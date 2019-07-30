@@ -9,10 +9,10 @@
 </CsOptions>
 <CsInstruments>
 
-  sr	     =  48000
-  ksmps	     =  512
-  nchnls     =  1
-  0dbfs	     =  1
+  sr         =  48000
+  ksmps      =  512
+  nchnls     =  2
+  0dbfs     =  1
 
 
   gilisten   OSCinit 4444
@@ -35,14 +35,17 @@ amp_next:
 if (kk == 0) goto amp_done
              kgoto   amp_next
 amp_done:
-  kdb        = (1-kamp)*-95
+  kdb        port (1-kamp)*-95, 0.5
   klf        port (klow*klow*klow)*500, 0.5
   klh        port (khigh*khigh*khigh)*900, 0.5
   kc         = (klf+klh)/2
   kspread    = klh-klf
-  anoise     fractalnoise ampdbfs(kdb), 2
-  asig       resonr anoise, kc, kspread
-             out asig
+  anoise     fractalnoise 1, 2
+  afil       resonr anoise, kc, kspread
+  acont      butlp afil, 900
+  acomp      compress afil, acont, 0, 48, 60, 4, 0.01, 0.1, 0.1
+  aout       = acomp*ampdbfs(kdb)
+             outs aout, aout
     endin
 
 turnon 1000
