@@ -12,32 +12,42 @@
   sr         =  48000
   ksmps      =  512
   nchnls     =  2
-  0dbfs     =  1
+  0dbfs      =  1
 
 
   gilisten   OSCinit 4444
 
+    opcode oscvar1, k, SSi
+  Spath, Stypes, iini \
+             xin
+  kval       init iini
+next:
+  kk         OSClisten gilisten, Spath, Stypes, kval
+if (kk == 0) goto done
+             kgoto next
+done:
+             xout kval
+    endop
+
+    opcode oscvar2, kk, SSii
+  Spath, Stypes, iini1, iini2 \
+             xin
+  kval1      init iini1
+  kval2      init iini2
+next:
+  kk         OSClisten gilisten, Spath, Stypes, kval1, kval2
+if (kk == 0) goto done
+             kgoto next
+done:
+             xout kval1, kval2
+    endop
+
     instr    1000 ; noise generator
-
-  klow       init 0.5
-  khigh      init 0.5
-  kamp        init 0.7
-
-;; filter
-filter_next:
-  kk         OSClisten gilisten, "/filter_range", "ff", klow, khigh
-if (kk == 0) goto filter_done
-             kgoto   filter_next
-filter_done:
-;; amp
-amp_next:
-  kk         OSClisten gilisten, "/amp", "f", kamp
-if (kk == 0) goto amp_done
-             kgoto   amp_next
-amp_done:
+  klo, khi   oscvar2 "/filter_range", "ff", 0.5, 0.5
+  kamp       oscvar1 "/amp", "f", 0.7
   kdb        port (1-kamp)*-95, 0.5
-  klf        port (klow*klow*klow)*500, 0.5
-  klh        port (khigh*khigh*khigh)*900, 0.5
+  klf        port (klo*klo*klo)*500, 0.5
+  klh        port (khi*khi*khi)*900, 0.5
   kc         = (klf+klh)/2
   kspread    = klh-klf
   anoise     fractalnoise 1, 2
