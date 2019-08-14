@@ -34,7 +34,7 @@ done:
     instr    1000 ; fm generator
   kcar       oscvar "/car", 0.7, 0.01, 14
   kmod       oscvar "/mod", 0.7, 0.01, 14
-  kidx       oscvar "/idx", 0.7, 0.01, 14
+  kidx       oscvar "/idx", 0.7, 0.01, 24
   kdb        oscvar "/amp", 0, -95, 0
   amod       poscil3 2^kidx, 2^kmod
   aout       poscil3 ampdbfs(kdb), (2^kcar)+amod
