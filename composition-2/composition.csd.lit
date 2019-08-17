@@ -20,6 +20,7 @@ where I am less likely to lose context.
 
 --- score
 i 1000 0 100
+i 1100 10.14 89
 ---
 
 @s the synth
@@ -29,9 +30,9 @@ In the body of the instrument, we combine the parameters to create args to synth
 This same body will be shared by multiple instruments, with different parameter settings.
 
 --- synth body
-  amod1      poscil3 aidx1, kmod1
-  a1         poscil3 kidx, kcar1+amod1
-  aclean     poscil3 ampdb(again), kcar+a1
+  amod       poscil3 aidx1, amod1
+  a1         poscil3 aidx, acar1+amod
+  aclean     poscil3 ampdb(again), acar+a1
   adist      limit aclean, -1, 1
   aout       = adist*ampdbfs(adb)
              outq aout, aout, aout, aout
@@ -45,10 +46,10 @@ the various curves work against.
 
 --- instr 1
     instr    1000 ; fm generator
-  kmod1      = 3060.3
-  kcar1      = 503.293880
-  kidx       = 402
-  kcar       = 0.2
+  amod1      = 3060.3
+  acar1      = 503.293880
+  aidx       = 402
+  acar       = 0.2
 ---
 
 <p>
@@ -76,8 +77,22 @@ traverse).
 @{synth body}
 ---
 
+@s another instrument
 
+--- instr 2
+    instr    1100 ; another fm generator
+  amod1      = 3060.3
+  acar1      = 503.293880
+  aidx       = 402
+  acar       = 0.2
+  aidx1      lna 70, 121, 0.92, 0.08, p3
+  again      lna -0.5, 1.0525, 0.9, 0.1, p3
+  adb        lna -65, -15, 0.01, 0.25, p3
 
+@{synth body}
+---
+
+@s udos
 These UDOs help make curves that are more intuitive to me.
 
 <p>
@@ -101,6 +116,8 @@ make more sense to me.
     xout aout+imn
     endop
 ---
+
+@s miscellanea and the parent document
 
 @code_type csound
 --- orc headers --- noWeave
@@ -132,6 +149,7 @@ make more sense to me.
 @{udos}
 
 @{instr 1}
+@{instr 2}
 
 </CsInstruments>
 <CsScore>
