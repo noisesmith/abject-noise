@@ -33,7 +33,6 @@ done:
 
     instr    1000 ; fm generator
   kcar       oscvar "/car", 0.7, 0.01, 14
-  kmod       oscvar "/mod", 0.7, 0.01, 14
   kidx       oscvar "/idx", 0.7, 0.01, 24
   kcar1      oscvar "/car1", 0.7, 0.01, 14
   kmod1      oscvar "/mod1", 0.7, 0.01, 14

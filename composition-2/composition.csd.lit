@@ -1,0 +1,144 @@
+@title fm synthesis composition
+
+@s preface
+
+<p>
+Using literate programming.
+</p>
+<small>
+(using the "lit" program, from <a href="">zyedidia</a>, written in D)
+</small>
+
+@s introduction, setup
+
+<p>
+The goal is to have an electronic music composition, created from source code,
+where I am less likely to lose context.
+</p>
+
+@s the score - comprising The instruments we invoke, and their timings
+
+--- score
+i 1000 0 100
+---
+
+@s the synth
+
+
+In the body of the instrument, we combine the parameters to create args to synthesis "opcodes".
+This same body will be shared by multiple instruments, with different parameter settings.
+
+--- synth body
+  amod1      poscil3 aidx1, kmod1
+  a1         poscil3 kidx, kcar1+amod1
+  aclean     poscil3 ampdb(again), kcar+a1
+  adist      limit aclean, -1, 1
+  aout       = adist*ampdbfs(adb)
+             outq aout, aout, aout, aout
+    endin
+---
+
+@s the first instrument
+
+Some parameters are fixed at start, at least for now. They create the baseline
+the various curves work against.
+
+--- instr 1
+    instr    1000 ; fm generator
+  kmod1      = 3060.3
+  kcar1      = 503.293880
+  kidx       = 402
+  kcar       = 0.2
+---
+
+<p>
+Here we make a simple line from low to high.
+</p>
+
+--- instr 1 +=
+  aidx1      lna 70, 121, 0.92, 0.08, p3
+---
+
+<p>
+The gain in this design is finicky, and a very low value is a big effect.
+</p>
+
+<p>
+Here, for "again", we use a line that spends a leasuirely amount of time
+ramping up, then a long sustained period, then a short fall. For "adb" we
+calculate an even shorter ramp for the amplitude (the range this parameter will
+traverse).
+</p>
+
+--- instr 1 +=
+  again       lna -0.5, 1.0525, 0.9, 0.1, p3
+  adb         lna -65, -15, 0.01, 0.25, p3
+@{synth body}
+---
+
+
+
+These UDOs help make curves that are more intuitive to me.
+
+<p>
+The parameters to
+<a href="file:///usr/share/doc/csound-doc/html/linen.html">linen</a>
+are amplitude, rise time, total duration, and decay time.
+</p>
+<p></p>
+<p>
+The parameters to this opcode: <code>min, max, fade-in, fade-out, duration</code>
+make more sense to me.
+</p>
+
+--- udos
+    opcode lna, a,iiiii
+  imn, imx, iin, iiout, idur \
+    xin
+  aout linen (imx-imn), idur*iin, idur, idur*iiout
+         ; between multiplying by (mx-mn), and adding mn back to out,
+         ; we effectively the linen output between mn and mx
+    xout aout+imn
+    endop
+---
+
+@code_type csound
+--- orc headers --- noWeave
+  sr         =  48000
+  ksmps      =  512
+  nchnls     =  4
+  0dbfs      =  1
+---
+
+--- cli opts --- noWeave
+-Lstdin
+-+rtaudio=jack
+-odac
+-iadc
+-b 1024
+-B 2048
+---
+
+@code_type csound
+--- composition.csd
+<CsoundSynthesizer>
+<CsOptions>
+@{cli opts}
+</CsOptions>
+<CsInstruments>
+
+@{orc headers}
+
+@{udos}
+
+@{instr 1}
+
+</CsInstruments>
+<CsScore>
+
+@{score}
+
+e
+</CsScore>
+</CsoundSynthesizer>
+---
