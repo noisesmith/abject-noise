@@ -119,7 +119,6 @@ make more sense to me.
 
 @s miscellanea and the parent document
 
-@code_type csound
 --- orc headers --- noWeave
   sr         =  48000
   ksmps      =  512
@@ -136,7 +135,7 @@ make more sense to me.
 -B 2048
 ---
 
-@code_type csound
+@code_type csound .csd
 --- composition.csd
 <CsoundSynthesizer>
 <CsOptions>
