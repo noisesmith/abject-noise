@@ -23,6 +23,9 @@ where I am less likely to lose context.
 ;; a buzz harmonic
 f 1 0 32768 10 0.9 0.8 0.7 0.6 0.5 0.4 0.3 0.2 0.1 0.05
 
+;; for playing around
+;; i 9999 0 360000
+
 i 1000 0 100
 i 1100 10.14 89
 
@@ -142,6 +145,41 @@ make more sense to me.
 -B 2048
 ---
 
+--- debug / audition
+  gilisten   OSCinit 4445
+
+    opcode oscvar, a, Siii
+  Spath, iini, ilo, ihi \
+             xin
+  kin        init iini
+next:
+  kk         OSClisten gilisten, Spath, "f", kin
+if (kk == 0) goto done
+             kgoto next
+done:
+    iscale   = ihi - ilo
+    kval     port (kin*iscale)+ilo, 0.15
+             xout a(kval)
+    endop
+
+    instr 9999
+    amod1  oscvar "/mod1", 0, 0, 1000
+    acar1  oscvar "/car1", 0, 0, 1000
+    aidx   oscvar "/idx", 0, 0, 1000
+    acar   oscvar "/car", 0, 0, 1000
+    aidx1  oscvar "/idx1", 0, 0, 1000
+    again  oscvar "/gain", 0, 0, 30
+    adb    oscvar "/db", -65, -65, 0
+    amute  oscvar "/mute", 0, 1, 0
+    amod   poscil3 aidx1, amod1
+    a1     poscil3 aidx, acar1+amod
+    aclean poscil3 ampdb(again), acar+a1, 1
+    adist  limit aclean, -1, 1
+    aout   = adist*ampdbfs(adb)*amute
+           outq aout, aout, aout, aout
+    endin
+---
+
 @comment_type ;;; %s
 @code_type csound .csd
 --- composition.csd
@@ -158,6 +196,7 @@ make more sense to me.
 @{long drone}
 @{second long drone}
 @{shorter parameterized burst}
+@{debug / audition}
 
 </CsInstruments>
 <CsScore>
