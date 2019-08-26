@@ -186,8 +186,16 @@ done:
     kmute  oscvark "/mute", 0, 1, 0
     kdisp  oscvark "/display", 0, 0, 1
     kdp    changed kdisp
-           printf "amod1: %f\nacar1: %f\naidx: %f\nacar: %f\naidx1: %f\nagain: %f\n\n\n", kdisp*kdp, \
-                          k(amod1),   k(acar1),  k(aidx),   k(acar),    k(aidx1),   k(again)
+           printf \
+{{
+    amod1   =       %f
+    acar1   =       %f
+    aidx    =       %f
+    acar    =       %f
+    aidx1   =       %f
+    again   =       %f
+}}, \
+                  kdisp*kdp, k(amod1),  k(acar1), k(aidx),  k(acar),  k(aidx1),   k(again)
     kexit  oscvark "/exit", 0, 0, 1
            scoreline "e", kexit
     amod   poscil3 aidx1, amod1
@@ -228,13 +236,28 @@ e
 ---
 
 some good sounds:
-
 ---
 
-amod1: 246.723101
-acar1: 263.594866
-aidx: 110.454060
-acar: 34.777638
-aidx1: 528.354883
-again: 0.000000
+    amod1  =      246.723101
+    acar1  =      263.594866
+    aidx   =      110.454060
+    acar   =      34.777638
+    aidx1  =      528.354883
+    again  =      0.000000
+
+    amod1  =      749.443233
+    acar1  =      487.750560
+    aidx   =      130.289540
+    acar   =      119.153678
+    aidx1  =      603.563488
+    again  =      0.000000
+
+;; a rumbly
+    amod1   =       118.040092
+    acar1   =       40.089086
+    aidx    =       159.242764
+    acar    =       47.884189
+    aidx1   =       115.812920
+    again   =       0.000000
+
 ---
