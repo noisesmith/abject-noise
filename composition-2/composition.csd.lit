@@ -24,12 +24,15 @@ where I am less likely to lose context.
 f 1 0 32768 10 0.9 0.8 0.7 0.6 0.5 0.4 0.3 0.2 0.1 0.05
 
 ;; for playing around
-i 9999 0 360000
+;; i 9999 0 360000
 
-;; i 1000 0 100
-;; i 1100 10.14 89
-
-;; i 2000 12.2 3
+i "fm_a_tinny" 0 100
+i "fm_b_tinny" 10.14 89
+i "blaster_a" 12.2 3
+i "buzz_a" 14.5 70 -15
+i "buzz_b" 44.125 70 -15
+i "rumbly_a" 51.125 30 -15
+i "wobble_a" 64.125 20 -15
 ---
 
 @s the synth
@@ -46,14 +49,13 @@ This same body will be shared by multiple instruments, with different parameter 
   adist      limit aclean, -1, 1
   aout       = adist*ampdbfs(adb)
              outq aout, aout, aout, aout
-    endin
 ---
 
 @s the first instrument
 
 @comment_type ;;; %s
---- long drone
-    instr    1000 ; fm generator
+--- fm a tinny
+    instr    fm_a_tinny
 ;; fixed parameters
   amod1      = 3060.3
   acar1      = 503.293880
@@ -66,13 +68,14 @@ This same body will be shared by multiple instruments, with different parameter 
   again       lna -0.5, 3.0525, 0.9, 0.1, p3
   adb         lna -65, -15, 0.01, 0.25, p3
 @{synth body}
+    endin
 ---
 
 @s another instrument
 
 @comment_type ;;; %s
---- second long drone
-    instr    1100 ; another fm generator
+--- fm b tinny
+    instr    fm_b_tinny ; another fm generator
   amod1      lna 0, 3060.3, 0.5, 0.5, p3
   acar1      lna 503.293880, 0, 0.7, 0.3, p3
   aidx       = 402
@@ -82,23 +85,81 @@ This same body will be shared by multiple instruments, with different parameter 
   adb        lna -65, -15, 0.01, 0.25, p3
 
 @{synth body}
+    endin
 ---
 
 @s more
 @comment_type ;;; %s
---- shorter parameterized burst
-    instr    2000
+--- blaster a
+    instr    blaster_a
   amod1      = 2000
   acar1      = 700
   aidx       = 1000
   acar       = 43.77
   aidx1      = 212
   again      = 10.3
-  adb        = -10
+  adb        = -30
 
 @{synth body}
+    endin
 ---
 
+@s and all the rest
+--- buzz a
+      instr buzz_a
+    amod1  =      246.723101
+    acar1  =      263.594866
+    aidx   =      110.454060
+    acar   =      34.777638
+    aidx1  =      528.354883
+    again  =      0.000000
+    adb    lna -65, p4, 0.1, 0.25, p3
+@{synth body}
+    endin
+---
+
+--- buzz b
+      instr buzz_b
+    amod1  =      749.443233
+    acar1  =      487.750560
+    aidx   =      130.289540
+    acar   =      119.153678
+    aidx1  =      603.563488
+    again  =      0.000000
+    adb    lna -65, p4, 0.1, 0.25, p3
+@{synth body}
+    endin
+---
+
+--- rumbly a
+      instr rumbly_a
+    amod1   =       118.040092
+    acar1   =       40.089086
+    aidx    =       159.242764
+    acar    =       47.884189
+    aidx1   =       115.812920
+    again   =       0.000000
+    adb    lna -65, p4, 0.1, 0.25, p3
+@{synth body}
+    endin
+---
+
+
+--- wobble a
+      instr wobble_a
+    amod1   =       118.040092
+    amod1   =       83.518930
+    acar1   =       223.830730
+    aidx    =       122.494429
+    acar    =       0.000000
+    aidx1   =       278.396428
+    again   =       3.589744
+    adb    lna -65, p4, 0.1, 0.25, p3
+@{synth body}
+    endin
+---
+
+---
 @s udos
 These UDOs help make curves that are more intuitive to me.
 
@@ -220,9 +281,13 @@ done:
 
 @{udos}
 
-@{long drone}
-@{second long drone}
-@{shorter parameterized burst}
+@{fm a tinny}
+@{fm b tinny}
+@{blaster a}
+@{buzz a}
+@{buzz b}
+@{rumbly a}
+@{wobble a}
 @{debug / audition}
 
 </CsInstruments>
@@ -233,31 +298,4 @@ done:
 e
 </CsScore>
 </CsoundSynthesizer>
----
-
-some good sounds:
----
-
-    amod1  =      246.723101
-    acar1  =      263.594866
-    aidx   =      110.454060
-    acar   =      34.777638
-    aidx1  =      528.354883
-    again  =      0.000000
-
-    amod1  =      749.443233
-    acar1  =      487.750560
-    aidx   =      130.289540
-    acar   =      119.153678
-    aidx1  =      603.563488
-    again  =      0.000000
-
-;; a rumbly
-    amod1   =       118.040092
-    acar1   =       40.089086
-    aidx    =       159.242764
-    acar    =       47.884189
-    aidx1   =       115.812920
-    again   =       0.000000
-
 ---
