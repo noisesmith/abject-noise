@@ -23,18 +23,22 @@ where I am less likely to lose context.
 ;; a buzz harmonic
 f 1 0 32768 10 0.9 0.8 0.7 0.6 0.5 0.4 0.3 0.2 0.1 0.05
 
-;; for playing around
-;; i 9999 0 360000
-
-i "fm_a_tinny" 0 100
-i "fm_b_tinny" 10.14 89
-i "blaster_a" 12.2 3
-i "buzz_a" 14.5 70 -15
-i "buzz_b" 44.125 70 -15
-i "rumbly_a" 51.125 30 -15
-i "wobble_a" 64.125 20 -15
+i "fm_a_tinny"   0    100    -5   0
+i "fm_b_tinny"  10.14  89     0  -7
+i "blaster_a"   12.2    3   -10   0
+i "buzz_a"      14.5   70    -5 -15
+i "buzz_a"      15.1   70   -15  -5
+i "buzz_b"      44.825 70   -15  -5
+i "buzz_b"      45.02  70    -5 -15
+i "rumbly_a"    51.125 30    -5 -15
+i "rumbly_a"    52     30   -15  -5
+i "wobble_a"    64.125 20   -15  -5
+i "wobble_a"    66.3   20    -5 -15
 ---
 
+
+;; for playing around
+;; i 9999 0 360000
 @s the synth
 
 
@@ -47,8 +51,9 @@ This same body will be shared by multiple instruments, with different parameter 
   a1         poscil3 aidx, acar1+amod
   aclean     poscil3 ampdb(again), acar+a1, 1
   adist      limit aclean, -1, 1
-  aout       = adist*ampdbfs(adb)
-             outq aout, aout, aout, aout
+  al         = adist*ampdbfs(adb+p4)
+  ar         = adist*ampdbfs(adb+p5)
+             outq al, ar, al, ar
 ---
 
 @s the first instrument
@@ -288,12 +293,38 @@ done:
 @{buzz b}
 @{rumbly a}
 @{wobble a}
-@{debug / audition}
 
 </CsInstruments>
 <CsScore>
 
 @{score}
+
+e
+</CsScore>
+</CsoundSynthesizer>
+---
+
+@comment_type ;;; %s
+@code_type csound .csd
+--- rte.csd
+<CsoundSynthesizer>
+<CsOptions>
+@{cli opts}
+</CsOptions>
+<CsInstruments>
+
+@{orc headers}
+
+@{debug / audition}
+
+</CsInstruments>
+<CsScore>
+
+;; a buzz harmonic
+f 1 0 32768 10 0.9 0.8 0.7 0.6 0.5 0.4 0.3 0.2 0.1 0.05
+
+;; for playing around
+i 9999 0 360000
 
 e
 </CsScore>
