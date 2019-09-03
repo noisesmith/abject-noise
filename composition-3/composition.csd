@@ -46,33 +46,43 @@
 
 
       instr wobble_a
-    amod1   =       118.040092
-    amod1   =       83.518930
-    acar1   =       223.830730
-    aidx    =       122.494429
+    amod1   =     118.040092
+    amod1   =      83.518930
+    acar1   =     223.830730
+    aidx    =     122.494429
     acar    =       0.000000
-    aidx1   =       278.396428
+    aidx1   =     278.396428
     again   =       3.589744
     $FMS
       endin
 
       instr dumb_machine
-    amod1   =       485.523373
-    acar1   =       457.683742
-    aidx    =       502.227187
-    acar    =       207.126945
-    aidx1   =       645.879745
+    amod1   =     485.523373
+    acar1   =     457.683742
+    aidx    =     502.227187
+    acar    =     207.126945
+    aidx1   =     645.879745
     again   =       0.000000
     $FMS
       endin
 
 
       instr evil_buzz
-    amod1   =       951.002240
-    acar1   =       743.875265
-    aidx    =       1000.000000
-    acar    =       207.126945
-    aidx1   =       732.739449
+    amod1   =     951.002240
+    acar1   =     743.875265
+    aidx    =    1000.000000
+    acar    =     207.126945
+    aidx1   =     732.739449
+    again   =       0.000000
+    $FMS
+      endin
+
+      instr wohwah
+    amod1   =       838.530064
+    acar1   =       590.200424
+    aidx    =       216.035634
+    acar    =       31.180400
+    aidx1   =       942.093551
     again   =       0.000000
     $FMS
       endin
