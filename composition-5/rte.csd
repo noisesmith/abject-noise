@@ -62,12 +62,7 @@ done:
     kdp    changed kdisp
            printf \
 {{
-  {:instr 1
-   :t 0
-   :d 1
-   :al 0
-   :ar 0
-   :amod1 %f
+  {:amod1 %f
    :acar1 %f
    :aidx  %f
    :acar  %f

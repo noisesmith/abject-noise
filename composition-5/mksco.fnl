@@ -13,31 +13,37 @@
          p.aidx1
          p.again))
 
+(local defaults
+ {:instr 1
+  :t 0
+  :d 1
+  :al 0
+  :ar 0})
+
+
+(fn with-defaults
+  [m]
+  (each [k v (pairs defaults)]
+    (tset m k v))
+  m)
+
 (local params
-  {:instr 1
-   :t 0
-   :d 1
-   :al 0
-   :ar 0
-   :amod1 118.040092
-   :acar1 223.830730
-   :aidx  122.494429
-   :acar    0.000000
-   :aidx1 278.396428
-   :again   3.589744})
+  (with-defaults
+   {:amod1 118.040092
+    :acar1 223.830730
+    :aidx  122.494429
+    :acar    0.000000
+    :aidx1 278.396428
+    :again   3.589744}))
 
 (local whine
-  {:instr 1
-   :t 0
-   :d 1
-   :al 0
-   :ar 0
-   :amod1 6280.623674
-   :acar1 1084.409809
-   :aidx  4877.505600
-   :acar  9040.089369
-   :aidx1 583.518922
-   :again 21.794871})
+  (with-defaults
+    {:amod1 6280.623674
+     :acar1 1084.409809
+     :aidx  4877.505600
+     :acar  9040.089369
+     :aidx1 583.518922
+     :again 21.794871}))
 
 (fn buzz-table
   []
