@@ -32,8 +32,9 @@
   (each [k v (pairs m)]
     (let [updatef (. up k)]
       (if updatef
-        (tset m k (updatef (. m k) k m t))
-        (tset m k v)))))
+        (tset t k (updatef v k m t))
+        (tset t k v))))
+  t)
 
 (fn rnd
   [low high]
@@ -79,11 +80,32 @@
   []
   (print (buzz-table)))
 
+(fn elaborate
+  [p start duration n density]
+  (let [deach (/ duration n)]
+    (for [i 1 n]
+      (let [d (rnd 0.1 deach)
+            t (+ start
+                 (* i deach)
+                 (rnd (- d) d))
+            wiggle (fn [x] (rnd (* x 0.9) (* x 1.1)))
+            parameters (tupdate p
+                                {:mod1 wiggle
+                                 :car1 wiggle
+                                 :idx wiggle
+                                 :car wiggle
+                                 :idx1 wiggle
+                                 :gain wiggle})]
+        (sco-line parameters
+                  t (* d density)
+                  (rnd -20 -5) (rnd -20 -5))))))
+
 (ftables)
 
 (sco-line whine 0 20 -10 -10)
 (sco-line params 10 10 -10 -15)
 (sco-line whine2 14 10 -10 -10)
+(elaborate whine 5 30 800 5.0)
 
 {:sco-line sco-line
  :defaults defaults
@@ -94,4 +116,5 @@
  :whine whine
  :whine2 whine2
  :buzz-table buzz-table
- :ftables ftables}
+ :ftables ftables
+ :elaborate elaborate}
