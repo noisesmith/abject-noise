@@ -100,12 +100,16 @@
                   t (* d density)
                   (rnd -20 -5) (rnd -20 -5))))))
 
-(ftables)
+(fn main
+  []
+  (ftables)
 
-(sco-line whine 0 20 -10 -10)
-(sco-line params 10 10 -10 -15)
-(sco-line whine2 14 10 -10 -10)
-(elaborate whine 5 30 800 5.0)
+  (sco-line whine 0 20 -10 -10)
+  (sco-line params 10 10 -10 -15)
+  (sco-line whine2 14 10 -10 -10)
+  (elaborate whine 5 30 800 5.0))
+
+(main)
 
 {:sco-line sco-line
  :defaults defaults
