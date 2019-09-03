@@ -26,6 +26,24 @@
     (tset m k v))
   m)
 
+(fn tupdate
+  [m up]
+  (local t {})
+  (each [k v (pairs m)]
+    (let [updatef (. up k)]
+      (if updatef
+        (tset m k (updatef (. m k) k m t))
+        (tset m k v)))))
+
+(fn rnd
+  [low high]
+  (let [offset (or low -1)
+        maximum (or high 1)
+        scale (- maximum offset)
+        r (math.random)]
+    (+ offset
+       (* scale r r r))))
+
 (local params
   (with-defaults
     {:mod1 118.040092
@@ -66,3 +84,14 @@
 (sco-line whine 0 20 -10 -10)
 (sco-line params 10 10 -10 -15)
 (sco-line whine2 14 10 -10 -10)
+
+{:sco-line sco-line
+ :defaults defaults
+ :with-defaults with-defaults
+ :tupdate tupdate
+ :rnd rnd
+ :params params
+ :whine whine
+ :whine2 whine2
+ :buzz-table buzz-table
+ :ftables ftables}
