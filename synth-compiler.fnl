@@ -22,26 +22,26 @@
 
 (local itypes
   {:a {:rate [:audio]}
-   :i {:rate [:init]}
    :f {:rate [:fsig]}
    :h {:rate [:init] :default 127}
+   :i {:rate [:init]}
    :j {:rate [:init] :default -1}
    :J {:rate [:kontrol] :pairs true}
    :k {:rate [:kontrol]}
-   :O {:rate [:kontrol] :default 0}
-   :P {:rate [:kontrol] :default 1}
-   :q {:rate [:kontrol] :default 10}
-   :V {:rate [:kontrol] :default 0.5}
    :K {:rate [:kontrol :init]}
    :m {:rate [:init] :min-count 0}
    :M {:rate [:audio] :max-count 9}
    :N {:rate [:audio :kontrols] :min-count 0}
    :o {:rate [:init] :default 0}
+   :O {:rate [:kontrol] :default 0}
    :p {:rate [:init] :default 1}
+   :P {:rate [:kontrol] :default 1}
+   :q {:rate [:kontrol] :default 10}
    :S {:rate [:string]}
    :T {:rate [:kontrol :string]}
    :U {:rate [:audio :kontrol] :init true}
    :v {:rate :init :default 0.5}
+   :V {:rate [:kontrol] :default 0.5}
    :x {:rate [:audio :kontrol]}
    :y {:rate [:audio] :min-count 0}
    :z {:rate [:kontrol] :min-count 0}
