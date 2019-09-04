@@ -21,46 +21,46 @@
   )
 
 (local itypes
-  {:a :audio
-   :i :init
-   :f :fsig
-   :h {:rate :init :default 127}
-   :j {:rate :init :default -1}
-   :J {:rate :kontrol :pairs true}
-   :k :kontrol
-   :O {:rate :kontrol :default 0}
-   :P {:rate :kontrol :default 1}
-   :q {:rate :kontrol :default 10}
-   :V {:rate :kontrol :default 0.5}
-   :K [:kontrol :init]
-   :m {:rate :init :min-count 0}
-   :M {:rate :audio :max-count 9}
+  {:a {:rate [:audio]}
+   :i {:rate [:init]}
+   :f {:rate [:fsig]}
+   :h {:rate [:init] :default 127}
+   :j {:rate [:init] :default -1}
+   :J {:rate [:kontrol] :pairs true}
+   :k {:rate [:kontrol]}
+   :O {:rate [:kontrol] :default 0}
+   :P {:rate [:kontrol] :default 1}
+   :q {:rate [:kontrol] :default 10}
+   :V {:rate [:kontrol] :default 0.5}
+   :K {:rate [:kontrol :init]}
+   :m {:rate [:init] :min-count 0}
+   :M {:rate [:audio] :max-count 9}
    :N {:rate [:audio :kontrols] :min-count 0}
-   :o {:rate :init :default 0}
-   :p {:rate :init :default 1}
-   :S :string
-   :T [:kontrol :string]
+   :o {:rate [:init] :default 0}
+   :p {:rate [:init] :default 1}
+   :S {:rate [:string]}
+   :T {:rate [:kontrol :string]}
    :U {:rate [:audio :kontrol] :init true}
    :v {:rate :init :default 0.5}
-   :x [:audio :kontrol]
-   :y {:rate :audio :min-count 0}
-   :z {:rate :kontrol :min-count 0}
+   :x {:rate [:audio :kontrol]}
+   :y {:rate [:audio] :min-count 0}
+   :z {:rate [:kontrol] :min-count 0}
    :Z {:rate [:kontrol :audio] :min-count 0}})
 
 (local otypes
-   {:a :audio
-    :f :fsig
-    :F {:rate :fsig :min-count 0}
-    :i :init
-    :I {:rate :init :optional true}
-    :k :kontrol
-    :K [:init :kontrol]
-    :m {:rate :audio :optional true}
-    :M {:rate :audios :max-count 9}
-    :s {:kontrol :audio}
-    :S :string
-    :X {:rate :audio :implicit true}
-    :z {:rate :kontrol :optional true}})
+   {:a {:rate [:audio]}
+    :f {:rate [:fsig]}
+    :F {:rate [:fsig] :min-count 0}
+    :i {:rate [:init]}
+    :I {:rate [:init] :optional true}
+    :k {:rate [:kontrol]}
+    :K {:rate [:init :kontrol]}
+    :m {:rate [:audio] :optional true}
+    :M {:rate [:audios] :max-count 9}
+    :s {:rate [:kontrol :audio]}
+    :S {:rate [:string]}
+    :X {:rate [:audio] :implicit true}
+    :z {:rate [:kontrol] :optional true}})
 
 (local unknowns {})
 
