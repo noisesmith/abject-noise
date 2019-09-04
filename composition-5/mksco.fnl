@@ -100,6 +100,19 @@
                   t (* d density)
                   (rnd -20 -5) (rnd -20 -5))))))
 
+(local itypes
+  {:a :audio
+   :i :init
+   :j :init--1
+   :k :kontrol
+   :O :kontrol-0
+   :P :kontrol-1
+   :V :kontrol-0_5
+   :K :kontrol-init
+   :o :init-0
+   :p :init-1
+   :S :string})
+
 (fn main
   []
   (ftables)
