@@ -20,6 +20,41 @@
      outs a0, a0"
   )
 
+(local itypes
+  {:a :audio
+   :i :init
+   :j :init--1
+   :k :kontrol
+   :O :kontrol-0
+   :P :kontrol-1
+   :V :kontrol-0_5
+   :K :kontrol-init
+   :o :init-0
+   :p :init-1
+   :S :string})
+
+(local otypes
+   {:a :audio
+    :i :init
+    :k :kontrol
+    :K :kontrol-init})
+
+(local unknowns {})
+
+(fn expand-types
+  [s t op]
+  (when s
+    (let [types []]
+      (for [i 1 (# s)]
+        (let [sym (string.sub s i i)
+              found (. t sym)]
+          (when (not found)
+            (let [unks (or (. unknowns sym) [])]
+              (table.insert unks op)
+              (tset unknowns sym unks)))
+          (table.insert types (or found sym))))
+      types)))
+
 (fn opcode-data
   []
   (let [opcs (io.popen "csound -z1 2>&1")
@@ -36,7 +71,8 @@
         (if (not line)
           (set done? true)
           (let [(op out-types in-types) (string.match line "^(%a+) +(%a+) +(%a+)$")
-                op-data {:out out-types :in in-types}]
+                op-data {:out (expand-types out-types otypes op)
+                         :in (expand-types in-types itypes op)}]
             (if op
               (if (. opcodes op)
                 (table.insert (. opcodes op) op-data)
@@ -44,4 +80,5 @@
     opcodes))
 
 {:compile compile
- :opcode-data opcode-data}
+ :opcode-data opcode-data
+ :unknowns unknowns}
