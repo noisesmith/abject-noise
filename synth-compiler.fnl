@@ -49,8 +49,8 @@
         (let [sym (string.sub s i i)
               found (. t sym)]
           (when (not found)
-            (let [unks (or (. unknowns sym) [])]
-              (table.insert unks op)
+            (let [unks (or (. unknowns sym) {})]
+              (tset unks op s)
               (tset unknowns sym unks)))
           (table.insert types (or found sym))))
       types)))
