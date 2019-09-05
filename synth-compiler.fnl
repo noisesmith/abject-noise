@@ -1,3 +1,23 @@
+(fn rtoposort
+  [g]
+  "reverse topologically sorts the directed graph g"
+  ;; will be a mapping from graph node to number of incoming edges
+  (local in-degree {})
+  (each [k v (pairs g)]
+    (each [_ _ (ipairs v)])))
+
+(fn connections->rgraph
+  [con]
+  "input is the connections format:
+  {id {sym number
+       other-sym [out-index other-id]}
+   other-id {}}
+  it maps synth units to their inputs
+
+  output is a standard adjacency list,
+  with directions of edges reversed in relation
+  to the data flow of the synth graph")
+
 (fn compile
   [opcodes nodes edges]
   "takes three tables
