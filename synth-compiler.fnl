@@ -1,9 +1,9 @@
 (fn keyset
   [t]
-  (local res {})
-  (each [k _ (pairs t)]
-    (tset res k true))
-  res)
+  (let [res {}]
+    (each [k _ (pairs t)]
+          (tset res k true))
+    res))
 
 ;; sort by in-degree
 ;; cut loops (?) -  in v2
@@ -12,17 +12,20 @@
 
 (fn sort-by-in-degree
   [g]
-  (local degrees {})
-  (each [k _ (pairs g)]
-    (tset degrees k 0))
-  (each [node edges (pairs g)]
-    (each [_ edge (ipairs edges)]
-      (tset degrees edge (+ (. degrees edge) 1))))
-  (local deg [])
-  (each [node count (pairs degrees)]
-    (table.insert deg [node count]))
-  (table.sort deg (fn [[_ v1] [_ v2]] (< v1 v2)))
-  deg)
+  (let [degrees {}
+        result []]
+    ;; accumulator setup
+    (each [k _ (pairs g)]
+      (tset degrees k 0))
+    ;; build accumulator values
+    (each [node edges (pairs g)]
+      (each [_ edge (ipairs edges)]
+        (tset degrees edge (+ (. degrees edge) 1))))
+    ;; convert to array
+    (each [node count (pairs degrees)]
+      (table.insert result [node count]))
+    (table.sort result (fn [[_ v1] [_ v2]] (< v1 v2)))
+    result))
 
 (fn cut-loops
   [g result]
@@ -30,29 +33,32 @@
 
 (fn shallow-copy
   [t]
-  (local result {})
-  (each [k v (pairs t)]
-    (tset result k v))
-  result)
+  (let [result {}]
+    (each [k v (pairs t)]
+      (tset result k v))
+    result))
 
 (fn toposort
   [g]
   "topologically sorts the directed graph g"
-  (local graph (shallow-copy g))
-  (local result [])
-  (var done? false)
-  (while (not done?)
-    (let [to-visit (sort-by-in-degree graph)
-          proc-count (# result)]
-      (each [_ [k count] (ipairs to-visit)]
-        (when (= count 0)
-          (table.insert result [k (. graph k)])
-          (tset graph k nil)))
-      (cut-loops graph result)
-      (when (= (# result) proc-count)
-        (set done? true))))
-  {:cut graph
-   :result result})
+  (let [graph (shallow-copy g)
+        result []]
+    (var done? false)
+    (while (not done?)
+      (let [to-visit (sort-by-in-degree graph)
+            proc-count (# result)]
+        ;; find new roots and prune
+        (each [_ [k count] (ipairs to-visit)]
+          (when (= count 0)
+            (table.insert result [k (. graph k)])
+            (tset graph k nil)))
+        ;; snip from loops
+        (cut-loops graph result)
+        ;; test for stall
+        (when (= (# result) proc-count)
+          (set done? true))))
+    {:excluded graph
+     :result result}))
 
 (fn connections->rgraph
   [con]
