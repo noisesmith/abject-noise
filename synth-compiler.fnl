@@ -40,19 +40,19 @@
   "topologically sorts the directed graph g"
   (local graph (shallow-copy g))
   (local result [])
-  (var proc-count 0)
   (var done? false)
   (while (not done?)
-    (let [to-visit (sort-by-in-degree graph)]
+    (let [to-visit (sort-by-in-degree graph)
+          proc-count (# result)]
       (each [_ [k count] (ipairs to-visit)]
         (when (= count 0)
           (table.insert result [k (. graph k)])
           (tset graph k nil)))
       (cut-loops graph result)
       (when (= (# result) proc-count)
-        (set done? true))
-      (set proc-count (# result))))
-  result)
+        (set done? true))))
+  {:cut graph
+   :result result})
 
 (fn connections->rgraph
   [con]
