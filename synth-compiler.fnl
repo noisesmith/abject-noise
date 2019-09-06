@@ -5,16 +5,54 @@
     (tset res k true))
   res)
 
+;; sort by in-degree
+;; cut loops (?) -  in v2
+;; select, emit, remove root nodes
+;; repeat, appending any new roots, until empty
+
+(fn sort-by-in-degree
+  [g]
+  (local degrees {})
+  (each [k _ (pairs g)]
+    (tset degrees k 0))
+  (each [node edges (pairs g)]
+    (each [_ edge (ipairs edges)]
+      (tset degrees edge (+ (. degrees edge) 1))))
+  (local deg [])
+  (each [node count (pairs degrees)]
+    (table.insert deg [node count]))
+  (table.sort deg (fn [[_ v1] [_ v2]] (< v1 v2)))
+  deg)
+
+(fn cut-loops
+  [g result]
+  {})
+
+(fn shallow-copy
+  [t]
+  (local result {})
+  (each [k v (pairs t)]
+    (tset result k v))
+  result)
+
 (fn toposort
   [g]
   "topologically sorts the directed graph g"
-  (local to-visit (keyset g))
-  (local in-paths {})
-  (let [start (next to-visit)]
-    (while (> (# to-visit) 0)
-      (each [k v (pairs g)]
-            (tset in-paths k 0)
-            (each [_ _ (ipairs v)])))))
+  (local graph (shallow-copy g))
+  (local result [])
+  (var proc-count 0)
+  (var done? false)
+  (while (not done?)
+    (let [to-visit (sort-by-in-degree graph)]
+      (each [_ [k count] (ipairs to-visit)]
+        (when (= count 0)
+          (table.insert result [k (. graph k)])
+          (tset graph k nil)))
+      (cut-loops graph result)
+      (when (= (# result) proc-count)
+        (set done? true))
+      (set proc-count (# result))))
+  result)
 
 (fn connections->rgraph
   [con]
@@ -132,6 +170,9 @@
                 (tset opcodes op [op-data])))))))
     opcodes))
 
-{:compile compile
+{:keyset keyset
+ :sort-by-in-degree sort-by-in-degree
+ :toposort toposort
+ :compile compile
  :opcode-data opcode-data
  :unknowns unknowns}
