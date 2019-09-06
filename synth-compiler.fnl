@@ -1,10 +1,20 @@
-(fn rtoposort
+(fn keyset
+  [t]
+  (local res {})
+  (each [k _ (pairs t)]
+    (tset res k true))
+  res)
+
+(fn toposort
   [g]
-  "reverse topologically sorts the directed graph g"
-  ;; will be a mapping from graph node to number of incoming edges
-  (local in-degree {})
-  (each [k v (pairs g)]
-    (each [_ _ (ipairs v)])))
+  "topologically sorts the directed graph g"
+  (local to-visit (keyset g))
+  (local in-paths {})
+  (let [start (next to-visit)]
+    (while (> (# to-visit) 0)
+      (each [k v (pairs g)]
+            (tset in-paths k 0)
+            (each [_ _ (ipairs v)])))))
 
 (fn connections->rgraph
   [con]
