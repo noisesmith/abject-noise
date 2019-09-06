@@ -28,8 +28,22 @@
     result))
 
 (fn cut-loops
-  [g result]
-  {})
+  [g result cuts]
+  (let [nodes (sort-by-in-degree g)
+        (cuttable cut-targets) (next nodes)
+        target {}]
+    (each [_ k (ipairs cut-targets)]
+      (tset target k true))
+    (var idx cuttable)
+    (var found? false)
+    (while (not found?)
+      (print "cut-loops working" (# cuts) idx)
+      (set idx (next nodes idx))
+      (when (. target idx)
+        (set found? true)
+        (table.insert cuts cuttable idx)
+        (table.insert result [cuttable cut-targets])
+        (tset g cuttable nil)))))
 
 (fn shallow-copy
   [t]
@@ -53,11 +67,11 @@
             (table.insert result [k (. graph k)])
             (tset graph k nil)))
         ;; snip from loops
-        (cut-loops graph result)
-        ;; test for stall
+        (cut-loops graph result cuts)
         (when (= (# result) proc-count)
-          (set done? true))))
-    {:excluded graph
+        (set done? true))))
+    {:cut cuts
+     :remainder graph
      :result result}))
 
 (fn connections->rgraph
