@@ -1,3 +1,14 @@
+(fn shallow-copy
+  [t]
+  (let [result {}]
+    (each [k v (pairs t)]
+      (tset result k v))
+    result))
+
+(fn tu
+  [m k f]
+  (tset m k (f (. m k))))
+
 (fn sco-line
   [p +t *d al ar]
   (print "i" p.instr
@@ -72,6 +83,15 @@
      :idx1  518.930972
      :gain    6.474840}))
 
+(fn car-var [car]
+  (with-defaults
+    {:mod1 412.026718
+     :car1 851.893079
+     :idx  111.358576
+     :car  (or car 0)
+     :idx1 201.559022
+     :gain 21.282052}))
+
 (fn buzz-table
   []
   "f 1 0 32768 10 0.9 0.8 0.7 0.6 0.5 0.4 0.3 0.2 0.1 0.05")
@@ -99,15 +119,16 @@
         (sco-line parameters
                   t (* d density)
                   (rnd -20 -5) (rnd -20 -5))))))
-
 (fn main
   []
   (ftables)
 
-  (sco-line whine 0 20 -10 -10)
-  (sco-line params 10 10 -10 -15)
-  (sco-line whine2 14 10 -10 -10)
-  (elaborate whine 5 30 800 5.0))
+  ;(sco-line whine 0 20 -10 -10)
+  ;(sco-line params 10 10 -10 -15)
+  ;(sco-line whine2 14 10 -10 -10)
+  ;;(elaborate whine 5 30 800 5.0)
+  (sco-line (car-var 0)     0 100 -3 -3)
+  (sco-line (car-var 12.4) 10 80 -8 -8))
 
 (main)
 
@@ -121,4 +142,5 @@
  :whine2 whine2
  :buzz-table buzz-table
  :ftables ftables
- :elaborate elaborate}
+ :elaborate elaborate
+ :car-var car-var}

@@ -33,7 +33,7 @@
         {
           "type": "fader",
           "top": 0,
-          "left": 0,
+          "left": 180,
           "id": "mod1",
           "linkId": "",
           "width": 80,
@@ -71,8 +71,8 @@
         },
         {
           "type": "fader",
-          "top": 160,
-          "left": 0,
+          "top": 0,
+          "left": 350,
           "id": "car1",
           "linkId": "",
           "width": 80,
@@ -172,8 +172,8 @@
         },
         {
           "type": "fader",
-          "top": 240,
-          "left": 0,
+          "top": 0,
+          "left": 520,
           "id": "idx",
           "linkId": "",
           "width": 80,
@@ -211,8 +211,8 @@
         },
         {
           "type": "fader",
-          "top": 320,
-          "left": 0,
+          "top": 0,
+          "left": 700,
           "id": "car",
           "linkId": "",
           "width": 80,
@@ -289,8 +289,8 @@
         },
         {
           "type": "fader",
-          "top": 80,
-          "left": 0,
+          "top": 0,
+          "left": 10,
           "id": "idx1",
           "linkId": "",
           "width": 80,

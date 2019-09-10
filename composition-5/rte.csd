@@ -62,12 +62,12 @@ done:
     kdp    changed kdisp
            printf \
 {{
-  {:amod1 %f
-   :acar1 %f
-   :aidx  %f
-   :acar  %f
-   :aidx1 %f
-   :again %f}
+  {:mod1 %f
+   :car1 %f
+   :idx  %f
+   :car  %f
+   :idx1 %f
+   :gain %f}
 }}, \
                   kdisp*kdp, k(amod1),  k(acar1), k(aidx),  k(acar),  k(aidx1),   k(again)
     kexit  oscvark "/exit", 0, 0, 1
