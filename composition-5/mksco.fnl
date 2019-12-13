@@ -22,9 +22,12 @@
 
 (fn with-defaults
   [m]
-  (each [k v (pairs defaults)]
-    (tset m k v))
-  m)
+  (let [result {}]
+    (each [k v (pairs defaults)]
+          (tset result k v))
+    (each [k v (pairs m)]
+          (tset result k v))
+    result))
 
 (fn tupdate
   [m up]
@@ -110,6 +113,9 @@
   (elaborate whine 5 30 800 5.0))
 
 (main)
+
+;; (local fennel (require :fennel))
+;; (local s (fennel.dofile "mksco.fnl"))
 
 {:sco-line sco-line
  :defaults defaults

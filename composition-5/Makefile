@@ -1,10 +1,11 @@
+FENNEL=../fennel-dist/fennel
 RT_ARGS=-Lstdin -+rtaudio=jack -odac -iadc -b1024 -B2048
 
 default: compo.sco
 	csound ${RT_ARGS} compo.orc $<
 
 compo.sco: mksco.fnl
-	fennel $< > $@
+	${FENNEL} $< > $@
 
 render: abject.mp3
 
@@ -16,3 +17,6 @@ abject-raw.wav: compo.sco
 
 abject.wav: abject-raw.wav
 	sox $< $@ channels 2
+
+repl:
+	rlwrap ${FENNEL}
