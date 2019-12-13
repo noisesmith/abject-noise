@@ -1,3 +1,8 @@
 [_] copy fennel csound libs
 [_] UI concept
-[_] 
+
+* composition code ideas
+	* sco constructing functions could all return strings, let main print
+
+* synth compiler ideas
+	* have tests, make it easier to pick up where I left off
