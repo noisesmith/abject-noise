@@ -19,4 +19,4 @@ abject.wav: abject-raw.wav
 	sox $< $@ channels 2
 
 repl:
-	rlwrap ${FENNEL}
+	rlwrap ${FENNEL} --repl repl.fnl

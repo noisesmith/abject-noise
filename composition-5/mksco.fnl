@@ -1,16 +1,22 @@
-(fn sco-line
-  [p +t *d al ar]
-  (print "i" p.instr
-         (+ p.t +t)
-         (* p.d *d)
-         (+ p.al al)
-         (+ p.ar ar)
-         p.mod1
-         p.car1
-         p.idx
-         p.car
-         p.idx1
-         p.gain))
+(fn set-db
+  [t n]
+  (.. "i 2 " t " 0 " n))
+
+(fn event
+  [params]
+  (table.concat ["i"
+                 params.base.instr
+                 (+ params.base.t params.+t)
+                 (* params.base.d params.*d)
+                 (+ params.base.al params.al)
+                 (+ params.base.ar params.ar)
+                 params.base.mod1
+                 params.base.car1
+                 params.base.idx
+                 params.base.car
+                 params.base.idx1
+                 params.base.gain]
+                " "))
 
 (local defaults
  {:instr 1
@@ -81,11 +87,12 @@
 
 (fn ftables
   []
-  (print (buzz-table)))
+  (buzz-table))
 
 (fn elaborate
   [p start duration n density]
-  (let [deach (/ duration n)]
+  (let [deach (/ duration n)
+        res []]
     (for [i 1 n]
       (let [d (rnd 0.1 deach)
             t (+ start
@@ -99,25 +106,62 @@
                                  :car wiggle
                                  :idx1 wiggle
                                  :gain wiggle})]
-        (sco-line parameters
-                  t (* d density)
-                  (rnd -20 -5) (rnd -20 -5))))))
+        (table.insert res
+                      {:base parameters
+                       :+t t
+                       :*d (* d density)
+                       :al (rnd -20 -5)
+                       :ar (rnd -20 -5)})))
+    res))
+
+(fn print-each
+  [...]
+  (each [i v (ipairs [...])]
+        (if (= (type v) :table)
+          (print-each (unpack v))
+          (print v))))
+
+(fn solo
+  [m]
+  (let [queue (fn [] 0)
+        m- (tupdate m {:+t queue})]
+    (tset m- :base (tupdate m.base {:t queue}))
+    m-))
+
+(fn mute
+  [...]
+  "")
+
+(fn mp
+  [f t]
+  (let [res []]
+    (each [_ v (ipairs t)]
+          (table.insert res (f v)))
+    res))
 
 (fn main
   []
-  (ftables)
-
-  (sco-line whine 0 20 -10 -10)
-  (sco-line params 10 10 -10 -15)
-  (sco-line whine2 14 10 -10 -10)
-  (elaborate whine 5 30 800 5.0))
+  (let [library {:db (set-db 0 -20)
+                 :ft (ftables)
+                 :whine (event {:base whine :+t 0 :*d 20 :al -10 :ar -10})
+                 :basic (event {:base params :+t 10 :*d 10 :al -10 :ar -15})
+                 :whine2 (event {:base whine2 :+t 14 :*d 10 :al -10 :ar -10})
+                 :chorus (elaborate whine 5 30 800 50.0)}
+        composition [library.db
+                     library.ft
+                     library.whine
+                     library.basic
+                     library.whine2
+                     (mp event library.chorus)]]
+    (print-each composition)))
 
 (main)
 
 ;; (local fennel (require :fennel))
 ;; (local s (fennel.dofile "mksco.fnl"))
 
-{:sco-line sco-line
+{:print-each print-each
+ :set-db set-db
  :defaults defaults
  :with-defaults with-defaults
  :tupdate tupdate

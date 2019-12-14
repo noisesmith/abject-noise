@@ -33,3 +33,7 @@
   ar      = adist*agr
            outq al, ar, al, ar
   endin
+
+  instr 2
+    gidb = p4
+  endin

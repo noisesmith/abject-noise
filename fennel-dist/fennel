@@ -144,6 +144,9 @@ if arg[1] == "--repl" or #arg == 0 then
         dosafe(initFilename, options, options)
     end
     print("Fennel " .. fennel.version .. " - Welcome to Fennel!")
+    if arg[2] then
+      dosafe(arg[2], options, options)
+    end
     fennel.repl(options)
 elseif arg[1] == "--compile" then
     for i = 2, #arg do
