@@ -90,35 +90,39 @@
   (buzz-table))
 
 (fn elaborate
-  [p start duration n density]
-  (let [deach (/ duration n)
+  [p opts]
+  (let [deach (/ opts.duration opts.n)
         res []]
-    (for [i 1 n]
+    (var active p)
+    (for [i 1 opts.n]
       (let [d (rnd 0.1 deach)
-            t (+ start
+            t (+ opts.start
                  (* i deach)
                  (rnd (- d) d))
-            wiggle (fn [x] (rnd (* x 0.9) (* x 1.1)))
-            parameters (tupdate p
+            wiggle (fn [x]
+                     (rnd (* x 0.9)
+                          (* x (/ 1 0.9))))
+            parameters (tupdate active
                                 {:mod1 wiggle
                                  :car1 wiggle
                                  :idx wiggle
                                  :car wiggle
                                  :idx1 wiggle
                                  :gain wiggle})]
+        (if opts.drunk (set active parameters))
         (table.insert res
                       {:base parameters
                        :+t t
-                       :*d (* d density)
+                       :*d (* d opts.density)
                        :al (rnd -20 -5)
                        :ar (rnd -20 -5)})))
     res))
 
 (fn print-each
-  [...]
-  (each [i v (ipairs [...])]
+  [t]
+  (each [i v (ipairs t)]
         (if (= (type v) :table)
-          (print-each (unpack v))
+          (print-each v)
           (print v))))
 
 (fn solo
@@ -141,19 +145,31 @@
 
 (fn main
   []
-  (let [library {:db (set-db 0 -20)
-                 :ft (ftables)
+  (let [library {:ft (ftables)
+                 :db (set-db 0 -20)
                  :whine (event {:base whine :+t 0 :*d 20 :al -10 :ar -10})
                  :basic (event {:base params :+t 10 :*d 10 :al -10 :ar -15})
                  :whine2 (event {:base whine2 :+t 14 :*d 10 :al -10 :ar -10})
-                 :chorus (elaborate whine 5 30 800 50.0)}
+                 :chorus (elaborate whine {:start 5
+                                           :duration 30
+                                           :n 800
+                                           :density 12.3})}
         composition [library.db
                      library.ft
                      library.whine
                      library.basic
                      library.whine2
                      (mp event library.chorus)]]
-    (print-each composition)))
+    ;(print-each composition)
+    ;(print-each library.ft (event (solo (. library.chorus 6))))
+    (print-each [library.ft
+                 library.db
+                 (mp event
+                     (elaborate whine {:start 0
+                                       :duration 1000
+                                       :n 2400
+                                       :density 12.3
+                                       :drunk true}))])))
 
 (main)
 
