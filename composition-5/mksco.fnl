@@ -159,17 +159,20 @@
                      library.whine
                      library.basic
                      library.whine2
-                     (mp event library.chorus)]]
-    ;(print-each composition)
-    ;(print-each library.ft (event (solo (. library.chorus 6))))
-    (print-each [library.ft
-                 library.db
-                 (mp event
-                     (elaborate whine {:start 0
-                                       :duration 1000
-                                       :n 2400
-                                       :density 12.3
-                                       :drunk true}))])))
+                     (mp event library.chorus)]
+        ;; the following goes wrong - the drunken walk shrinks a value
+        ;; down to zero...
+        test-data [library.ft
+                   library.db
+                   (mp event
+                       (elaborate whine {:start 0
+                                         :duration 1000
+                                         :n 2400
+                                         :density 12.3
+                                         :drunk true}))]]
+    ;(print-each [library.ft (event (solo (. library.chorus 6)))])
+    ;(print-each test-data)
+    (print-each composition)))
 
 (main)
 
