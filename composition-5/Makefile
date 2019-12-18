@@ -1,10 +1,18 @@
 FENNEL=../fennel-dist/fennel
-RT_ARGS=-Lstdin -+rtaudio=jack -odac -iadc -b1024 -B2048
+
+PLATFORM=$(shell uname)
+ifeq ($(PLATFORM),Darwin)
+  RT=portaudio
+else
+  RT=jack
+endif
+
+RT_ARGS=-Lstdin -+rtaudio=$(RT) -odac -iadc -b1024 -B2048
 
 default: compo.sco
 	csound ${RT_ARGS} compo.orc $<
 
-compo.sco: mksco.fnl
+compo.sco: mksco.fnl sco.fnl
 	${FENNEL} $< > $@
 
 render: abject.mp3
