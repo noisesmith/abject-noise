@@ -32,7 +32,6 @@
   :al 0
   :ar 0})
 
-
 (fn with-defaults
   [m]
   (apply-defaults m defaults))
@@ -59,6 +58,11 @@
                    p.base.idx1
                    p.base.gain]
                   " ")))
+
+(fn ev
+  [params]
+  (event
+   {:base params}))
 
 (fn tupdate
   [m up]
@@ -135,6 +139,7 @@
 
 {:set-db set-db
  :event event
+ :ev ev
  :defaults defaults
  :with-defaults with-defaults
  :full-defaults full-defaults

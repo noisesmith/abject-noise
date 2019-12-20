@@ -28,12 +28,16 @@
      :gain    6.474840}))
 
 (fn buzz-table
-  []
-  "f 1 0 32768 10 0.9 0.8 0.7 0.6 0.5 0.4 0.3 0.2 0.1 0.05")
+  [n]
+  (.. "f " n " 0 32768 10 0.9 0.8 0.7 0.6 0.5 0.4 0.3 0.2 0.1 0.05"))
+
+(fn sine-table
+  [n]
+  (.. "f " n " 0 32768 10 1"))
 
 (fn ftables
   []
-  (buzz-table))
+  (buzz-table 1))
 
 (local library
        {:ft (ftables)
@@ -72,17 +76,24 @@
 
 (local
  composition2
- [library.ft
-  (sco.event {:car 1000
-              :t 0
-              :d 1})])
+ [(sine-table 1)
+  (sco.ev  {:car 1000
+            :d 10
+            :t 0
+            :al -5
+            :ar -10})
+  (sco.ev {:car 30
+           :d 10
+           :t 0
+           :al -10
+           :ar -5})])
 
 (fn main
   []
   ;(sco.print-each (isolated-chorus 6))
   ;(sco.print-each drunken-walk-test)
-  (sco.print-each composition)
-  ;(sco.print-each composition2)
+  ;(sco.print-each composition)
+  (sco.print-each composition2)
   (print))
 
 (main)
