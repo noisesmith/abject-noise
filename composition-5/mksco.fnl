@@ -78,15 +78,31 @@
  composition2
  [(sine-table 1)
   (sco.ev  {:car 1000
-            :d 10
-            :t 0
-            :al -5
-            :ar -10})
+            :t 0 :d 10
+            :al -5 :ar -10})
   (sco.ev {:car 30
-           :d 10
-           :t 0
-           :al -10
-           :ar -5})])
+           :t 0 :d 10
+           :al -10 :ar -5})
+  (sco.ev {:car 1000
+           :car1 11
+           :idx 10
+           :t 6 :d 10
+           :al -10 :ar -5})
+  (sco.ev {:car 30
+           :car1 3
+           :idx 1
+           :t 6 :d 10
+           :al -5 :ar -10})
+  (sco.ev {:car 1000
+           :car1 13
+           :idx 12
+           :t 12 :d 20
+           :al -10 :ar -10})
+  (sco.ev {:car 30
+           :car1 5
+           :idx 2
+           :t 12 :d 20
+           :al -5 :ar -5})])
 
 (fn main
   []
