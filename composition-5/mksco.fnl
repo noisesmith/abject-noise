@@ -46,8 +46,8 @@
                                       :n 800
                                       :density 12.3})})
 (local composition
-       [library.db
-        library.ft
+       [library.ft
+        library.db
         library.whine
         library.basic
         library.whine2
@@ -70,12 +70,20 @@
   [library.ft
    (sco.event (sco.solo (. library.chorus idx)))])
 
+(local
+ composition2
+ [library.ft
+  (sco.event {:car 1000
+              :t 0
+              :d 1})])
+
 (fn main
   []
-  (sco.print-each (isolated-chorus 6))
+  ;(sco.print-each (isolated-chorus 6))
   ;(sco.print-each drunken-walk-test)
-  ;(sco.print-each composition)
-  )
+  (sco.print-each composition)
+  ;(sco.print-each composition2)
+  (print))
 
 (main)
 
