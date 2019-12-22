@@ -137,8 +137,16 @@
           (table.insert res (f v)))
     res))
 
+(fn set-piece
+  [m ...]
+  (let [res []]
+    (each [_ v (ipairs [...])]
+          (table.insert res (ev (apply-defaults v m))))
+    res))
+
 {:set-db set-db
  :event event
+ :set-piece set-piece
  :ev ev
  :defaults defaults
  :with-defaults with-defaults
