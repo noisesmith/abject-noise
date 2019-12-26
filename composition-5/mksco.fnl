@@ -132,75 +132,103 @@
     :idx1 18.3
     :al -5 :ar -5})
   [(sco.set-piece
-     {:t 84 :d 50}
-     {:car 1000
+    {:t 84 :d 50}
+    {:car 1000
+     :car1 23
+     :idx 18
+     :mod1 333.7
+     :idx1 43.3
+     :al -10 :ar -10}
+    {:car 30
+     :car1 8
+     :idx 5
+     :mod1 8.2
+     :idx1 8.3
+     :al -5 :ar -5})
+   [(sco.set-piece
+     {:t 100 :d 10}
+     {:car 501.12
       :car1 23
       :idx 18
       :mod1 333.7
       :idx1 43.3
       :al -10 :ar -10}
-     {:car 30
+     {:car 57.12
       :car1 8
       :idx 5
       :mod1 8.2
       :idx1 8.3
       :al -5 :ar -5})
+    (sco.set-piece
+     {:t 110 :d 10}
+     {:car 482.44
+      :car1 23
+      :idx 18
+      :mod1 333.7
+      :idx1 43.3
+      :al -10 :ar -10}
+     {:car 63.12
+      :car1 8
+      :idx 5
+      :mod1 8.2
+      :idx1 8.3
+      :al -5 :ar -5})]
    [(sco.set-piece
-    {:t 100 :d 10}
-    {:car 501.12
+     {:t 120 :d 10}
+     {:car 501.12
+      :car1 23
+      :idx 18
+      :mod1 333.7
+      :idx1 43.3
+      :al -10 :ar -10}
+     {:car 57.12
+      :car1 8
+      :idx 5
+      :mod1 8.2
+      :idx1 8.3
+      :al -5 :ar -5})
+    (sco.set-piece
+     {:t 130 :d 10}
+     {:car 482.44
+      :car1 23
+      :idx 18
+      :mod1 383.7
+      :idx1 63.3
+      :al -10 :ar -10}
+     {:car 63.12
+      :car1 8
+      :idx 5
+      :mod1 11.2
+      :idx1 18.3
+      :al -5 :ar -5})]
+   [{:t 120 :d 20
+     :car 57.12
+     :car1 8
+     :idx 5
+     :mod1 8.2
+     :idx1 8.3
+     :al -5 :ar -5}
+    {:t 120 :d 10
+     :car 501.12
      :car1 23
      :idx 18
      :mod1 333.7
      :idx1 43.3
      :al -10 :ar -10}
-    {:car 57.12
-     :car1 8
-     :idx 5
-     :mod1 8.2
-     :idx1 8.3
-     :al -5 :ar -5})
-   (sco.set-piece
-    {:t 110 :d 10}
-    {:car 482.44
-     :car1 23
-     :idx 18
-     :mod1 333.7
-     :idx1 43.3
-     :al -10 :ar -10}
-    {:car 63.12
-     :car1 8
-     :idx 5
-     :mod1 8.2
-     :idx1 8.3
-     :al -5 :ar -5})]
-   [(sco.set-piece
-    {:t 120 :d 10}
-    {:car 501.12
-     :car1 23
-     :idx 18
-     :mod1 333.7
-     :idx1 43.3
-     :al -10 :ar -10}
-    {:car 57.12
-     :car1 8
-     :idx 5
-     :mod1 8.2
-     :idx1 8.3
-     :al -5 :ar -5})
-   (sco.set-piece
-    {:t 130 :d 10}
-    {:car 482.44
+    {:t 130 :d 10
+     :car 482.44
      :car1 23
      :idx 18
      :mod1 383.7
      :idx1 63.3
-     :al -10 :ar -10}
-    {:car 63.12
-     :car1 8
-     :idx 5
-     :mod1 11.2
-     :idx1 18.3
-     :al -5 :ar -5})]]])
+     :al -10 :ar -10}]
+   [{:t 140 :d 69
+     :car 44.414
+     :car1 21.34
+     :idx 12.33
+     :mod1 16.3382
+     :idx1 2.23
+     :al -5 :ar -5}]]])
 
 (fn main
   []
