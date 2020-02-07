@@ -7,7 +7,7 @@ else
   RT=jack
 endif
 
-RT_ARGS=-Lstdin -+rtaudio=$(RT) -odac -iadc -b1024 -B2048
+RT_ARGS=-Lstdin -+rtaudio=$(RT) -odac -b1024 -B2048
 
 default: compo.sco
 	csound ${RT_ARGS} compo.orc $<
