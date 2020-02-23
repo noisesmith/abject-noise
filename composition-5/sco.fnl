@@ -2,14 +2,17 @@
   [t n]
   (.. "i 2 " t " 0 " n))
 
-(fn apply-defaults
-  [m from-default]
+(fn merge
+  [m1 ...]
   (let [result {}]
-    (each [k v (pairs from-default)]
+    (each [k v (pairs m1)]
           (tset result k v))
-    (each [k v (pairs (or m {}))]
-          (tset result k v))
+    (each [_ m (ipairs [...])]
+          (each [k v (pairs m)]
+                (tset result k v)))
     result))
+
+(fn apply-defaults [m1 m2] (merge m2 m1))
 
 (local
  defaults
@@ -157,4 +160,5 @@
  :print-each print-each
  :solo solo
  :mute mute
- :mp mp}
+ :mp mp
+ :merge merge}
