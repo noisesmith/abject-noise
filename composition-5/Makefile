@@ -9,7 +9,9 @@ endif
 
 RT_ARGS=-Lstdin -+rtaudio=$(RT) -odac -b1024 -B2048
 
-default: compo.sco
+default: hear
+
+hear: compo.sco
 	csound ${RT_ARGS} compo.orc $<
 
 compo.sco: mksco.fnl sco.fnl
@@ -28,3 +30,6 @@ abject.wav: abject-raw.wav
 
 repl:
 	rlwrap ${FENNEL} --repl repl.fnl
+
+clean:
+	rm -f compo.sco abject-raw.wav abject.wav abject.mp3
