@@ -1,0 +1,698 @@
+/*
+ *	IanniX Score File
+ */
+
+
+/*
+ *	This method is called first.
+ *	It is the good section for asking user for script global variables (parameters).
+ *	
+ * 	This section is never overwritten by IanniX when saving.
+ */
+function askUserForParameters() {
+	//title("The title of the parameter box");
+	//ask("Group name of the parameter (only for display purposes)", "Parameter label", "myGlobalVar", "theDefaultValue");
+}
+
+
+/*
+ *	This method stores all the operations made through IanniX scripts.
+ *	You can add some commands here to make your own scripts!
+ *	Scripts are written in Javascript but even with a limited knowledge of Javascript, many types of useful scripts can be created.
+ *	
+ *	Beyond the standard javascript commands, the run() function is used to send commands to IanniX.
+ *	Commands must be provided to run() as a single string.
+ *	For example, run("zoom 100"); sets the display zoom to 100%.
+ *	
+ *	To combine numeric parameters with text commands to produce a string, use the concatenation operator.
+ *	In the following example center_x and center_y are in numeric variables and must be concatenated to the command string.
+ *	Example: run("setPos current " + center_x + " " + center_y + " 0");
+ *	
+ *	To learn IanniX commands, perform an manipulation in IanniX graphical user interface, and see the Helper window.
+ *	You'll see the syntax of the command-equivalent action.
+ *	
+ *	And finally, remember that most of commands must target an object.
+ *	Global syntax is always run("<command name> <target> <arguments>");
+ *	Targets can be an ID (number) or a Group ID (string name of group) (please see "Info" tab in Inspector panel).
+ *	Special targets are "current" (last used ID), "all" (all the objects) and "lastCurve" (last used curve).
+ *	
+ * 	This section is never overwritten by IanniX when saving.
+ */
+function makeWithScript() {
+	//Clears the score
+	run("clear");
+	//Resets rotation
+	run("rotate 0 0 0");
+	//Resets score viewport center
+	run("center 0 0");
+	//Resets score zoom
+	run("zoom 100");
+}
+
+
+/*
+ *	When an incoming message is received, this method is called.
+ *		- <protocol> tells information about the nature of message ("osc", "midi", "direct…)
+ *		- <host> and <port> gives the origin of message, specially for IP protocols (for OpenSoundControl, UDP or TCP, it is the IP and port of the application that sends the message)
+ *		- <destination> is the supposed destination of message (for OpenSoundControl it is the path, for MIDI it is Control Change or Note on/off…)
+ *		- <values> are an array of arguments contained in the message
+ *	
+ * 	This section is never overwritten by IanniX when saving.
+ */
+function onIncomingMessage(protocol, host, port, destination, values) {
+	//Logs a message in the console (open "Config" tab from Inspector panel and see "Message log")
+	console("Received on '" + protocol + "' (" + host + ":" + port + ") to '" + destination + "', " + values.length + " values : ");
+	
+	//Browses all the arguments and displays them in log window
+	for(var valueIndex = 0 ; valueIndex < values.length ; valueIndex++)
+		console("- arg " + valueIndex + " = " + values[valueIndex]);
+}
+
+
+/*
+ *	This method stores all the operations made through the graphical user interface.
+ *	You are not supposed to modify this section, but it can be useful to remove some stuff that you added accidentaly.
+ *	
+ * 	Be very careful! This section is automaticaly overwritten when saving a score.
+ */
+function madeThroughGUI() {
+//GUI: NEVER EVER REMOVE THIS LINE
+	run("center -0.555922 2.66842");
+
+
+	run("add curve 1");
+	run("setpos current -5.94408 5.58059 0");
+	var points1 = [
+		{x: 0, y: 0, z: 0, c1x: 0, c1y: 0, c1z: 0, c2x: 0, c2y: 0, c2z: 0},
+		{x: 10.7079, y: 0.0513153, z: 0, c1x: 0, c1y: 0, c1z: 0, c2x: 0, c2y: 0, c2z: 0},
+		{x: 10.7079, y: -1.55658, z: 0, c1x: 0, c1y: 0, c1z: 0, c2x: 0, c2y: 0, c2z: 0},
+		{x: -0.0513158, y: -1.59079, z: 0, c1x: 0, c1y: 0, c1z: 0, c2x: 0, c2y: 0, c2z: 0},
+		{x: -0.0427632, y: -2.08684, z: 0, c1x: 0, c1y: 0, c1z: 0, c2x: 0, c2y: 0, c2z: 0},
+		{x: 10.6822, y: -2.1125, z: 0, c1x: 0, c1y: 0, c1z: 0, c2x: 0, c2y: 0, c2z: 0},
+		{x: 10.6566, y: -3.46382, z: 0, c1x: 0, c1y: 0, c1z: 0, c2x: 0, c2y: 0, c2z: 0},
+		{x: 4.0625, y: -3.44671, z: 0, c1x: 0, c1y: 0, c1z: 0, c2x: 0, c2y: 0, c2z: 0},
+		{x: 4.0625, y: -2.98487, z: 0, c1x: 0, c1y: 0, c1z: 0, c2x: 0, c2y: 0, c2z: 0},
+		{x: 9.57895, y: -3.01053, z: 0, c1x: 0, c1y: 0, c1z: 0, c2x: 0, c2y: 0, c2z: 0},
+		{x: 9.55329, y: -2.72829, z: 0, c1x: 0, c1y: 0, c1z: 0, c2x: 0, c2y: 0, c2z: 0},
+		{x: 0, y: -2.65987, z: 0, c1x: 0, c1y: 0, c1z: 0, c2x: 0, c2y: 0, c2z: 0},
+		{x: 0, y: -3.94276, z: 0, c1x: 0, c1y: 0, c1z: 0, c2x: 0, c2y: 0, c2z: 0},
+		{x: 10.6651, y: -3.82303, z: 0, c1x: 0, c1y: 0, c1z: 0, c2x: 0, c2y: 0, c2z: 0},
+		{x: 10.5967, y: -4.19079, z: 0, c1x: 0, c1y: 0, c1z: 0, c2x: 0, c2y: 0, c2z: 0},
+		{x: 8.41579, y: -4.18224, z: 0, c1x: 0, c1y: 0, c1z: 0, c2x: 0, c2y: 0, c2z: 0},
+		{x: 8.40724, y: -4.47303, z: 0, c1x: 0, c1y: 0, c1z: 0, c2x: 0, c2y: 0, c2z: 0},
+		{x: 10.6053, y: -4.42171, z: 0, c1x: 0, c1y: 0, c1z: 0, c2x: 0, c2y: 0, c2z: 0},
+		{x: 10.5625, y: -4.78947, z: 0, c1x: 0, c1y: 0, c1z: 0, c2x: 0, c2y: 0, c2z: 0},
+		{x: 7.91974, y: -4.83224, z: 0, c1x: 0, c1y: 0, c1z: 0, c2x: 0, c2y: 0, c2z: 0},
+		{x: 7.91118, y: -4.11382, z: 0, c1x: 0, c1y: 0, c1z: 0, c2x: 0, c2y: 0, c2z: 0},
+		{x: 7.35526, y: -4.13947, z: 0, c1x: 0, c1y: 0, c1z: 0, c2x: 0, c2y: 0, c2z: 0},
+		{x: 7.42368, y: -5.27697, z: 0, c1x: 0, c1y: 0, c1z: 0, c2x: 0, c2y: 0, c2z: 0},
+		{x: 10.4428, y: -5.22566, z: 0, c1x: 0, c1y: 0, c1z: 0, c2x: 0, c2y: 0, c2z: 0},
+		{x: 10.5112, y: -5.72171, z: 0, c1x: 0, c1y: 0, c1z: 0, c2x: 0, c2y: 0, c2z: 0},
+		{x: 7.12434, y: -5.62763, z: 0, c1x: 0, c1y: 0, c1z: 0, c2x: 0, c2y: 0, c2z: 0},
+		{x: 7.19276, y: -4.81513, z: 0, c1x: 0, c1y: 0, c1z: 0, c2x: 0, c2y: 0, c2z: 0},
+		{x: 6.14934, y: -4.85789, z: 0, c1x: 0, c1y: 0, c1z: 0, c2x: 0, c2y: 0, c2z: 0},
+		{x: 6.19211, y: -5.19145, z: 0, c1x: 0, c1y: 0, c1z: 0, c2x: 0, c2y: 0, c2z: 0},
+		{x: 6.9875, y: -5.18289, z: 0, c1x: 0, c1y: 0, c1z: 0, c2x: 0, c2y: 0, c2z: 0},
+		{x: 6.91908, y: -5.79868, z: 0, c1x: 0, c1y: 0, c1z: 0, c2x: 0, c2y: 0, c2z: 0},
+		{x: 4.86645, y: -5.6875, z: 0, c1x: 0, c1y: 0, c1z: 0, c2x: 0, c2y: 0, c2z: 0},
+		{x: 4.90066, y: -5.44803, z: 0, c1x: 0, c1y: 0, c1z: 0, c2x: 0, c2y: 0, c2z: 0},
+		{x: 6.73092, y: -5.58487, z: 0, c1x: 0, c1y: 0, c1z: 0, c2x: 0, c2y: 0, c2z: 0},
+		{x: 6.75658, y: -5.35395, z: 0, c1x: 0, c1y: 0, c1z: 0, c2x: 0, c2y: 0, c2z: 0},
+		{x: 5.96974, y: -5.32829, z: 0, c1x: 0, c1y: 0, c1z: 0, c2x: 0, c2y: 0, c2z: 0},
+		{x: 5.93553, y: -4.68684, z: 0, c1x: 0, c1y: 0, c1z: 0, c2x: 0, c2y: 0, c2z: 0},
+		{x: 7.15, y: -4.60987, z: 0, c1x: 0, c1y: 0, c1z: 0, c2x: 0, c2y: 0, c2z: 0},
+		{x: 7.15855, y: -4.2079, z: 0, c1x: 0, c1y: 0, c1z: 0, c2x: 0, c2y: 0, c2z: 0},
+		{x: 6.15789, y: -4.25066, z: 0, c1x: 0, c1y: 0, c1z: 0, c2x: 0, c2y: 0, c2z: 0},
+		{x: 6.175, y: -4.11382, z: 0, c1x: 0, c1y: 0, c1z: 0, c2x: 0, c2y: 0, c2z: 0},
+		{x: 10.1691, y: -4.01118, z: 0, c1x: 0, c1y: 0, c1z: 0, c2x: 0, c2y: 0, c2z: 0},
+		{x: 10.152, y: -3.93421, z: 0, c1x: 0, c1y: 0, c1z: 0, c2x: 0, c2y: 0, c2z: 0},
+		{x: 5.56776, y: -4.01118, z: 0, c1x: 0, c1y: 0, c1z: 0, c2x: 0, c2y: 0, c2z: 0},
+		{x: 5.54211, y: -4.43026, z: 0, c1x: 0, c1y: 0, c1z: 0, c2x: 0, c2y: 0, c2z: 0},
+		{x: 6.99605, y: -4.34474, z: 0, c1x: 0, c1y: 0, c1z: 0, c2x: 0, c2y: 0, c2z: 0},
+		{x: 6.96184, y: -4.44737, z: 0, c1x: 0, c1y: 0, c1z: 0, c2x: 0, c2y: 0, c2z: 0},
+		{x: 5.61908, y: -4.59276, z: 0, c1x: 0, c1y: 0, c1z: 0, c2x: 0, c2y: 0, c2z: 0},
+		{x: 5.67039, y: -5.32829, z: 0, c1x: 0, c1y: 0, c1z: 0, c2x: 0, c2y: 0, c2z: 0},
+		{x: 4.37039, y: -5.15724, z: 0, c1x: 0, c1y: 0, c1z: 0, c2x: 0, c2y: 0, c2z: 0},
+		{x: 4.41316, y: -5.67895, z: 0, c1x: 0, c1y: 0, c1z: 0, c2x: 0, c2y: 0, c2z: 0},
+		{x: 3.67763, y: -5.61908, z: 0, c1x: 0, c1y: 0, c1z: 0, c2x: 0, c2y: 0, c2z: 0},
+		{x: 3.60921, y: -4.70395, z: 0, c1x: 0, c1y: 0, c1z: 0, c2x: 0, c2y: 0, c2z: 0},
+		{x: 5.37961, y: -4.99474, z: 0, c1x: 0, c1y: 0, c1z: 0, c2x: 0, c2y: 0, c2z: 0},
+		{x: 5.33684, y: -4.32763, z: 0, c1x: 0, c1y: 0, c1z: 0, c2x: 0, c2y: 0, c2z: 0},
+		{x: 4.69539, y: -4.26776, z: 0, c1x: 0, c1y: 0, c1z: 0, c2x: 0, c2y: 0, c2z: 0},
+		{x: 4.79803, y: -4.66118, z: 0, c1x: 0, c1y: 0, c1z: 0, c2x: 0, c2y: 0, c2z: 0},
+		{x: 5.22566, y: -4.7125, z: 0, c1x: 0, c1y: 0, c1z: 0, c2x: 0, c2y: 0, c2z: 0},
+		{x: 5.19145, y: -4.81513, z: 0, c1x: 0, c1y: 0, c1z: 0, c2x: 0, c2y: 0, c2z: 0},
+		{x: 4.08816, y: -4.64408, z: 0, c1x: 0, c1y: 0, c1z: 0, c2x: 0, c2y: 0, c2z: 0},
+		{x: 4.07961, y: -4.24211, z: 0, c1x: 0, c1y: 0, c1z: 0, c2x: 0, c2y: 0, c2z: 0},
+		{x: 4.73816, y: -4.15658, z: 0, c1x: 0, c1y: 0, c1z: 0, c2x: 0, c2y: 0, c2z: 0},
+		{x: 5.33684, y: -4.21645, z: 0, c1x: 0, c1y: 0, c1z: 0, c2x: 0, c2y: 0, c2z: 0},
+		{x: 5.31974, y: -4.0625, z: 0, c1x: 0, c1y: 0, c1z: 0, c2x: 0, c2y: 0, c2z: 0},
+		{x: 3.74605, y: -4.07961, z: 0, c1x: 0, c1y: 0, c1z: 0, c2x: 0, c2y: 0, c2z: 0},
+		{x: 3.78882, y: -4.52434, z: 0, c1x: 0, c1y: 0, c1z: 0, c2x: 0, c2y: 0, c2z: 0},
+		{x: 3.42961, y: -4.54145, z: 0, c1x: 0, c1y: 0, c1z: 0, c2x: 0, c2y: 0, c2z: 0},
+		{x: 3.40395, y: -4.13947, z: 0, c1x: 0, c1y: 0, c1z: 0, c2x: 0, c2y: 0, c2z: 0},
+		{x: 2.52303, y: -4.14803, z: 0, c1x: 0, c1y: 0, c1z: 0, c2x: 0, c2y: 0, c2z: 0},
+		{x: 2.48882, y: -4.60132, z: 0, c1x: 0, c1y: 0, c1z: 0, c2x: 0, c2y: 0, c2z: 0},
+		{x: 3.18158, y: -4.51579, z: 0, c1x: 0, c1y: 0, c1z: 0, c2x: 0, c2y: 0, c2z: 0},
+		{x: 3.25855, y: -5.10592, z: 0, c1x: 0, c1y: 0, c1z: 0, c2x: 0, c2y: 0, c2z: 0},
+		{x: 3.54079, y: -5.09737, z: 0, c1x: 0, c1y: 0, c1z: 0, c2x: 0, c2y: 0, c2z: 0},
+		{x: 3.56645, y: -5.66184, z: 0, c1x: 0, c1y: 0, c1z: 0, c2x: 0, c2y: 0, c2z: 0},
+		{x: 3.16447, y: -5.56776, z: 0, c1x: 0, c1y: 0, c1z: 0, c2x: 0, c2y: 0, c2z: 0},
+		{x: 3.15592, y: -5.33684, z: 0, c1x: 0, c1y: 0, c1z: 0, c2x: 0, c2y: 0, c2z: 0},
+		{x: 3.42961, y: -5.40526, z: 0, c1x: 0, c1y: 0, c1z: 0, c2x: 0, c2y: 0, c2z: 0},
+		{x: 2.80526, y: -5.13158, z: 0, c1x: 0, c1y: 0, c1z: 0, c2x: 0, c2y: 0, c2z: 0},
+		{x: 2.72829, y: -4.84079, z: 0, c1x: 0, c1y: 0, c1z: 0, c2x: 0, c2y: 0, c2z: 0},
+		{x: 2.13816, y: -4.84934, z: 0, c1x: 0, c1y: 0, c1z: 0, c2x: 0, c2y: 0, c2z: 0},
+		{x: 2.16382, y: -4.36184, z: 0, c1x: 0, c1y: 0, c1z: 0, c2x: 0, c2y: 0, c2z: 0},
+		{x: 0.932237, y: -4.36184, z: 0, c1x: 0, c1y: 0, c1z: 0, c2x: 0, c2y: 0, c2z: 0},
+		{x: 0.983552, y: -5.29408, z: 0, c1x: 0, c1y: 0, c1z: 0, c2x: 0, c2y: 0, c2z: 0},
+		{x: 2.49737, y: -5.2, z: 0, c1x: 0, c1y: 0, c1z: 0, c2x: 0, c2y: 0, c2z: 0},
+		{x: 2.56579, y: -5.61908, z: 0, c1x: 0, c1y: 0, c1z: 0, c2x: 0, c2y: 0, c2z: 0},
+		{x: 0.726974, y: -5.63618, z: 0, c1x: 0, c1y: 0, c1z: 0, c2x: 0, c2y: 0, c2z: 0},
+		{x: 0.692763, y: -4.26776, z: 0, c1x: 0, c1y: 0, c1z: 0, c2x: 0, c2y: 0, c2z: 0},
+		{x: 0.119737, y: -4.24211, z: 0, c1x: 0, c1y: 0, c1z: 0, c2x: 0, c2y: 0, c2z: 0},
+		{x: 0.196711, y: -6.19211, z: 0, c1x: 0, c1y: 0, c1z: 0, c2x: 0, c2y: 0, c2z: 0},
+		{x: 11.0842, y: -6.13224, z: 0, c1x: 0, c1y: 0, c1z: 0, c2x: 0, c2y: 0, c2z: 0},
+		{x: 11.0842, y: -6.48289, z: 0, c1x: 0, c1y: 0, c1z: 0, c2x: 0, c2y: 0, c2z: 0},
+		{x: -0.145395, y: -6.54276, z: 0, c1x: 0, c1y: 0, c1z: 0, c2x: 0, c2y: 0, c2z: 0},
+		{x: 0, y: 0, z: 0, c1x: 0, c1y: 0, c1z: 0, c2x: 0, c2y: 0, c2z: 0},
+	];
+	for(var i = 0 ; i < points1.length ; i++)
+		run("setpointat current " + i + " " + points1[i].x + " " + points1[i].y + " " + points1[i].z + " " + points1[i].c1x + " " + points1[i].c1y + " " + points1[i].c1z + " " + points1[i].c2x + " " + points1[i].c2y + " " + points1[i].c2z);
+	run("add cursor 2");
+	run("setcurve current lastCurve");
+	run("setpos current -5.94408 5.58059 0");
+	run("setpattern current 0 0 1");
+
+
+	run("add trigger 61");
+	run("setpos current 4.55855 2.27928 0");
+
+	run("add trigger 60");
+	run("setpos current 4.80658 2.48454 0");
+
+	run("add trigger 51");
+	run("setpos current 1.49671 3.3227 0");
+
+	run("add trigger 50");
+	run("setpos current 0.949341 3.54506 0");
+
+	run("add trigger 49");
+	run("setpos current 0.735525 3.31414 0");
+
+	run("add trigger 48");
+	run("setpos current 0.427631 3.57072 0");
+
+	run("add trigger 55");
+	run("setpos current 3.50658 3.30559 0");
+
+	run("add trigger 54");
+	run("setpos current 3.30987 3.54506 0");
+
+	run("add trigger 53");
+	run("setpos current 2.82237 3.36546 0");
+
+	run("add trigger 52");
+	run("setpos current 1.87303 3.55362 0");
+
+	run("add trigger 11");
+	run("setpos current 1.35987 5.47796 0");
+
+	run("add trigger 10");
+	run("setpos current 1.00066 5.71743 0");
+
+	run("add trigger 9");
+	run("setpos current 0.444736 5.46941 0");
+
+	run("add trigger 8");
+	run("setpos current 0.0769728 5.67467 0");
+
+	run("add trigger 15");
+	run("setpos current 4.86645 5.38388 0");
+
+	run("add trigger 14");
+	run("setpos current 4.45592 5.58059 0");
+
+	run("add trigger 13");
+	run("setpos current 3.88289 5.7602 0");
+
+	run("add trigger 12");
+	run("setpos current 1.74474 5.68322 0");
+
+	run("add trigger 3");
+	run("setpos current -5.08882 5.40954 0");
+
+	run("add trigger 7");
+	run("setpos current -2.14671 5.47796 0");
+
+	run("add trigger 6");
+	run("setpos current -2.85658 5.7773 0");
+
+	run("add trigger 5");
+	run("setpos current -3.66053 5.44375 0");
+
+	run("add trigger 4");
+	run("setpos current -4.12237 5.67467 0");
+
+	run("add trigger 27");
+	run("setpos current -0.90658 4.17796 0");
+
+	run("add trigger 26");
+	run("setpos current 0.0940781 3.76743 0");
+
+	run("add trigger 25");
+	run("setpos current 0.478947 4.1523 0");
+
+	run("add trigger 24");
+	run("setpos current 1.06053 3.76743 0");
+
+	run("add trigger 31");
+	run("setpos current -4.43026 4.17796 0");
+
+	run("add trigger 30");
+	run("setpos current -3.81447 3.87862 0");
+
+	run("add trigger 29");
+	run("setpos current -3.38684 4.23783 0");
+
+	run("add trigger 28");
+	run("setpos current -2.7625 3.81875 0");
+
+	run("add trigger 19");
+	run("setpos current 3.69474 4.20362 0");
+
+	run("add trigger 18");
+	run("setpos current 4.29342 3.8102 0");
+
+	run("add trigger 17");
+	run("setpos current 4.86645 4.50296 0");
+
+	run("add trigger 16");
+	run("setpos current 4.66118 4.97335 0");
+
+	run("add trigger 23");
+	run("setpos current 1.43684 4.1523 0");
+
+	run("add trigger 22");
+	run("setpos current 2.98487 3.73322 0");
+
+	run("add trigger 21");
+	run("setpos current 3.20724 4.16941 0");
+
+	run("add trigger 20");
+	run("setpos current 3.55789 3.78454 0");
+
+	run("add trigger 107");
+	run("setpos current -1.92434 3.00625 0");
+
+	run("add trigger 106");
+	run("setpos current -1.32566 2.77533 0");
+
+	run("add trigger 105");
+	run("setpos current -1.17171 2.98914 0");
+
+	run("add trigger 104");
+	run("setpos current -0.547369 2.74967 0");
+
+	run("add trigger 111");
+	run("setpos current -4.45592 3.04046 0");
+
+	run("add trigger 110");
+	run("setpos current -3.96842 2.8352 0");
+
+	run("add trigger 109");
+	run("setpos current -3.51513 3.04046 0");
+
+	run("add trigger 108");
+	run("setpos current -3.11316 2.80099 0");
+
+	run("add trigger 99");
+	run("setpos current 1.30855 2.74112 0");
+
+	run("add trigger 98");
+	run("setpos current 1.49671 2.92072 0");
+
+	run("add trigger 97");
+	run("setpos current 2.54868 2.80099 0");
+
+	run("add trigger 96");
+	run("setpos current 2.77105 2.98059 0");
+
+	run("add trigger 103");
+	run("setpos current -0.58158 2.94638 0");
+
+	run("add trigger 102");
+	run("setpos current -0.0085535 2.95493 0");
+
+	run("add trigger 101");
+	run("setpos current 0.427631 2.75822 0");
+
+	run("add trigger 100");
+	run("setpos current 0.974999 2.96349 0");
+
+	run("add trigger 123");
+	run("setpos current -4.225 1.81743 0");
+
+	run("add trigger 122");
+	run("setpos current -5.02895 1.59506 0");
+
+	run("add trigger 121");
+	run("setpos current -5.31119 1.79178 0");
+
+	run("add trigger 120");
+	run("setpos current -5.59342 1.50954 0");
+
+	run("add trigger 127");
+	run("setpos current -3.10461 1.76612 0");
+
+	run("add trigger 126");
+	run("setpos current -3.46382 1.57796 0");
+
+	run("add trigger 125");
+	run("setpos current -3.71184 1.79178 0");
+
+	run("add trigger 124");
+	run("setpos current -3.89145 1.57796 0");
+
+	run("add trigger 115");
+	run("setpos current -5.82434 2.78388 0");
+
+	run("add trigger 114");
+	run("setpos current -5.525 3.00625 0");
+
+	run("add trigger 113");
+	run("setpos current -5.25987 2.76678 0");
+
+	run("add trigger 112");
+	run("setpos current -4.67829 2.79243 0");
+
+	run("add trigger 119");
+	run("setpos current -6.04671 1.74046 0");
+
+	run("add trigger 118");
+	run("setpos current -5.79013 2.04835 0");
+
+	run("add trigger 117");
+	run("setpos current -5.80724 2.44178 0");
+
+	run("add trigger 116");
+	run("setpos current -6.08092 2.60427 0");
+
+	run("add trigger 75");
+	run("setpos current -0.889475 2.21941 0");
+
+	run("add trigger 74");
+	run("setpos current -0.538817 1.99704 0");
+
+	run("add trigger 73");
+	run("setpos current -0.410527 2.26217 0");
+
+	run("add trigger 72");
+	run("setpos current 0.932236 2.25362 0");
+
+	run("add trigger 79");
+	run("setpos current -1.57369 2.71546 0");
+
+	run("add trigger 78");
+	run("setpos current -1.76184 2.47599 0");
+
+	run("add trigger 77");
+	run("setpos current -1.43684 2.24506 0");
+
+	run("add trigger 76");
+	run("setpos current -1.24869 2.0227 0");
+
+	run("add trigger 67");
+	run("setpos current 3.21579 2.21941 0");
+
+	run("add trigger 66");
+	run("setpos current 3.4296 2.01414 0");
+
+	run("add trigger 65");
+	run("setpos current 3.62631 2.21941 0");
+
+	run("add trigger 64");
+	run("setpos current 3.86579 2.05691 0");
+
+	run("add trigger 71");
+	run("setpos current 1.16316 1.93717 0");
+
+	run("add trigger 70");
+	run("setpos current 1.34276 2.22796 0");
+
+	run("add trigger 69");
+	run("setpos current 1.60789 1.97138 0");
+
+	run("add trigger 68");
+	run("setpos current 1.86447 2.24506 0");
+
+	run("add trigger 91");
+	run("setpos current 2.44605 2.53585 0");
+
+	run("add trigger 90");
+	run("setpos current 2.18947 2.68125 0");
+
+	run("add trigger 89");
+	run("setpos current 1.97566 2.51875 0");
+
+	run("add trigger 88");
+	run("setpos current 1.625 2.6898 0");
+
+	run("add trigger 95");
+	run("setpos current 3.13026 2.80099 0");
+
+	run("add trigger 94");
+	run("setpos current 3.36118 2.93783 0");
+
+	run("add trigger 93");
+	run("setpos current 3.53224 2.72401 0");
+
+	run("add trigger 92");
+	run("setpos current 2.71974 2.66414 0");
+
+	run("add trigger 83");
+	run("setpos current -0.0342114 2.38191 0");
+
+	run("add trigger 82");
+	run("setpos current -0.709869 2.48454 0");
+
+	run("add trigger 81");
+	run("setpos current -0.915132 2.70691 0");
+
+	run("add trigger 80");
+	run("setpos current -1.27434 2.48454 0");
+
+	run("add trigger 87");
+	run("setpos current 0.932236 2.48454 0");
+
+	run("add trigger 86");
+	run("setpos current 0.667104 2.65559 0");
+
+	run("add trigger 85");
+	run("setpos current 0.367762 2.46743 0");
+
+	run("add trigger 84");
+	run("setpos current 0.162499 2.6727 0");
+
+	run("add trigger 139");
+	run("setpos current 0.84671 1.62072 0");
+
+	run("add trigger 138");
+	run("setpos current 0.564473 1.86875 0");
+
+	run("add trigger 137");
+	run("setpos current -0.179606 1.62072 0");
+
+	run("add trigger 136");
+	run("setpos current -0.265132 1.79178 0");
+
+	run("add trigger 143");
+	run("setpos current 2.30066 1.66349 0");
+
+	run("add trigger 142");
+	run("setpos current 1.41974 1.80033 0");
+
+	run("add trigger 141");
+	run("setpos current 1.18881 1.61217 0");
+
+	run("add trigger 140");
+	run("setpos current 0.940789 1.81743 0");
+
+	run("add trigger 131");
+	run("setpos current -1.98421 1.60362 0");
+
+	run("add trigger 130");
+	run("setpos current -2.14671 1.79178 0");
+
+	run("add trigger 129");
+	run("setpos current -2.36908 1.57796 0");
+
+	run("add trigger 128");
+	run("setpos current -2.50592 1.80033 0");
+
+	run("add trigger 135");
+	run("setpos current -0.521711 1.59506 0");
+
+	run("add trigger 134");
+	run("setpos current -0.77829 1.84309 0");
+
+	run("add trigger 133");
+	run("setpos current -0.975001 1.60362 0");
+
+	run("add trigger 132");
+	run("setpos current -1.73619 1.80033 0");
+
+	run("add trigger 152");
+	run("setpos current 4.55 1.83454 0");
+
+	run("add trigger 147");
+	run("setpos current 3.04474 1.68914 0");
+
+	run("add trigger 146");
+	run("setpos current 2.925 1.8602 0");
+
+	run("add trigger 145");
+	run("setpos current 2.66842 1.66349 0");
+
+	run("add trigger 144");
+	run("setpos current 2.48026 1.8773 0");
+
+	run("add trigger 151");
+	run("setpos current 4.225 1.7148 0");
+
+	run("add trigger 150");
+	run("setpos current 4.00263 1.84309 0");
+
+	run("add trigger 149");
+	run("setpos current 3.79737 1.6977 0");
+
+	run("add trigger 148");
+	run("setpos current 3.64342 1.83454 0");
+
+	run("add trigger 43");
+	run("setpos current -1.84737 3.16875 0");
+
+	run("add trigger 42");
+	run("setpos current -3.12171 3.57072 0");
+
+	run("add trigger 41");
+	run("setpos current -3.43816 3.37401 0");
+
+	run("add trigger 40");
+	run("setpos current -3.94276 3.52796 0");
+
+	run("add trigger 47");
+	run("setpos current -0.342106 3.29704 0");
+
+	run("add trigger 46");
+	run("setpos current -0.632896 3.60493 0");
+
+	run("add trigger 45");
+	run("setpos current -0.90658 3.21151 0");
+
+	run("add trigger 44");
+	run("setpos current -1.52237 3.63059 0");
+
+	run("add trigger 35");
+	run("setpos current -5.77303 3.75033 0");
+
+	run("add trigger 34");
+	run("setpos current -6.14079 4.03256 0");
+
+	run("add trigger 33");
+	run("setpos current -5.5079 4.10954 0");
+
+	run("add trigger 32");
+	run("setpos current -4.77237 3.88717 0");
+
+	run("add trigger 39");
+	run("setpos current -4.40461 3.25428 0");
+
+	run("add trigger 38");
+	run("setpos current -4.70395 3.59638 0");
+
+	run("add trigger 37");
+	run("setpos current -5.48224 3.3227 0");
+
+	run("add trigger 36");
+	run("setpos current -6.11513 3.24572 0");
+
+	run("add trigger 59");
+	run("setpos current 4.50724 2.78388 0");
+
+	run("add trigger 58");
+	run("setpos current 4.84079 3.18585 0");
+
+	run("add trigger 57");
+	run("setpos current 4.46447 3.36546 0");
+
+	run("add trigger 56");
+	run("setpos current 3.98553 3.57928 0");
+
+	run("add trigger 63");
+	run("setpos current 4.17368 2.28783 0");
+
+	run("add trigger 62");
+	run("setpos current 4.43881 1.97138 0");
+
+
+
+//GUI: NEVER EVER REMOVE THIS LINE
+}
+
+
+/*
+ *	This method stores all the operations made by other softwares through one of the IanniX interfaces.
+ *	You are not supposed to modify this section, but it can be useful to remove some stuff that you or a third party software added accidentaly.
+ *	
+ * 	Be very careful! This section is automaticaly overwritten when saving a score.
+ */
+function madeThroughInterfaces() {
+//INTERFACES: NEVER EVER REMOVE THIS LINE
+
+//INTERFACES: NEVER EVER REMOVE THIS LINE
+}
+
+
+/*
+ *	This method is called last.
+ *	It allows you to modify your hand-drawn score (made through graphical user interface).
+ *	
+ * 	This section is never overwritten by IanniX when saving.
+ */
+function alterateWithScript() {
+	
+}
+
+
+/*
+ *	//APP VERSION: NEVER EVER REMOVE THIS LINE
+ *	Made with IanniX 0.9.20
+ *	//APP VERSION: NEVER EVER REMOVE THIS LINE
+ */
+
+
+
+/*
+    This file is part of IanniX, a graphical real-time open-source sequencer for digital art
+    Copyright (C) 2010-2015 — IanniX Association
+
+    Project Manager: Thierry Coduys (http://www.le-hub.org)
+    Development:     Guillaume Jacquemin (https://www.buzzinglight.com)
+
+    This file was written by Guillaume Jacquemin.
+
+    IanniX is a free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    any later version.
+
+    This program is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with this program.  If not, see <http://www.gnu.org/licenses/>.
+*/
+

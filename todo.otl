@@ -6,3 +6,15 @@
 
 * synth compiler ideas
 	* have tests, make it easier to pick up where I left off
+
+where I am right now:
+: working directory, composition-5
+: can make live preview with rte.csd and rte-open-stage-control.json
+: multiple fennel files for making a score (with help of the live preview for
+: picking params), and a hard coded orchestra in csound
+:
+
+previous / potential:
+: fennel synth graph to csound compiler
+: some sort of timeline control - maybe with the help of iannix?
+: maybe a lua osc lib?
