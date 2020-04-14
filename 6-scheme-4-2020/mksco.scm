@@ -28,9 +28,13 @@
           (note-max-hz note))
   (format #t "; ~a\n" (note-description note)))
 
+;; Ideas:
+; create tables for curves for each K param (and read from them in the instrument)
+; paramaterize more controls
+; filter (resonant filters...)
 (define e1
-  (let ((max-hz 1010)
-        (min-hz 1000))
+  (let ((max-hz 1)
+        (min-hz 1.1))
     (make-note "test event" 1 0 10 0.1
                min-hz
                max-hz)))
