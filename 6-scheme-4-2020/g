@@ -1,0 +1,9 @@
+#!/bin/sh
+
+get_sco () {
+  ./mksco.scm > g.sco
+}
+
+get_sco
+
+csound -o dac -Lstdin g.orc g.sco
