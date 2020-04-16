@@ -62,6 +62,11 @@
         #:duration d
         #:value v))
 
+(define (curve-shape init . breaks)
+  (make <curve-data>
+        #:init init
+        #:breakpoints breaks))
+
 (define-class
   <curve-data> ()
   (init
@@ -97,11 +102,10 @@
         #:description "a simple curve"
         #:table-number 1
         #:size 1024
-        #:data (make <curve-data>
-                     #:init 0.1
-                     #:breakpoints (list (bp 1 1.0)
-                                         (bp 1 10.0)
-                                         (bp 5 0.1)))))
+        #:data (curve-shape 0.1
+                            (bp 1 1.0)
+                            (bp 1 10.0)
+                            (bp 5 0.1))))
 
 (define e1
   (make <note>
