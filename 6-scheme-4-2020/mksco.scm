@@ -1,58 +1,91 @@
 #!/usr/local/bin/guile
 !#
 
-(use-modules (srfi srfi-9)
+(use-modules (oop goops)
              (ice-9 format))
 
-(define-record-type <note>
-  (make-note description
-             instrument time duration amplitude
-             min-hz max-hz)
-  note?
-  (description note-description set-note-description!)
-  (instrument note-instrument set-note-instrument!)
-  (time note-time set-note-time!)
-  (duration note-duration set-note-duration!)
-  (amplitude note-amplitude set-note-amplitude!)
-  (max-hz note-max-hz set-note-max-hz!)
-  (min-hz note-min-hz set-note-min-hz!))
+(define-class
+  <note> ()
+  (description
+    #:init-keyword #:description
+    #:init-value "a note"
+    #:getter -description)
+  (instrument
+    #:init-keyword #:instrument
+    #:getter -instrument)
+  (max-hz
+    #:init-keyword #:max-hz
+    #:getter -max-hz)
+  (min-hz
+    #:init-keyword #:min-hz
+    #:getter -min-hz))
 
-(define-record-type <curve>
-  (make-curve description
-              n size data)
-  curve?
-  (description curve-description)
-  (n curve-n)
-  (size curve-size)
-  (data curve-data))
+(define-method
+  (emit (note <note>) time duration amplitude)
+  (format #t "i~a ~a ~a ~a"
+          (-instrument note)
+          time
+          duration
+          amplitude)
+  (format #t " ~a ~a"
+          (-min-hz note)
+          (-max-hz note))
+  (format #t " ; ~a\n" (-description note)))
 
-(define (emit-note note)
-  (format #t "i~a ~a ~a ~a  "
-          (note-instrument note)
-          (note-time note)
-          (note-duration note)
-          (note-amplitude note))
-  (format #t "~a ~a "
-          (note-min-hz note)
-          (note-max-hz note))
-  (format #t "; ~a\n" (note-description note)))
+(define-class
+  <curve> ()
+  (description
+    #:init-keyword #:description
+    #:init-value "a curve"
+    #:getter -description)
+  (table-number
+    #:init-keyword #:table-number
+    #:getter -table-number)
+  (size
+    #:init-keyword #:size
+    #:getter -size)
+  (data
+    #:init-keyword #:data
+    #:getter -data))
 
-(define (emit-curve curve)
-  ;; a breakpoint is a (curve-time . final-value) cons pair
-  ;; the total duration will be normalized from total curve times to the size
-  (let* ((data (curve-data curve))
-         (init (car data))
-         (breakpoints (cdr data))
-         (total (apply + 0.0 (map car breakpoints)))
-         (norm (/ (curve-size curve) total)))
+(define-class
+  <breakpoint> ()
+  (duration
+    #:init-keyword #:duration
+    #:getter -duration)
+  (value
+    #:init-keyword #:value
+    #:getter -value))
+
+(define (bp d v)
+  (make <breakpoint>
+        #:duration d
+        #:value v))
+
+(define-class
+  <curve-data> ()
+  (init
+    #:init-keyword #:init
+    #:getter -init)
+  (breakpoints
+    #:init-keyword #:breakpoints
+    #:getter -breakpoints))
+
+(define-method
+  (emit (curve <curve>))
+  (let* ((bps (-breakpoints (-data curve)))
+         (dt (apply + 0.0 (map -duration bps)))
+         (norm (/ (-size curve) dt)))
     (format #t "\nf ~a 0 ~a 5 ~a"
-            (curve-n curve) (curve-size curve) init)
+            (-table-number curve)
+            (-size curve)
+            (-init (-data curve)))
     (map (lambda (bp)
            (format #t " ~a ~a"
-                   (inexact->exact (floor (* norm (car bp))))
-                   (cdr bp)))
-         breakpoints)
-    (format #t " ; ~a\n" (curve-description curve))))
+                   (inexact->exact (floor (* norm (-duration bp))))
+                   (-value bp)))
+         bps)
+    (format #t " ; ~a\n" (-description curve))))
 
 ;; Ideas:
 ; create tables for curves for each K param (and read from them in the instrument)
@@ -60,17 +93,25 @@
 ; filter (resonant filters...)
 
 (define curve1
-  (make-curve "a simple curve" 1 1024 '(0.1 (1 . 1.0) (5 . 0.1))))
+  (make <curve>
+        #:description "a simple curve"
+        #:table-number 1
+        #:size 1024
+        #:data (make <curve-data>
+                     #:init 0.1
+                     #:breakpoints (list (bp 1 1.0)
+                                         (bp 1 10.0)
+                                         (bp 5 0.1)))))
 
 (define e1
-  (let ((max-hz 1)
-        (min-hz 1.1))
-    (make-note "test event" 1 0 10 0.1
-               min-hz
-               max-hz)))
+  (make <note>
+        #:description "test event"
+        #:instrument 1
+        #:min-hz 1.1
+        #:max-hz 1))
 
 (define (gen-sco)
-   (emit-curve curve1)
-   (emit-note e1))
+   (emit curve1)
+   (emit e1 0 10 0.1))
 
 (gen-sco)
