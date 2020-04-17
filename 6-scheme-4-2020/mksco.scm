@@ -15,6 +15,7 @@
 ; paramaterize more controls
 ; filter (resonant filters...)
 ; https://www.gnu.org/software/guile/manual/html_node/Atomics.html
+; ffi (jack, csound, threads etc.)
 
 (define curve1
   (make <curve>
