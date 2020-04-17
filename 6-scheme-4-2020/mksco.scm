@@ -14,6 +14,7 @@
 ; create tables for curves for each K param (and read from them in the instrument)
 ; paramaterize more controls
 ; filter (resonant filters...)
+; https://www.gnu.org/software/guile/manual/html_node/Atomics.html
 
 (define curve1
   (make <curve>
