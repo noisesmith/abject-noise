@@ -1,5 +1,5 @@
 (define-module (csound note)
-               #:export (<note>))
+               #:export (note))
 
 (use-modules
   (ice-9 format)
@@ -33,3 +33,7 @@
           (min-hz note)
           (max-hz note))
   (format #t " ; ~a\n" (description note)))
+
+(define (note desc . args)
+  (apply make <note> #:description desc
+         args))

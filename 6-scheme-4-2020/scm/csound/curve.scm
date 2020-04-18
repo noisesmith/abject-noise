@@ -1,5 +1,5 @@
 (define-module (csound curve)
-               #:export (<curve> curve-shape bp))
+               #:export (curve curve-shape bp))
 
 (use-modules
   (oop goops)
@@ -66,3 +66,6 @@
          bps)
     (format #t " ; ~a\n" (description curve))))
 
+(define (curve desc . args)
+  (apply make <curve> #:description desc
+         args))

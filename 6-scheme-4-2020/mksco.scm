@@ -2,8 +2,7 @@
                     (dirname (current-filename))
                     "/scm"))
 
-(use-modules (oop goops)
-             (csound csound)
+(use-modules (csound csound)
              (csound note)
              (csound curve))
 
@@ -15,18 +14,16 @@
 ; ffi (jack, csound, threads etc.)
 
 (define curve1
-  (make <curve>
-        #:description "a simple curve"
-        #:table-number 1
-        #:size 1024
-        #:data (curve-shape 0.1
-                            (bp 1 1.0)
-                            (bp 1 10.0)
-                            (bp 5 0.1))))
+  (curve "a simple curve"
+         #:table-number 1
+         #:size 1024
+         #:data (curve-shape 0.1
+                             (bp 1 1.0)
+                             (bp 1 10.0)
+                             (bp 5 0.1))))
 
 (define e1
-  (make <note>
-        #:description "test event"
+  (note "test event"
         #:instrument 1
         #:min-hz 1.1
         #:max-hz 1))
