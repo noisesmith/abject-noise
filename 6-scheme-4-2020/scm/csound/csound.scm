@@ -9,11 +9,11 @@
   (counter
     #:init-value 1
     #:init-keyword #:counter
-    #:getter -counter))
+    #:getter counter))
 
 (define-method
   (get-table (allocator <table-allocator>))
-  (let ((n (-counter allocator)))
+  (let ((n (counter allocator)))
     (cons n
           (make <table-allocator>
                 #:counter (1+ n)))))

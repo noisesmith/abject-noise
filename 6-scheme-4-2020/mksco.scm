@@ -1,6 +1,3 @@
-#!/usr/local/bin/guile
-!#
-
 (add-to-load-path (string-append
                     (dirname (current-filename))
                     "/scm"))

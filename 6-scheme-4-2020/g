@@ -1,7 +1,7 @@
 #!/bin/sh
 
 get_sco () {
-  ./mksco.scm > g.sco
+  guile mksco.scm > g.sco
 }
 
 get_sco
