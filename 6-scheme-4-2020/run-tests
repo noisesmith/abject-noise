@@ -1,0 +1,10 @@
+#!/bin/sh
+
+cd test-logs
+for test in $(find ../scm/test/ -name '*.scm')
+do
+  echo ';;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;'
+  echo RUNNING TESTS FROM $test
+  guile -L ../scm $test
+  echo ';;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;'
+done

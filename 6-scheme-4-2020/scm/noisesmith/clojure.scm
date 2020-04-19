@@ -96,6 +96,10 @@
   (apply conj (make <ht>) args))
 
 (define-method
+  (get (_ <top>) k not-found-f)
+  (not-found-f _))
+
+(define-method
   (get (ht <ht>) k not-found-f)
   (let ((found (vhash-assoc k (vh ht))))
     (if found
@@ -103,8 +107,8 @@
       (not-found-f ht))))
 
 (define-method
-  (get (ht <ht>) k)
-  (get ht k (lambda (_) #f)))
+  (get x k)
+  (get x k (lambda (_) #f)))
 
 (define-method
   (display (ht <ht>) port)
@@ -126,12 +130,14 @@
                       (write (car p) port)
                       (display " " port)
                       (write (cdr p) port))))
-    (write-pair (car pairs))
-    (map (lambda (pair)
-           (display " " port)
-           (write-pair pair))
-         (cdr pairs)))
-  (display ")"))
+    (if (not (equal? pairs '()))
+      (begin
+        (write-pair (car pairs))
+        (map (lambda (pair)
+               (display " " port)
+               (write-pair pair))
+             (cdr pairs)))))
+  (display ")" port))
 
 (read-hash-extend
   #\h

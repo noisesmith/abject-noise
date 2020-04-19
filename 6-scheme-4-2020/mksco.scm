@@ -1,7 +1,3 @@
-(add-to-load-path (string-append
-                    (dirname (current-filename))
-                    "/scm"))
-
 (use-modules (csound csound)
              (csound note)
              (csound curve))

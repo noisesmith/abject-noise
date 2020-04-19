@@ -1,9 +1,10 @@
 (define-module (csound instrument)
-               #:export (instrument))
+               #:export (insert patch plug ports)
+               #:use-module (noisesmith clojure)
+               #:re-export (ht))
 
 (use-modules
   (ice-9 format)
-  (ice-9 vlist)
   (oop goops)
   (csound csound))
 
@@ -49,8 +50,23 @@
   <instrument> ()
   (synthesis-node-graph
     #:init-keyword #:graph
-    #:init-form (alist->vhash '())
+    #:init-form (ht)
     #:getter graph))
+
+(define-method
+  (write (i <instrument>) port)
+  (write (format #f "instrument: graph {~a}" (graph i))
+           port))
+
+(define-class
+  ;; an individual node in an instrument graph
+  <node> ()
+  (in
+    #:init-keyword #:in
+    #:accessor in)
+  (out
+    #:init-keyword #:out
+    #:accessor out))
 
 (define-class
   <ports> ()
@@ -69,11 +85,15 @@
         #:out outs))
 
 (define-method
+  (node (ports <ports>))
+  (make <node>
+        #:in (in ports)
+        #:out (out ports)))
+
+(define-method
   (insert (i <instrument>) (n <top>) (p <ports>))
-  (let* ((node (alist->vhash '()))
-         (node (vhash-cons #:in (map list (in p)) node))
-         (node (vhash-cons #:out (out p) node))
-         (connections (vhash-cons n node (graph i))))
+  (let* ((new-node (node p))
+         (connections (conj (graph i) n new-node)))
     (make <instrument>
           #:graph connections)))
 
@@ -90,14 +110,22 @@
     #:init-keyword #:slot
     #:getter slot))
 
-;(define-method
-;  (connect (i <instrument>) (input <plug>) (output <plug>))
-;  (let ((target-entry (vhash-assoc (graph i) (node output)))
-;        (target-slot (vhash-assoc (cdr target-entry)))
-;        (new-node (vhash-assoc (cdr target-entry)))
-;        ))
-;  (make <instrument>
-;        #:graph (vhash-cons target-node target-connections (graph i))))
+(define (plug node slot)
+  (make <plug>
+        #:node node
+        #:slot slot))
+
+(define-method
+  (patch (i <instrument>)
+         (input <plug>)
+         (output <plug>))
+  (let* ((target-entry (get (graph i) (node output)))
+         (connected (conj (in target-entry) (slot output) input))
+         (new-node (make <node>
+                         #:in connected
+                         #:out (out target-entry))))
+    (make <instrument>
+          #:graph (conj (graph i) (node output) new-node))))
 
 (define (normalize instrument)
   "an instrument")
