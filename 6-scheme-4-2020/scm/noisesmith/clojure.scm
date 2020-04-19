@@ -1,5 +1,5 @@
 (define-module (noisesmith clojure)
-               #:export (~> ~>> ht conj get get-in update-in part))
+               #:export (~> ~>> ht conj get keys get-in update-in part))
 
 (use-modules
   (ice-9 vlist)
@@ -59,6 +59,25 @@
     #:init-form (alist->vhash '())
     #:getter vh))
 
+(define-method
+  (keys (ht <ht>))
+  (map car (vlist->list (vh ht))))
+
+(define-method
+  (equal? (a <ht>) (b <ht>))
+  (let* ((max-hash-arg (1- (expt 2 64)))
+         (dumb-compare (lambda (x y)
+                         (< (hash x max-hash-arg)
+                            (hash y max-hash-arg))))
+         (ka (sort (keys a) dumb-compare))
+         (kb (sort (keys b) dumb-compare)))
+    (and (equal? ka kb)
+         (reduce (lambda (t? k)
+                   (and t?
+                        (equal? (get a k) (get b k))))
+                 #t
+                 ka))))
+
 (define (ht-conj-helper ht kvs)
   (reduce (lambda (kv hash)
             (if (eq? kv '())
@@ -102,17 +121,20 @@
 (define-method
   (write (ht <ht>) port)
   (display "#h(" port)
-  (map (lambda (pair)
-         (display "(" port)
-         (write (car pair) port)
-         (display " " port)
-         (write (cdr pair) port)
-         (display ")" port))
-       (vlist->list (vh ht)))
+  (let ((pairs (vlist->list (vh ht)))
+        (write-pair (lambda (p)
+                      (write (car p) port)
+                      (display " " port)
+                      (write (cdr p) port))))
+    (write-pair (car pairs))
+    (map (lambda (pair)
+           (display " " port)
+           (write-pair pair))
+         (cdr pairs)))
   (display ")"))
 
 (read-hash-extend
   #\h
   (lambda (chr port)
     (let ((payload (read port)))
-      `(apply ht (apply append ',payload)))))
+      `(ht ,@payload))))
