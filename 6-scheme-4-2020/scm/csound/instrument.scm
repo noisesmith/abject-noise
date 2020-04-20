@@ -66,6 +66,9 @@
 (define-class
   ;; an individual node in an instrument graph
   <node> ()
+  (compile-fn
+    #:init-keyword #:compile-fn
+    #:accessor #:compile-fn)
   (in
     #:init-keyword #:in
     #:accessor in)
@@ -104,6 +107,7 @@
   (apply make <ports> slots))
 
 (define-method
+  ;; TODO - will need a compilation function too
   (node (ports <ports>))
   (make <node>
         #:in (in ports)
@@ -164,7 +168,11 @@
           #:graph (conj (graph i) (node output) new-node))))
 
 (define (normalize instrument)
-  "an instrument")
+  "an instrument"
+  ;; loop, emit/remove each node in the graph where all inputs are string/number,
+  ;; update all nodes with input from emitted item with string of variable created
+  ;; until nodes are empty or (error case) nodes are unresolvable
+  )
 
 (define-method
   (compile (unit <instrument>) n)
