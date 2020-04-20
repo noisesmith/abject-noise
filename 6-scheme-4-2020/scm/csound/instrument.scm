@@ -67,8 +67,17 @@
   ;; an individual node in an instrument graph
   <node> ()
   (compile-fn
-    #:init-keyword #:compile-fn
-    #:accessor compile-fn)
+    #:init-keyword #:compile-fn)
+  (compilef-internal
+    #:allocation #:virtual
+    #:accessor compile-fn
+    #:slot-ref (lambda (instance)
+                 (slot-ref instance 'compile-fn))
+    #:slot-set! (lambda (instance f)
+                  (make <node>
+                        #:compile-fn f
+                        #:in (in instance)
+                        #:out (out instance))))
   (in
     #:init-keyword #:in
     #:accessor in)
