@@ -68,7 +68,7 @@
   <node> ()
   (compile-fn
     #:init-keyword #:compile-fn
-    #:accessor #:compile-fn)
+    #:accessor compile-fn)
   (in
     #:init-keyword #:in
     #:accessor in)
