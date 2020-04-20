@@ -1,10 +1,15 @@
 #!/bin/sh
 
+FAIL_COUNT=0
+
 cd test-logs
 for test in $(find ../scm/test/ -name '*.scm')
 do
   echo ';;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;'
   echo RUNNING TESTS FROM $test
   guile -L ../scm $test
+  FAIL_COUNT=$(expr $FAIL_COUNT + $?)
   echo ';;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;'
 done
+
+return $FAIL_COUNT

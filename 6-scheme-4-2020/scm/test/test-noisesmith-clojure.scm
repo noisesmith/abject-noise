@@ -29,4 +29,8 @@
                            (update-in key-path 1+)
                            (get-in key-path)))))
 
+(test-assert "oops@" #f)
+
 (test-end "ht-test")
+
+(exit (test-runner-fail-count (test-runner-get)))

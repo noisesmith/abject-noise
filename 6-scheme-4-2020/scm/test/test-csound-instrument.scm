@@ -30,4 +30,7 @@
   (test-assert "patched connection present"
                (equal? (get-in i '(#:graph #:tri #:in #:amp))
                        (plug #:sin #:sig))))
+(test-assert "oops@" #f)
 (test-end "csound-instrument-test")
+
+(exit (test-runner-fail-count (test-runner-get)))
