@@ -21,4 +21,12 @@
     "ht unordered equality"
     (equal? h1 h2)))
 
+(let ((m #h(#:a #h(#:b #h(#:c 1))))
+      (key-path '(#:a #:b #:c)))
+  (test-assert "update-in of ht"
+               (equal? 2
+                       (~> m
+                           (update-in key-path 1+)
+                           (get-in key-path)))))
+
 (test-end "ht-test")

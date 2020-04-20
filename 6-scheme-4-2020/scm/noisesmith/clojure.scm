@@ -92,6 +92,11 @@
         #:vh
         (ht-conj-helper (vh ht) (part 2 kvs))))
 
+(define-method
+  ;; so that (conj #f #:k "v") works, like clojure nil punning
+  (conj (b <boolean>) . kvs)
+  (apply conj (ht) kvs))
+
 (define (ht . args)
   (apply conj (make <ht>) args))
 
@@ -144,3 +149,16 @@
   (lambda (chr port)
     (let ((payload (read port)))
       `(ht ,@payload))))
+
+(define-method
+  (get-in m ks)
+  (if (equal? ks '())
+    m
+    (get-in (get m (car ks)) (cdr ks))))
+
+(define-method
+  (update-in m ks f)
+  (if (equal? ks '())
+    (f m)
+    (conj m (car ks)
+          (update-in (get m (car ks)) (cdr ks) f))))

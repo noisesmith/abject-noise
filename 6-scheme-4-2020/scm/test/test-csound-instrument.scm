@@ -21,6 +21,6 @@
 (test-begin "insert-test")
 (let ((i (insert #:sin (ports #h(#:amp #f #:hz #f #:tab #f)
                               '(#:sig)))))
-  (test-assert "instrument creation"
+  (test-assert "insertion of a node into an instrument"
                i))
 (test-end "insert-test")
