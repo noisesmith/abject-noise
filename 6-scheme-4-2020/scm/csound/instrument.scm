@@ -54,9 +54,14 @@
     #:getter graph))
 
 (define-method
+  (get (i <instrument>) k)
+  (get #h(#:graph (graph i)) k))
+
+(define-method
   (write (i <instrument>) port)
-  (write (format #f "instrument: graph {~a}" (graph i))
-           port))
+  (display "[<instrument> :graph=" port)
+  (write (graph i) port)
+  (display "]" port))
 
 (define-class
   ;; an individual node in an instrument graph
@@ -67,6 +72,14 @@
   (out
     #:init-keyword #:out
     #:accessor out))
+
+(define-method
+  (write (n <node>) port)
+  (display "[<node> :in=" port)
+  (write (in n) port)
+  (display ", :out=" port)
+  (write (out n) port)
+  (display "]" port))
 
 (define-class
   <ports> ()
@@ -79,16 +92,26 @@
     #:init-keyword #:out
     #:getter out))
 
-(define (ports outs ins)
-  (make <ports>
-        #:in ins
-        #:out outs))
+(define-method
+  (write (p <ports>) port)
+  (display "[<ports> :in=" port)
+  (write (in p) port)
+  (display ", :out=" port)
+  (write (out p) port)
+  (display "]" port))
+
+(define (ports . slots)
+  (apply make <ports> slots))
 
 (define-method
   (node (ports <ports>))
   (make <node>
         #:in (in ports)
         #:out (out ports)))
+
+(define-method
+  (get (n <node>) k)
+  (get #h(#:in (in n) #:out (out n)) k))
 
 (define-method
   (insert (i <instrument>) (n <top>) (p <ports>))
@@ -114,6 +137,19 @@
   (make <plug>
         #:node node
         #:slot slot))
+
+(define-method
+  (write (p <plug>) port)
+  (display "[<plug> :node=" port)
+  (write (node p) port)
+  (display ", :slot=" port)
+  (write (slot p) port)
+  (display "]" port))
+
+(define-method
+  (equal? (p1 <plug>) (p2 <plug>))
+  (and (equal? (node p1) (node p2))
+       (equal? (slot p1) (slot p2))))
 
 (define-method
   (patch (i <instrument>)
