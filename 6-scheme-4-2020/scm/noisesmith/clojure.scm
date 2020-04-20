@@ -82,7 +82,9 @@
   (reduce (lambda (kv hash)
             (if (eq? kv '())
               hash
-              (vhash-cons (car kv) (cadr kv) hash)))
+              (~>> hash
+                   (vhash-delete (car kv))
+                   (vhash-cons (car kv) (cadr kv)))))
           #f
           (cons ht kvs)))
 
