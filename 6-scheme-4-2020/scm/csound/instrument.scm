@@ -68,6 +68,8 @@
   <node> ()
   (compile-fn
     #:init-keyword #:compile-fn)
+  ;; TODO - automate the below, using (class-direct-slots <node>)
+  ;; and (slot-ref x 'init-keyword) on the resulting slots
   (compilef-internal
     #:allocation #:virtual
     #:accessor compile-fn
