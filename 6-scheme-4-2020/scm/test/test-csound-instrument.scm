@@ -5,23 +5,17 @@
              (csound instrument))
 
 (test-begin "csound-instrument-test")
-(let ((p (ports #:in #h(#:amp #f #:hz #f #:tab #f)
+(let ((p (node #:in #h(#:amp #f #:hz #f #:tab #f)
                 #:out '(#:sig))))
-  (test-assert "ports creation"
+  (test-assert "node creation"
                p))
 
-(let* ((-node (@@ (csound instrument) node)) ; get the private fn
-       (n (-node (ports #:out '(#:sig)
-                        #:in #h(#:amp #f #:hz #f #:tab #f)))))
-  (test-assert "node creation"
-               n))
-
-(let ((i (insert #:sin (ports #:out '(#:sig)
+(let ((i (insert #:sin (node #:out '(#:sig)
                               #:in #h(#:amp #f #:hz #f #:tab #f)))))
   (test-assert "insertion of a node into an instrument"
                i))
 
-(let* ((standard-ports (ports #:out '#(#:sig) #:in #h(#:amp #f #:hz #f #:tab #f)))
+(let* ((standard-ports (node #:out '#(#:sig) #:in #h(#:amp #f #:hz #f #:tab #f)))
        (i (~> (insert #:sin standard-ports)
               (insert #:tri standard-ports)
               (patch (plug #:sin #:sig) (plug #:tri #:amp))))) ; am!

@@ -1,5 +1,5 @@
 (define-module (csound instrument)
-               #:export (insert patch plug ports)
+               #:export (insert patch plug node)
                #:use-module (noisesmith clojure)
                #:re-export (ht))
 
@@ -66,26 +66,15 @@
 (define-class
   ;; an individual node in an instrument graph
   <node> ()
-  (compile-fn
-    #:init-keyword #:compile-fn)
-  ;; TODO - automate the below, using (class-direct-slots <node>)
-  ;; and (slot-ref x 'init-keyword) on the resulting slots
-  (compilef-internal
-    #:allocation #:virtual
-    #:accessor compile-fn
-    #:slot-ref (lambda (instance)
-                 (slot-ref instance 'compile-fn))
-    #:slot-set! (lambda (instance f)
-                  (make <node>
-                        #:compile-fn f
-                        #:in (in instance)
-                        #:out (out instance))))
   (in
     #:init-keyword #:in
-    #:accessor in)
+    #:getter in)
   (out
     #:init-keyword #:out
-    #:accessor out))
+    #:getter out))
+
+(define (node . args)
+  (apply make <node> args))
 
 (define-method
   (write (n <node>) port)
@@ -95,49 +84,19 @@
   (write (out n) port)
   (display "]" port))
 
-(define-class
-  <ports> ()
-  ;; a list of #:keys for input port identifiers
-  (input-list
-    #:init-keyword #:in
-    #:getter in)
-  ;; a list of #:keys for output port identifiers
-  (output-list
-    #:init-keyword #:out
-    #:getter out))
-
-(define-method
-  (write (p <ports>) port)
-  (display "[<ports> :in=" port)
-  (write (in p) port)
-  (display ", :out=" port)
-  (write (out p) port)
-  (display "]" port))
-
-(define (ports . slots)
-  (apply make <ports> slots))
-
-(define-method
-  ;; TODO - will need a compilation function too
-  (node (ports <ports>))
-  (make <node>
-        #:in (in ports)
-        #:out (out ports)))
-
 (define-method
   (get (n <node>) k)
   (get #h(#:in (in n) #:out (out n)) k))
 
 (define-method
-  (insert (i <instrument>) (n <top>) (p <ports>))
-  (let* ((new-node (node p))
-         (connections (conj (graph i) n new-node)))
+  (insert (i <instrument>) (t <top>) (n <node>))
+  (let ((connections (conj (graph i) t n)))
     (make <instrument>
           #:graph connections)))
 
 (define-method
-  (insert (n <top>) (p <ports>))
-  (insert (make <instrument>) n p))
+  (insert (t <top>) (n <node>))
+  (insert (make <instrument>) t n))
 
 (define-class
   <plug> ()
