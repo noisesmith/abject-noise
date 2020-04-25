@@ -1,12 +1,8 @@
 (define-module (csound compile)
                #:export (compile)
                #:use-module (noisesmith clojure)
-               #:use-module (csound instrument)
-               #:re-export (ht ; noisesmith clojure
-                             insert patch plug)) ; csound instrument
+               #:re-export (ht))
 (use-modules
-  (csound csound)
-  (csound instrument node)
   (ice-9 format)
   (oop goops))
 
@@ -45,9 +41,3 @@
           (paramlist (lvals unit))
           (compile (opcode unit))
           (paramlist (parameters unit))))
-
-(define-method
-  (compile (unit <instrument>) n)
-  (format #f "          instr ~a\n~a\n          endin\n"
-          n
-          (compile (normalize unit))))

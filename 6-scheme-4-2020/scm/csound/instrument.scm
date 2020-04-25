@@ -4,6 +4,7 @@
                #:use-module (csound instrument node)
                #:re-export (ht node))
 (use-modules
+  (csound compile)
   (oop goops))
 
 (define-class
@@ -78,3 +79,9 @@
   ;; update all nodes with input from emitted item with string of variable created
   ;; until nodes are empty or (error case) nodes are unresolvable
   )
+
+(define-method
+  (compile (unit <instrument>) n)
+  (format #f "          instr ~a\n~a\n          endin\n"
+          n
+          (compile (normalize unit))))
