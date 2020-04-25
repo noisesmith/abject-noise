@@ -1,50 +1,10 @@
 (define-module (csound instrument)
-               #:export (insert patch plug node)
+               #:export (insert patch plug normalize <instrument>)
                #:use-module (noisesmith clojure)
-               #:re-export (ht))
-
+               #:use-module (csound instrument node)
+               #:re-export (ht node))
 (use-modules
-  (ice-9 format)
-  (oop goops)
-  (csound csound))
-
-; an instrument compiler
-
-(define-generic compile)
-
-(define-method
-  (compile (unit <string>))
-  unit)
-
-(define-method
-  (compile (unit <number>))
-  (compile (number->string unit)))
-
-(define-method
-  (compile (unit <list>))
-  (string-join (map compile unit) " "))
-
-(define-class
-  <assignment> ()
-  (lvals
-    #:init-keyword #:lvals
-    #:getter lvals)
-  (opcode
-    #:init-keyword #:opcode
-    #:getter opcode)
-  (parameters
-    #:init-keyword #:parameters
-    #:getter parameters))
-
-(define (paramlist l)
-  (string-join (map compile l) ", "))
-
-(define-method
-  (compile (unit <assignment>))
-  (format #f "~10a ~a ~a"
-          (paramlist (lvals unit))
-          (compile (opcode unit))
-          (paramlist (parameters unit))))
+  (oop goops))
 
 (define-class
   <instrument> ()
@@ -62,31 +22,6 @@
   (display "[<instrument> :graph=" port)
   (write (graph i) port)
   (display "]" port))
-
-(define-class
-  ;; an individual node in an instrument graph
-  <node> ()
-  (in
-    #:init-keyword #:in
-    #:getter in)
-  (out
-    #:init-keyword #:out
-    #:getter out))
-
-(define (node . args)
-  (apply make <node> args))
-
-(define-method
-  (write (n <node>) port)
-  (display "[<node> :in=" port)
-  (write (in n) port)
-  (display ", :out=" port)
-  (write (out n) port)
-  (display "]" port))
-
-(define-method
-  (get (n <node>) k)
-  (get #h(#:in (in n) #:out (out n)) k))
 
 (define-method
   (insert (i <instrument>) (t <top>) (n <node>))
@@ -143,9 +78,3 @@
   ;; update all nodes with input from emitted item with string of variable created
   ;; until nodes are empty or (error case) nodes are unresolvable
   )
-
-(define-method
-  (compile (unit <instrument>) n)
-  (format #f "          instr ~a\n~a\n          endin\n"
-          n
-          (compile (normalize unit))))
