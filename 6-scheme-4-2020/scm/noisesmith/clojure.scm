@@ -1,10 +1,12 @@
 (define-module (noisesmith clojure)
-               #:export (~> ~>> ht conj get keys get-in update-in part))
+               #:export (~> ~>> assj comp conj disj empty? get get-in ht keys
+                            part seq update-in vals))
 
 (use-modules
   (ice-9 vlist)
   (oop goops)
-  (srfi srfi-1))
+  (srfi srfi-1)
+  (srfi srfi-26))
 
 ;;; threading
 (define-syntax ~>
@@ -39,11 +41,14 @@
     ((_ x f rest ...)
      (~>> (f x) rest ...))))
 
+(define-method
+  (empty? (l <list>))
+  (equal? l '()))
 
 ;;; lists
 (define (part n l)
   (letrec ((p (lambda (acc l)
-                (cond ((eq? l '())
+                (cond ((empty? l)
                        (list (reverse acc)))
                       ((= (count (lambda (_) #t) acc) n)
                        (cons (reverse acc)
@@ -60,8 +65,16 @@
     #:getter vh))
 
 (define-method
+  (empty? (h <ht>))
+  (empty? (vlist->list (vh h))))
+
+(define-method
   (keys (ht <ht>))
   (map car (vlist->list (vh ht))))
+
+(define-method
+  (vals (ht <ht>))
+  (map cdr (vlist->list (vh ht))))
 
 (define-method
   (equal? (a <ht>) (b <ht>))
@@ -78,29 +91,42 @@
                  #t
                  ka))))
 
-(define (ht-conj-helper ht kvs)
-  (reduce (lambda (kv hash)
-            (if (eq? kv '())
+(define-method
+  (disj (source <ht>) . ks)
+  (make <ht>
+        #:vh (apply disj (vh source) ks)))
+
+(define-method
+  (disj (source <top>) . ks)
+  (if (empty? ks)
+    source
+    (apply disj
+           (vhash-delete (car ks) source)
+           (cdr ks))))
+
+(define (ht-assj-helper ht kvs)
+  (fold (lambda (kv hash)
+            (if (empty? kv)
               hash
               (~>> hash
                    (vhash-delete (car kv))
                    (vhash-cons (car kv) (cadr kv)))))
-          #f
-          (cons ht kvs)))
+          ht
+          kvs))
 
 (define-method
-  (conj (ht <ht>) . kvs)
+  (assj (ht <ht>) . kvs)
   (make <ht>
         #:vh
-        (ht-conj-helper (vh ht) (part 2 kvs))))
+        (ht-assj-helper (vh ht) (part 2 kvs))))
 
 (define-method
-  ;; so that (conj #f #:k "v") works, like clojure nil punning
-  (conj (b <boolean>) . kvs)
-  (apply conj (ht) kvs))
+  ;; so that (assj #f #:k "v") works, like clojure nil punning
+  (assj (b <boolean>) . kvs)
+  (apply assj (ht) kvs))
 
 (define (ht . args)
-  (apply conj (make <ht>) args))
+  (apply assj (make <ht>) args))
 
 (define-method
   (get (_ <top>) k not-found-f)
@@ -137,7 +163,7 @@
                       (write (car p) port)
                       (display " " port)
                       (write (cdr p) port))))
-    (if (not (equal? pairs '()))
+    (if (not (empty? pairs))
       (begin
         (write-pair (car pairs))
         (map (lambda (pair)
@@ -154,13 +180,29 @@
 
 (define-method
   (get-in m ks)
-  (if (equal? ks '())
+  (if (empty? ks)
     m
     (get-in (get m (car ks)) (cdr ks))))
 
 (define-method
+  (select-keys (source <ht>) (selected <list>))
+  (fold (lambda (k h)
+          (assj h (get source k)))
+        (ht)
+        selected))
+
+(define-method
   (update-in m ks f)
-  (if (equal? ks '())
+  (if (empty? ks)
     (f m)
-    (conj m (car ks)
+    (assj m (car ks)
           (update-in (get m (car ks)) (cdr ks) f))))
+
+(define (comp . fs)
+  (reduce (lambda (f g)
+            (lambda (x) (g (f x))))
+          identity
+          fs))
+
+(define-method (seq (ht <ht>))
+  (vlist->list (vh ht)))

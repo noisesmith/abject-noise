@@ -1,5 +1,5 @@
 (define-module (csound compile)
-               #:export (compile)
+               #:export (compile <assignment>)
                #:use-module (noisesmith clojure)
                #:re-export (ht))
 (use-modules

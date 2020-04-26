@@ -6,24 +6,33 @@
 
 (test-begin "csound-instrument-test")
 (let ((p (node #:in #h(#:amp #f #:hz #f #:tab #f)
-                #:out '(#:sig))))
-  (test-assert "node creation"
-               p))
+               #:out '(#:sig))))
+  (test-assert
+    "node creation"
+    p))
 
-(let ((i (insert #:sin (node #:out '(#:sig)
-                              #:in #h(#:amp #f #:hz #f #:tab #f)))))
-  (test-assert "insertion of a node into an instrument"
-               i))
+(define standard-ports
+  (node #:out #h(#:sig #f) #:in #h(#:amp #f #:hz #f #:tab #f)))
 
-(let* ((standard-ports (node #:out '#(#:sig) #:in #h(#:amp #f #:hz #f #:tab #f)))
-       (i (~> (insert #:sin standard-ports)
-              (insert #:tri standard-ports)
-              (patch (plug #:sin #:sig) (plug #:tri #:amp))))) ; am!
-  (test-assert "patching one node into another"
-               i)
-  (test-assert "patched connection present"
-               (equal? (get-in i '(#:graph #:tri #:in #:amp))
-                       (plug #:sin #:sig))))
+(test-assert
+  "creation of an instrument via insertion"
+  (insert #:sin standard-ports))
+
+(define i ; am!
+  (~> (insert #:sin standard-ports)
+      (insert #:tri standard-ports)
+      (patch (plug #:sin #:sig)
+             (plug #:tri #:amp))))
+
+(test-assert
+  "patching one node into another"
+  i)
+
+(test-equal
+  "patched connection present"
+  (get-in i '(#:graph #:tri #:in #:amp))
+  (plug #:sin #:sig))
+
 (test-end "csound-instrument-test")
 
 (exit (test-runner-fail-count (test-runner-get)))

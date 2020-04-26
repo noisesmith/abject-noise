@@ -1,11 +1,12 @@
 (define-module (csound instrument)
-               #:export (insert patch plug normalize <instrument>)
+               #:export (insert patch plug normalize)
                #:use-module (noisesmith clojure)
                #:use-module (csound instrument node)
                #:re-export (ht node))
 (use-modules
   (csound compile)
-  (oop goops))
+  (oop goops)
+  (srfi srfi-1))
 
 (define-class
   <instrument> ()
@@ -26,7 +27,7 @@
 
 (define-method
   (insert (i <instrument>) (t <top>) (n <node>))
-  (let ((connections (conj (graph i) t n)))
+  (let ((connections (assj (graph i) t n)))
     (make <instrument>
           #:graph connections)))
 
@@ -66,19 +67,72 @@
          (input <plug>)
          (output <plug>))
   (let* ((target-entry (get (graph i) (node output)))
-         (connected (conj (in target-entry) (slot output) input))
+         (connected (assj (in target-entry) (slot output) input))
          (new-node (make <node>
                          #:in connected
                          #:out (out target-entry))))
     (make <instrument>
-          #:graph (conj (graph i) (node output) new-node))))
+          #:graph (assj (graph i) (node output) new-node))))
 
-(define (normalize instrument)
-  "an instrument"
-  ;; loop, emit/remove each node in the graph where all inputs are string/number,
-  ;; update all nodes with input from emitted item with string of variable created
-  ;; until nodes are empty or (error case) nodes are unresolvable
-  )
+(define (named graph k)
+  (assj (get graph k)
+        ;; TODO - this is a simplification, we need something that
+        ;; understands rates and such...
+        #:name ((comp symbol->string keyword->symbol) k)))
+
+(define (ready-nodes i)
+  (letrec ((g (graph i))
+           (all-inputs-ready
+             (lambda (inputs)
+               (if (= inputs '())
+                 #t
+                 (let ((i (car inputs)))
+                   (and (or (string? i)
+                            (number? i))
+                        (all-inputs-ready (cdr i)))))))
+           (node-ready?
+             (lambda (k)
+               (let ((inputs (vals (in (get g k)))))
+                 (all-inputs-ready inputs)))))
+    (fold (lambda (k m)
+            (if (not (node-ready? k))
+              m
+              (assj m k (named g k))))
+          g
+          (filter node-ready?
+                  (keys g)))))
+
+(define (update-input removed input-hash)
+  (fold (lambda (kv updated)
+          (let ((s (get (cdr kv) #:name)))
+            (assj updated (car kv) s)))
+        input-hash
+        (seq removed)))
+
+(define (update-inputs removed remaining)
+  (fold (lambda (kv pruned)
+          (let ((k (car kv))
+                (v (cdr kv)))
+            (assj pruned
+                  (car kv)
+                  (update-input removed (cdr kv)))))
+        remaining
+        (seq removed)))
+
+(define-method
+  (normalize (i <instrument>))
+  ;; loop
+  (if (empty? i)
+    ;; until nodes are empty or (error case) nodes are unresolvable
+    '()
+    ;; find elements that are "ready" - no inputs aside from strings / numbers
+    (let* ((ready (ready-nodes i))
+           ;; emit/remove each node in the graph where all inputs are string/number,
+           (remaining (apply disj (graph i) (keys ready)))
+           ;; update all nodes with input from emitted item with string of variable created
+           (pruned (update-inputs ready remaining)))
+      (cons ready
+            (normalize pruned)))))
 
 (define-method
   (compile (unit <instrument>) n)
