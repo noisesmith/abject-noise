@@ -1,15 +1,23 @@
 (define-module (noisesmith clojure)
-               #:export (~> ~>> assj comp conj disj empty? get get-in ht keys
-                            part seq update-in vals))
+               #:export (-> ->> assj comp conj constantly disj empty? get get-in
+                            hmerge ht keys name part reduce-kv seq update-in
+                            vals))
 
 (use-modules
   (ice-9 vlist)
+  (noisesmith debug)
   (oop goops)
   (srfi srfi-1)
   (srfi srfi-26))
 
+(define debug (->catalog))
+
+(define (constantly x)
+  (lambda (. _)
+    x))
+
 ;;; threading
-(define-syntax ~>
+(define-syntax ->
   (syntax-rules
     ()
     ((_)
@@ -21,11 +29,11 @@
     ((_ x f)
      (f x))
     ((_ x (f . (f-rest ...)) rest ...)
-     (~> (f x f-rest ...) rest ...))
+     (-> (f x f-rest ...) rest ...))
     ((_ x f rest ...)
-     (~> (f x) rest ...))))
+     (-> (f x) rest ...))))
 
-(define-syntax ~>>
+(define-syntax ->>
   (syntax-rules
     ()
     ((_)
@@ -37,9 +45,9 @@
     ((_ x f)
      (f x))
     ((_ x (f ...) rest ...)
-     (~>> (f ... x) rest ...))
+     (->> (f ... x) rest ...))
     ((_ x f rest ...)
-     (~>> (f x) rest ...))))
+     (->> (f x) rest ...))))
 
 (define-method
   (empty? (l <list>))
@@ -62,7 +70,11 @@
   (vhash
     #:init-keyword #:vh
     #:init-form (alist->vhash '())
-    #:getter vh))
+    #:getter _vh))
+
+(define (vh ht)
+  (or (debug #:accessor (_vh ht))
+      (alist->vhash '())))
 
 (define-method
   (empty? (h <ht>))
@@ -76,20 +88,47 @@
   (vals (ht <ht>))
   (map cdr (vlist->list (vh ht))))
 
+(define (ht-assj-helper ht kvs)
+  (fold (lambda (kv hash)
+            (if (empty? kv)
+              hash
+              (->> hash
+                   (vhash-delete (car kv))
+                   (vhash-cons (car kv) (cadr kv)))))
+          ht
+          kvs))
+
+(define-method
+  (assj (ht <ht>) . kvs)
+  (make <ht>
+        #:vh
+        (ht-assj-helper (vh ht) (part 2 kvs))))
+
+
+(define (update-in m ks f . args)
+  (if (empty? ks)
+    (apply f m args)
+    (assj m (car ks)
+          (apply update-in (get m (car ks)) (cdr ks) f args))))
+
+(define-method (seq (ht <ht>))
+  (vlist->list (vh ht)))
+
 (define-method
   (equal? (a <ht>) (b <ht>))
-  (let* ((max-hash-arg (1- (expt 2 64)))
-         (dumb-compare (lambda (x y)
-                         (< (hash x max-hash-arg)
-                            (hash y max-hash-arg))))
-         (ka (sort (keys a) dumb-compare))
-         (kb (sort (keys b) dumb-compare)))
-    (and (equal? ka kb)
-         (reduce (lambda (t? k)
-                   (and t?
-                        (equal? (get a k) (get b k))))
-                 #t
-                 ka))))
+  (let ((paired-off
+          (fold (lambda (kv m)
+                    (update-in m (list kv)
+                               (lambda (x)
+                                 (if (not x)
+                                     1
+                                     (+ 1 x)))))
+                  (make <ht>)
+                  (append (seq a)
+                          (seq b)))))
+    (every (lambda (x) (= x 2))
+           (vals paired-off))))
+
 
 (define-method
   (disj (source <ht>) . ks)
@@ -103,22 +142,6 @@
     (apply disj
            (vhash-delete (car ks) source)
            (cdr ks))))
-
-(define (ht-assj-helper ht kvs)
-  (fold (lambda (kv hash)
-            (if (empty? kv)
-              hash
-              (~>> hash
-                   (vhash-delete (car kv))
-                   (vhash-cons (car kv) (cadr kv)))))
-          ht
-          kvs))
-
-(define-method
-  (assj (ht <ht>) . kvs)
-  (make <ht>
-        #:vh
-        (ht-assj-helper (vh ht) (part 2 kvs))))
 
 (define-method
   ;; so that (assj #f #:k "v") works, like clojure nil punning
@@ -191,18 +214,42 @@
         (ht)
         selected))
 
-(define-method
-  (update-in m ks f)
-  (if (empty? ks)
-    (f m)
-    (assj m (car ks)
-          (update-in (get m (car ks)) (cdr ks) f))))
-
 (define (comp . fs)
   (reduce (lambda (f g)
             (lambda (x) (g (f x))))
           identity
           fs))
 
-(define-method (seq (ht <ht>))
-  (vlist->list (vh ht)))
+(define-method
+  (seq (l <list>))
+  l)
+
+(define-method
+  (seq (b <boolean>))
+  '())
+
+(define-method
+  (reduce-kv f init s)
+  (fold (lambda (kv acc)
+          (f acc (car kv) (cdr kv)))
+        init
+        (seq s)))
+
+(define-method
+  (reduce-kv f s)
+  (reduce-kv f (ht) s))
+
+(define (hmerge h1 h2)
+  (reduce-kv assj h1 h2))
+
+(define-method
+  (name (k <keyword>))
+  (name (keyword->symbol k)))
+
+(define-method
+  (name (s <symbol>))
+  (symbol->string s))
+
+(define-method
+  (name (s <string>))
+  s)

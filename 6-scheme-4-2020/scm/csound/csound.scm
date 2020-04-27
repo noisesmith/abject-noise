@@ -2,6 +2,10 @@
                #:use-module (oop goops)
                #:export (emit get-table))
 
+;; consider moving this up a level
+;; consider using (bytestructures guile) for interop:
+;; /usr/share/guile/site/2.2/bytestructures/guile.scm
+
 (define-generic emit)
 
 (define-class

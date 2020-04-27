@@ -2,7 +2,15 @@
 
 (use-modules (srfi srfi-64)
              (oop goops) ; for the class-of function
+             (noisesmith debug)
              (noisesmith clojure))
+
+(define unit-test?
+  (equal? (cdr (command-line))
+          '("unit")))
+
+(define event-capture
+  (->catalog))
 
 (test-begin "ht-test")
 
@@ -17,6 +25,7 @@
 
 (let ((h1 #h(1 2 2 1))
       (h2 #h(2 1 1 2)))
+  ; (event-capture #:ordering #h(#:h1 h1 #:h2 h2))
   (test-assert
     "ht unordered equality"
     (equal? h1 h2)))
@@ -25,10 +34,12 @@
       (key-path '(#:a #:b #:c)))
   (test-assert "update-in of ht"
                (equal? 2
-                       (~> m
+                       (-> m
                            (update-in key-path 1+)
                            (get-in key-path)))))
 
 (test-end "ht-test")
 
-(exit (test-runner-fail-count (test-runner-get)))
+(if unit-test?
+  (exit (test-runner-fail-count (test-runner-get))))
+(test-runner-reset (test-runner-current))

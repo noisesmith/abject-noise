@@ -7,7 +7,7 @@ for test in $(find ../scm/test/ -name '*.scm')
 do
   echo ';;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;'
   echo RUNNING TESTS FROM $test
-  guile -L ../scm $test
+  guile -L ../scm $test unit
   FAIL_COUNT=$(expr $FAIL_COUNT + $?)
   echo ';;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;'
 done

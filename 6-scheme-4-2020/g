@@ -1,9 +1,11 @@
 #!/bin/sh
 
-get_sco () {
-  guile -L scm mksco.scm > g.sco
+get_orc () {
+  guile -L scm -e 'gen-orc' mk.scm> g.orc
 }
 
-get_sco
+get_sco () {
+  guile -L scm -e 'gen-sco'  mk.scm> g.sco
+}
 
-csound -o dac -Lstdin g.orc g.sco
+get_orc && get_sco && csound -o dac -Lstdin g.orc g.sco

@@ -1,12 +1,18 @@
 (define-module (csound instrument)
-               #:export (insert patch plug normalize)
+               #:export (insert patch normalize)
                #:use-module (noisesmith clojure)
+               #:use-module (csound compile)
                #:use-module (csound instrument node)
-               #:re-export (ht node))
+               #:use-module (csound instrument plug)
+               #:re-export (ht ->node compile ->plug))
 (use-modules
-  (csound compile)
+  (ice-9 match)
+  (noisesmith debug)
   (oop goops)
-  (srfi srfi-1))
+  (srfi srfi-1)
+  (srfi srfi-26))
+
+(define debug (->catalog))
 
 (define-class
   <instrument> ()
@@ -16,14 +22,28 @@
     #:getter graph))
 
 (define-method
+  (assj (i <instrument>) k v)
+  (if (equal? k #:graph)
+      (make <instrument> #:graph v)
+      i))
+
+(define-method
   (get (i <instrument>) k)
   (get #h(#:graph (graph i)) k))
+
+(define-method
+  (get (i <instrument>) k default-fn)
+  (get #h(#:graph (graph i)) k default-fn))
 
 (define-method
   (write (i <instrument>) port)
   (display "[<instrument> :graph=" port)
   (write (graph i) port)
   (display "]" port))
+
+(define-method
+  (empty? (i <instrument>))
+  (empty? (graph i)))
 
 (define-method
   (insert (i <instrument>) (t <top>) (n <node>))
@@ -35,107 +55,113 @@
   (insert (t <top>) (n <node>))
   (insert (make <instrument>) t n))
 
-(define-class
-  <plug> ()
-  (node
-    #:init-keyword #:node
-    #:getter node)
-  (slot
-    #:init-keyword #:slot
-    #:getter slot))
-
-(define (plug node slot)
-  (make <plug>
-        #:node node
-        #:slot slot))
-
-(define-method
-  (write (p <plug>) port)
-  (display "[<plug> :node=" port)
-  (write (node p) port)
-  (display ", :slot=" port)
-  (write (slot p) port)
-  (display "]" port))
-
-(define-method
-  (equal? (p1 <plug>) (p2 <plug>))
-  (and (equal? (node p1) (node p2))
-       (equal? (slot p1) (slot p2))))
-
 (define-method
   (patch (i <instrument>)
          (input <plug>)
          (output <plug>))
   (let* ((target-entry (get (graph i) (node output)))
          (connected (assj (in target-entry) (slot output) input))
-         (new-node (make <node>
-                         #:in connected
-                         #:out (out target-entry))))
+         (new-node (assj target-entry #:in connected)))
     (make <instrument>
           #:graph (assj (graph i) (node output) new-node))))
 
-(define (named graph k)
-  (assj (get graph k)
-        ;; TODO - this is a simplification, we need something that
-        ;; understands rates and such...
-        #:name ((comp symbol->string keyword->symbol) k)))
-
-(define (ready-nodes i)
-  (letrec ((g (graph i))
-           (all-inputs-ready
-             (lambda (inputs)
-               (if (= inputs '())
-                 #t
-                 (let ((i (car inputs)))
-                   (and (or (string? i)
-                            (number? i))
-                        (all-inputs-ready (cdr i)))))))
-           (node-ready?
-             (lambda (k)
-               (let ((inputs (vals (in (get g k)))))
-                 (all-inputs-ready inputs)))))
-    (fold (lambda (k m)
-            (if (not (node-ready? k))
-              m
-              (assj m k (named g k))))
-          g
-          (filter node-ready?
-                  (keys g)))))
-
-(define (update-input removed input-hash)
-  (fold (lambda (kv updated)
-          (let ((s (get (cdr kv) #:name)))
-            (assj updated (car kv) s)))
-        input-hash
-        (seq removed)))
-
-(define (update-inputs removed remaining)
-  (fold (lambda (kv pruned)
-          (let ((k (car kv))
-                (v (cdr kv)))
-            (assj pruned
-                  (car kv)
-                  (update-input removed (cdr kv)))))
-        remaining
-        (seq removed)))
+(define-method
+  (patch (i <instrument>) (input <number>) (output <plug>))
+  (update-in i (list #:graph (node output) #:in)
+             assj (slot output) input))
 
 (define-method
-  (normalize (i <instrument>))
+  (patch (i <instrument>) (input <string>) (output <plug>))
+  (update-in i (list #:graph (node output) #:in)
+             assj (slot output) input))
+
+(define-method
+  (patch (i <instrument>) (target <keyword>) (plugs-keys <list>))
+  (if (eq? plugs-keys '())
+      i
+      (-> i
+          (patch (car plugs-keys)
+                 (->plug target (cadr plugs-keys)))
+          (patch target (cddr plugs-keys)))))
+
+(define (inputs-ready? ready? _ v)
+  (and ready?
+       (or (string? v)
+           (number? v))))
+
+(define (split-ready-nodes g)
+  (reduce-kv (match-lambda*
+               (((ready not-ready) k v)
+                (if (reduce-kv inputs-ready? #t (in v))
+                    (list (assj ready k v) not-ready)
+                    (list ready (assj not-ready k v)))))
+             (list #h() #h())
+             g))
+
+(define (map-to-token node-key)
+  (lambda (new-mappings output-key string-token)
+    (assj new-mappings
+          (->plug node-key output-key)
+          string-token)))
+
+(define (derive-input-map nodes)
+  (reduce-kv (lambda (mapping node-key synth-node)
+               (hmerge mapping
+                       (reduce-kv (map-to-token node-key)
+                                  (out synth-node))))
+             nodes))
+
+(define (update-input input-map)
+  (lambda (inputs tag input)
+    ;; look up the plug, or leave as is
+    (assj inputs tag
+          (get input-map input
+               (constantly input)))))
+
+(define (attach-ready-inputs ready)
+    (lambda (m k v)
+      (assj m k
+            (update-in v '(#:in)
+                      (cut reduce-kv (update-input (derive-input-map ready))
+                           <>)))))
+
+(define (stringify-value tag)
+  (lambda (m out-name prefix)
+    (assj m out-name (string-append prefix (name tag) "_" (name out-name)))))
+
+(define (name-outputs m k)
+  (reduce-kv (stringify-value k) m))
+
+(define (tokenize-graph m k v)
+  (assj m k (update-in v '(#:out) name-outputs k)))
+
+(define (normalize graph)
   ;; loop
-  (if (empty? i)
-    ;; until nodes are empty or (error case) nodes are unresolvable
-    '()
-    ;; find elements that are "ready" - no inputs aside from strings / numbers
-    (let* ((ready (ready-nodes i))
-           ;; emit/remove each node in the graph where all inputs are string/number,
-           (remaining (apply disj (graph i) (keys ready)))
-           ;; update all nodes with input from emitted item with string of variable created
-           (pruned (update-inputs ready remaining)))
-      (cons ready
-            (normalize pruned)))))
+  (if (empty? graph)
+      ;; until nodes are empty or (error case) nodes are unresolvable
+      '()
+      (match-let (((ready remaining) (split-ready-nodes graph)))
+                 (if (empty? ready)
+                     (throw 'incomplete-compile #h(#:non-ready graph))
+                     ;; emit/remove each node in the graph where all inputs are string/number,
+                     (catch 'incomplete-compile
+                            (cut let ((pruned (reduce-kv (attach-ready-inputs ready) remaining)))
+                                 (cons ready
+                                       (normalize pruned)))
+                            (lambda (_ . e)
+                              (throw 'incomplete-compile (cons ready e))))))))
 
 (define-method
   (compile (unit <instrument>) n)
-  (format #f "          instr ~a\n~a\n          endin\n"
-          n
-          (compile (normalize unit))))
+  (catch 'incomplete-compile
+         (cut format #f "          instr ~a\n~a          endin\n"
+              n
+              (->> (graph unit)
+                   (reduce-kv tokenize-graph)
+                   (normalize)
+                   (map vals)
+                   (compile)))
+         (lambda (_ . e)
+           (string-append "no nodes ready! \n"
+                          (call-with-output-string (lambda (p)
+                                                     (write e p)))))))
