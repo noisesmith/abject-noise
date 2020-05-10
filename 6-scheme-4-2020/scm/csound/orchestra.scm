@@ -1,5 +1,5 @@
 (define-module (csound orchestra)
-               #:export (=-expr gendyx outs ->ports tab:a timeinsts)
+               #:export (=-expr gendyx insert-curve outs ->ports tab:a timeinsts)
                #:use-module (csound instrument)
                #:use-module ((ice-9 format)
                              #:select (format)
@@ -58,7 +58,7 @@
 
 (define tab:a
   (->ports '(#:sig "a")
-           "tab3"
+           "table3"
            '(#:index #:fn #:mode #:off #:wrap)
            #h(#:mode 1
               #:off 0
@@ -91,6 +91,32 @@
   (->node #:in (in-ht args)
           #:out (apply ht name/type)
           #:formatter (lambda (i o)
-                        (fmt:format "~15a = ~a\n"
+                        (fmt:format #f "~15a = ~a\n"
                                     (get o (car name/type))
-                                    (format-to-infix expression-list o)))))
+                                    (format-to-infix expression-list i)))))
+(define timer
+  timeinsts)
+
+(define phase
+  (=-expr '(#:v "k")
+          '(/ #:time p3)
+          '(#:time)))
+
+
+(define (insert-curve ins table-number out-key out-node)
+  (let ((curve-key (keyword out-key "_curve")))
+    (-> ins
+        (insert out-key out-node)
+        (insert curve-key tab:a)
+        ;; these last two only need to exist once, they are "generic"
+        ;; this function is idempotent over #:curve_phase and #:curve_timer
+        (insert #:curve_phase phase)
+        (insert #:curve_timer timer)
+        ;; the hookups
+        (patch (->plug curve-key #:sig)
+               (->plug out-key #:x))
+        (patch curve-key
+               (list (->plug #:curve_phase #:v) #:index
+                     table-number #:fn))
+        (patch (->plug #:curve_timer #:t)
+               (->plug #:curve_phase #:time)))))

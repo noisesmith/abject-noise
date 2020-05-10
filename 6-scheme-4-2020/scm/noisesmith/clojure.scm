@@ -1,7 +1,7 @@
 (define-module (noisesmith clojure)
                #:export (-> ->> assj comp conj constantly disj empty? get get-in
-                            hmerge ht keys name part reduce-kv seq update-in
-                            vals))
+                            hmerge ht keys keyword name part reduce-kv seq
+                            update-in vals))
 
 (use-modules
   (ice-9 vlist)
@@ -253,3 +253,7 @@
 (define-method
   (name (s <string>))
   s)
+
+(define (keyword . xs)
+  ((comp symbol->keyword string->symbol)
+   (apply string-append (map name xs))))

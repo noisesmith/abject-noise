@@ -1,11 +1,12 @@
 [_] Tasks
-	[_] create tables for curves for each K param (and read from them in the instrument)
+	[X] create tables for curves for each K param (and read from them in the instrument)
 		[X] convert current instrument to (csound orchestra) implementation
 		[X] mkorc and mksco files
-		[_] graph function to attach curves as desired
-		[_] nice syntax for defining said curves
+		[X] graph function to attach curves as desired
+		[X] nice syntax for defining said curves
 
 * Ideas
+	* for incomplete compile, show path to every non-compilable input on every node
 	* paramaterize more controls
 	* filter (resonant filters...)
 	* https://www.gnu.org/software/guile/manual/html_node/Atomics.html

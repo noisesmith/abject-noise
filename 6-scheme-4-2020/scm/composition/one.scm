@@ -29,40 +29,15 @@
                 #:curveup 2 #:curvedown 0.1
                 #:initcps 24 #:num 12)))
 
-(define timer
-  orc:timeinsts)
-
-(define phase
-  (orc:=-expr '(#:v "k")
-              '(/ #:time p3)
-              '(#:time)))
-
-(define freq-curve
-  (update-in orc:tab:a '(#:in) hmerge
-             #h(#:fn curve-table)))
-
 (define minfreq
-  (orc:=-expr '(#:minfreq "k")
+  (orc:=-expr '(#:v "k")
               '(+ (* p5 0.9)
                   (* #:x p5 0.1))
               '(#:x)))
 
-(define (insert-curve ins)
-  (-> ins
-      (ins:insert #:minfreq minfreq)
-      (ins:insert #:freq-curve freq-curve)
-      (ins:insert #:phase phase)
-      (ins:insert #:timer timer)
-      (ins:patch (ins:->plug #:freq-curve #:sig)
-                 (ins:->plug #:minfreq #:x))
-      (ins:patch (ins:->plug #:phase #:v)
-                 (ins:->plug #:freq-curve #:index))
-      (ins:patch (ins:->plug #:timer #:t)
-                 (ins:->plug #:phase #:time))))
-
 (define gendy-instrument
   (-> (ins:insert #:gendyx gendyx)
-      (insert-curve)
+      (orc:insert-curve 1 #:minfreq minfreq)
       (ins:patch (ins:->plug #:minfreq #:v)
                  (ins:->plug #:gendyx #:minfreq))
       (ins:insert #:outs orc:outs)
