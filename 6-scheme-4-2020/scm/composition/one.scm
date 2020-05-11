@@ -13,6 +13,7 @@
 
 (define gendy-index 1)
 (define min-freq-table 1)
+(define max-freq-table 2)
 
 ;; orchestra stuff
 (define (headers params)
@@ -35,15 +36,22 @@
                   (* #:x p5 0.1))
               '(#:x)))
 
+(define maxfreq
+  (orc:=-expr '(#:v "k")
+              '(+ (* p6 0.9)
+                  (* #:x p6 0.1))
+              '(#:x)))
+
 (define gendy-instrument
   (-> (ins:insert #:gendyx gendyx)
       (orc:insert-curve min-freq-table #:minfreq minfreq)
+      (orc:insert-curve max-freq-table #:maxfreq maxfreq)
       (ins:patch (ins:->plug #:minfreq #:v)
                  (ins:->plug #:gendyx #:minfreq))
+      (ins:patch (ins:->plug #:maxfreq #:v)
+                 (ins:->plug #:gendyx #:maxfreq))
       (ins:insert #:outs orc:outs)
-      (ins:patch #:gendyx '("ampdbfs(p4)" #:amp
-                            ;"p5" #:minfreq
-                            "p6" #:maxfreq))
+      (ins:patch #:gendyx '("ampdbfs(p4)" #:amp))
       (ins:patch #:outs (list (ins:->plug #:gendyx #:sig) #:l
                               (ins:->plug #:gendyx #:sig) #:r))))
 
@@ -62,12 +70,22 @@
                              (bp 1 10.0)
                              (bp 5 0.1))))
 
+(define max-freq-curve
+  (curve "curve for maxfreq"
+         #:table-number max-freq-table
+         #:size 1024
+         #:data (curve-shape 0.1
+                             (bp 5 1.0)
+                             (bp 1 10.0)
+                             (bp 1 0.1))))
+
 (define gendy-long-drone
   (note "extended gendy for accompaniment" gendy-index
-        #:min-hz 100.1
+        #:min-hz 97.1
         #:max-hz 100.3))
 
 (define (gen-sco . args)
    (emit min-freq-curve)
+   (emit max-freq-curve)
    (emit gendy-long-drone
          0 1000 -2))

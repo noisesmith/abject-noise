@@ -13,6 +13,7 @@
 	* use my own oo / multimethod lib with the behavior I want (less complex than goops)
 	* unified definition of instrument across orchestra/score
 	: instead of magic numbers for tables used, and magic pN fields for params
+	* make orchestra =-expr construct its own free variable list for init
 
 
 * Done
