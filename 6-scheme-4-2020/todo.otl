@@ -1,18 +1,23 @@
-[_] Tasks
+* Tasks
+	[_] paramaterize more controls
+
+* Ideas
+	* for incomplete compile, show path to every non-compilable input on every node
+	* filter (resonant filters...)
+	* https://www.gnu.org/software/guile/manual/html_node/Atomics.html
+	* ffi (jack, csound, threads etc.)
+	* convert existing instruments to use the graph based (csound isntrument) compiler
+	* delete unneeded orc related code, convert score code to align with (csound instrument)
+	* evolve a DSL for working with these instruments
+	* auto-generating open-sound-control UI with hookup
+	* use my own oo / multimethod lib with the behavior I want (less complex than goops)
+	* unified definition of instrument across orchestra/score
+	: instead of magic numbers for tables used, and magic pN fields for params
+
+
+* Done
 	[X] create tables for curves for each K param (and read from them in the instrument)
 		[X] convert current instrument to (csound orchestra) implementation
 		[X] mkorc and mksco files
 		[X] graph function to attach curves as desired
 		[X] nice syntax for defining said curves
-
-* Ideas
-	* for incomplete compile, show path to every non-compilable input on every node
-	* paramaterize more controls
-	* filter (resonant filters...)
-	* https://www.gnu.org/software/guile/manual/html_node/Atomics.html
-	* ffi (jack, csound, threads etc.)
-	* convert existing instruments to use the graph based (csound isntrument) compiler
-	* evolve a DSL for working with these instruments
-	* auto-generating open-sound-control UI with hookup
-	* use my own oo lib with the behavior I want
-

@@ -1,6 +1,6 @@
 (define-module (noisesmith clojure)
                #:export (-> ->> assj comp conj constantly disj empty? get get-in
-                            hmerge ht keys keyword name part reduce-kv seq
+                            hmerge ht keys keyword key-list name part reduce-kv seq
                             update-in vals))
 
 (use-modules
@@ -257,3 +257,11 @@
 (define (keyword . xs)
   ((comp symbol->keyword string->symbol)
    (apply string-append (map name xs))))
+
+(define (key-list l)
+  "not strictly copied from clojure, but often needed at the edges
+  of scheme and clojure code"
+  (if (eq? l '())
+      '()
+      (cons (car l)
+            (key-list (cddr l)))))

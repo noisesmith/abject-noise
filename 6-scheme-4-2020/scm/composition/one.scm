@@ -2,17 +2,17 @@
                #:export (gen-orc gen-sco))
 
 (use-modules (csound csound)
-             (csound curve)
              ((csound instrument)
               #:select (compile patch ->plug insert)
               #:renamer (symbol-prefix-proc 'ins:))
-             (csound note)
              ((csound orchestra)
               #:renamer (symbol-prefix-proc 'orc:))
+             (csound score curve)
+             (csound score note)
              (noisesmith clojure))
 
 (define gendy-index 1)
-(define curve-table 1)
+(define min-freq-table 1)
 
 ;; orchestra stuff
 (define (headers params)
@@ -37,7 +37,7 @@
 
 (define gendy-instrument
   (-> (ins:insert #:gendyx gendyx)
-      (orc:insert-curve 1 #:minfreq minfreq)
+      (orc:insert-curve min-freq-table #:minfreq minfreq)
       (ins:patch (ins:->plug #:minfreq #:v)
                  (ins:->plug #:gendyx #:minfreq))
       (ins:insert #:outs orc:outs)
@@ -53,21 +53,21 @@
   (display (ins:compile gendy-instrument gendy-index)))
 
 ;; score stuff
-(define curve1
-  (curve "a simple curve"
-         #:table-number curve-table
+(define min-freq-curve
+  (curve "curve for minfreq"
+         #:table-number min-freq-table
          #:size 1024
          #:data (curve-shape 0.1
                              (bp 1 1.0)
                              (bp 1 10.0)
                              (bp 5 0.1))))
 
-(define e1
-  (note "test event"
-        #:instrument gendy-index
+(define gendy-long-drone
+  (note "extended gendy for accompaniment" gendy-index
         #:min-hz 100.1
         #:max-hz 100.3))
 
 (define (gen-sco . args)
-   (emit curve1)
-   (emit e1 0 10 -5))
+   (emit min-freq-curve)
+   (emit gendy-long-drone
+         0 1000 -2))

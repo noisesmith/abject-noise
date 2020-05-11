@@ -1,4 +1,4 @@
-(define-module (csound curve)
+(define-module (csound score curve)
                #:export (curve curve-shape bp))
 
 (use-modules

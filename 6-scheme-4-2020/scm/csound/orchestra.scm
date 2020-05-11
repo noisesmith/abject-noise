@@ -23,12 +23,6 @@
               (string-join (map compile outs) ", ")
               name
               (string-join (map compile ins) ", ")))
-;
-(define (key-list l)
-  (if (eq? l '())
-      '()
-      (cons (car l)
-            (key-list (cddr l)))))
 
 (define (->ports outs name ins . params)
   (-> (->node #:in (in-ht ins)
@@ -108,15 +102,15 @@
     (-> ins
         (insert out-key out-node)
         (insert curve-key tab:a)
-        ;; these last two only need to exist once, they are "generic"
-        ;; this function is idempotent over #:curve_phase and #:curve_timer
-        (insert #:curve_phase phase)
-        (insert #:curve_timer timer)
         ;; the hookups
         (patch (->plug curve-key #:sig)
                (->plug out-key #:x))
         (patch curve-key
                (list (->plug #:curve_phase #:v) #:index
                      table-number #:fn))
+        ;; these last two only need to exist once, they are "generic"
+        ;; this function is idempotent over #:curve_phase and #:curve_timer
+        (insert #:curve_phase phase)
+        (insert #:curve_timer timer)
         (patch (->plug #:curve_timer #:t)
                (->plug #:curve_phase #:time)))))
