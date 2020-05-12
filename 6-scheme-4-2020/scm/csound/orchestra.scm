@@ -1,5 +1,5 @@
 (define-module (csound orchestra)
-               #:export (=-expr gendyx insert-curve outs ->ports tab:a timeinsts)
+               #:export (=-expr gendyx insert-curve interject outs ->ports tab:a timeinsts)
                #:use-module (csound instrument)
                #:use-module ((ice-9 format)
                              #:select (format)
@@ -114,3 +114,12 @@
         (insert #:curve_timer timer)
         (patch (->plug #:curve_timer #:t)
                (->plug #:curve_phase #:time)))))
+
+(define (interject instrument target-plug in-plug out-plug)
+  "steal the source from some input and process it, providing a new input in its place"
+  (let* ((target-node (node target-plug))
+         (target-input (slot target-plug))
+         (target (get-in instrument `(#:graph ,target-node #:in ,target-input))))
+    (-> instrument
+        (patch target in-plug)
+        (patch out-plug target-node))))
