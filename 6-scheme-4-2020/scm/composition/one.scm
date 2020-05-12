@@ -80,12 +80,32 @@
                              (bp 1 0.1))))
 
 (define gendy-long-drone
-  (note "extended gendy for accompaniment" gendy-index
-        #:min-hz 97.1
-        #:max-hz 100.3))
+  (note "extended gendy low frequency for accompaniment" gendy-index
+        #:min-hz 20.1
+        #:max-hz 30.3))
+
+(define (gendy-long-melodies count start dur amp)
+  (if (= count 0)
+      '()
+      (let* ((s start)
+             (d (/ dur count))
+             (ns (+ s d))
+             (nd (- dur d))
+             (df (+ 2.9 (* 0.0002 (random 3000))))
+             (sf (+ 0.8 (* 0.0002 (random 1000))))
+             (mnh (+ 900 (* 0.113 (random 1000))))
+             (mxh (+ 1000 (* 0.15 (random 1010)))))
+        (cons (list (note "granulated gendy tone" gendy-index
+                          #:min-hz mnh
+                          #:max-hz mxh)
+                    (* s sf)
+                    (* d df) amp)
+              (gendy-long-melodies (- count 1) ns nd amp)))))
 
 (define (gen-sco . args)
    (emit min-freq-curve)
    (emit max-freq-curve)
    (emit gendy-long-drone
-         0 1000 -2))
+         0 1000 5)
+   (for-each (lambda (e) (apply emit e))
+             (gendy-long-melodies 5000 0 1000.0 0)))
