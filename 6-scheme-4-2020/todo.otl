@@ -1,4 +1,5 @@
 * Tasks
+	[...] operator that inserts between an existing connection and its input
 	[_] paramaterize more controls
 
 * Ideas
@@ -14,6 +15,8 @@
 	* unified definition of instrument across orchestra/score
 	: instead of magic numbers for tables used, and magic pN fields for params
 	* make orchestra =-expr construct its own free variable list for init
+	* allow expr inline in parameters of an instrument
+	* score syntax for clarity of overlapping events / patterns
 
 
 * Done
