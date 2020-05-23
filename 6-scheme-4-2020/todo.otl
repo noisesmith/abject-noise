@@ -1,23 +1,29 @@
 * Tasks
-	[...] operator that inserts between an existing connection and its input
+	[_] operator that inserts between an existing connection and its input
+		[X] orchestra (interject instrument target-plug in-plug out-plug)
+		[/] rewrite insert-curve in terms of this operator
 	[_] paramaterize more controls
 
 * Ideas
+	* track tasks using `git bug` instead of this file
 	* for incomplete compile, show path to every non-compilable input on every node
 	* filter (resonant filters...)
 	* https://www.gnu.org/software/guile/manual/html_node/Atomics.html
-	* ffi (jack, csound, threads etc.)
-	* convert existing instruments to use the graph based (csound isntrument) compiler
 	* delete unneeded orc related code, convert score code to align with (csound instrument)
 	* evolve a DSL for working with these instruments
 	* auto-generating open-sound-control UI with hookup
 	* use my own oo / multimethod lib with the behavior I want (less complex than goops)
 	* unified definition of instrument across orchestra/score
-	: instead of magic numbers for tables used, and magic pN fields for params
-	* make orchestra =-expr construct its own free variable list for init
+		: instead of magic numbers for tables used, and magic pN fields for params
 	* allow expr inline in parameters of an instrument
+		: this implies changing much the =-expr implementation to be part of
+		: (csound instrument) - eg. format-to-infix gets applied to all inputs
 	* score syntax for clarity of overlapping events / patterns
-
+	* state machine that records you and plays you back, with GUI for following along
+	* instrument / DSL for manipulating in the spectral domain
+	* ffi (jack, csound, threads etc.)
+	* chaotic systems
+	* change ->node data so that the formatter is printed
 
 * Done
 	[X] create tables for curves for each K param (and read from them in the instrument)
@@ -25,3 +31,4 @@
 		[X] mkorc and mksco files
 		[X] graph function to attach curves as desired
 		[X] nice syntax for defining said curves
+	[X] convert existing instruments to use the graph based (csound instrument) compiler

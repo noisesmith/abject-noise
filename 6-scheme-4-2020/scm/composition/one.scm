@@ -30,22 +30,10 @@
                 #:curveup 2 #:curvedown 0.1
                 #:initcps 24 #:num 12)))
 
-(define minfreq
-  (orc:=-expr '(#:v "k")
-              '(+ (* p5 0.9)
-                  (* #:x p5 0.1))
-              '(#:x)))
-
-(define maxfreq
-  (orc:=-expr '(#:v "k")
-              '(+ (* p6 0.9)
-                  (* #:x p6 0.1))
-              '(#:x)))
-
 (define gendy-instrument
   (-> (ins:insert #:gendyx gendyx)
-      (orc:insert-curve min-freq-table #:minfreq minfreq)
-      (orc:insert-curve max-freq-table #:maxfreq maxfreq)
+      (orc:insert-curve min-freq-table #:minfreq '(#:v "k") '(* p5 0.9) 'p5)
+      (orc:insert-curve max-freq-table #:maxfreq '(#:v "k") '(* p6 0.9) 'p6)
       (ins:patch (ins:->plug #:minfreq #:v)
                  (ins:->plug #:gendyx #:minfreq))
       (ins:patch (ins:->plug #:maxfreq #:v)
