@@ -1,5 +1,5 @@
 (define-module (csound instrument)
-               #:export (insert patch normalize)
+               #:export (get-positional insert new-positional normalize patch)
                #:use-module (noisesmith clojure)
                #:use-module (csound compile)
                #:use-module (csound instrument node)
@@ -19,13 +19,19 @@
   (synthesis-node-graph
     #:init-keyword #:graph
     #:init-form (ht)
-    #:getter graph))
+    #:getter graph)
+  (positionals
+    #:init-keyword #:positionals
+    #:init-form '(ins start dur)
+    #:getter positionals))
 
 (define-method
   (assj (i <instrument>) k v)
-  (if (equal? k #:graph)
-      (make <instrument> #:graph v)
-      i))
+  (cond ((equal? k #:graph)
+         (make <instrument> #:graph v #:positionals (positionals i)))
+        ((equal? k #:positionals)
+         (make <instrument> #:positionals v #:graph (graph i)))
+        (else i)))
 
 (define-method
   (get (i <instrument>) k)
@@ -77,7 +83,7 @@
 
 (define-method
   (patch (i <instrument>) (target <keyword>) (plugs-keys <list>))
-  (if (eq? plugs-keys '())
+  (if (null? plugs-keys)
       i
       (-> i
           (patch (car plugs-keys)
@@ -111,18 +117,53 @@
                                   (out synth-node))))
              nodes))
 
+;; TODO - FIXME - maybe we want to find more than just keywords here
+(define (free-keys expression-tree)
+  (if (null? expression-tree)
+      '()
+      (append-map! (lambda (form)
+                     (cond ((keyword? form)
+                            (list form))
+                           ((list? form)
+                            (free-keys form))
+                           (else '())))
+                   expression-tree)))
+
+(define (normalize-input expr positionals subs)
+  (cond ((null? expr)
+         "")
+        ((keyword? expr)
+         (get subs expr (constantly expr)))
+        ((symbol? expr)
+         (get positionals expr (constantly expr)))
+        ((number? expr)
+         (number->string expr))
+        ;; all cases from here down expect a list
+        ((and (list? expr)
+              (null? (free-keys expr)))
+         (fmt:format #f "(~a)"
+                     (string-join (map (lambda (e)
+                                         (normalize-input e positionals subs))
+                                       (cdr expr))
+                                  (fmt:format #f " ~a "
+                                              (normalize-input (car expr)
+                                                               positionals
+                                                               subs)))))
+        ;; TODO - FIXME - how to ensure input is normalized after mapping here?
+        ((list? expr)
+         (map normalize-input expr))))
+
 (define (update-input input-map)
   (lambda (inputs tag input)
     ;; look up the plug, or leave as is
     (assj inputs tag
-          (get input-map input
-               (constantly input)))))
+          (normalize-input input positionals input-map))))
 
-(define (attach-ready-inputs ready)
+(define (attach-ready-inputs ready positionals)
     (lambda (m k v)
       (assj m k
             (update-in v '(#:in)
-                      (cut reduce-kv (update-input (derive-input-map ready))
+                      (cut reduce-kv (update-input (derive-input-map ready) positionals)
                            <>)))))
 
 (define (stringify-value tag)
@@ -132,10 +173,35 @@
 (define (name-outputs m k)
   (reduce-kv (stringify-value k) m))
 
-(define (tokenize-graph m k v)
-  (assj m k (update-in v '(#:out) name-outputs k)))
+(define (param n)
+  (string-append "p" (number->string n)))
 
-(define (normalize graph)
+(define (new-positional instrument . ks)
+  "Returns a new instrument with the positional arg registered."
+  ;; can't use update-in here because get short-circuits to the nodes
+  (assj instrument #:positionals
+        (append (positionals instrument) ks)))
+
+(define (get-positionals instrument)
+  ;; create a mapping from named positional to index
+  (car
+    (fold (lambda (k acc)
+            (let ((m (car acc))
+                  (n (cdr acc)))
+              (cons (assj m k n)
+                    (1+ n))))
+          (cons #h() 1)
+          (positionals instrument))))
+
+(define (tokenize-graph)
+  "Creates strings for each node output.
+  Turns each registered positional arg into a symbol lookup."
+  (lambda (m k v)
+    (assj m k
+          (-> v
+              (update-in '(#:out) name-outputs k)))))
+
+(define (normalize graph positionals)
   ;; loop
   (if (empty? graph)
       ;; until nodes are empty or (error case) nodes are unresolvable
@@ -145,9 +211,10 @@
                      (throw 'incomplete-compile #h(#:non-ready graph))
                      ;; emit/remove each node in the graph where all inputs are string/number,
                      (catch 'incomplete-compile
-                            (cut let ((pruned (reduce-kv (attach-ready-inputs ready) remaining)))
+                            (cut let ((pruned (reduce-kv (attach-ready-inputs ready positionals)
+                                                         remaining)))
                                  (cons ready
-                                       (normalize pruned)))
+                                       (normalize pruned positionals)))
                             (lambda (_ . e)
                               (throw 'incomplete-compile (cons ready e))))))))
 
@@ -157,8 +224,8 @@
          (cut format #f "          instr ~a\n~a          endin\n"
               n
               (->> (graph unit)
-                   (reduce-kv tokenize-graph)
-                   (normalize)
+                   (reduce-kv (tokenize-graph))
+                   (normalize (get-positionals unit))
                    (map vals)
                    (compile)))
          (lambda (_ . e)

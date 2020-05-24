@@ -1,4 +1,14 @@
 * Tasks
+	[_] unified definition of instrument across orchestra/score
+		: instead of magic numbers for tables used, and magic pN fields for params
+		: function `positional` takes a symbolic name and an instrument,
+		: sets up instrument to replace all references to that key with `pN`
+		: and similarly maps references to that symbol in the score to `N`
+		: position.
+	[_] allow expr inline in parameters of an instrument
+		: this implies changing much the =-expr implementation to be part of
+		: (csound instrument) - eg. format-to-infix gets applied to all inputs
+		[_] the tricky change seems to be the conditional formatting
 	[_] operator that inserts between an existing connection and its input
 		[X] orchestra (interject instrument target-plug in-plug out-plug)
 		[/] rewrite insert-curve in terms of this operator
@@ -13,11 +23,6 @@
 	* evolve a DSL for working with these instruments
 	* auto-generating open-sound-control UI with hookup
 	* use my own oo / multimethod lib with the behavior I want (less complex than goops)
-	* unified definition of instrument across orchestra/score
-		: instead of magic numbers for tables used, and magic pN fields for params
-	* allow expr inline in parameters of an instrument
-		: this implies changing much the =-expr implementation to be part of
-		: (csound instrument) - eg. format-to-infix gets applied to all inputs
 	* score syntax for clarity of overlapping events / patterns
 	* state machine that records you and plays you back, with GUI for following along
 	* instrument / DSL for manipulating in the spectral domain

@@ -3,7 +3,7 @@
 
 (use-modules (csound csound)
              ((csound instrument)
-              #:select (compile patch ->plug insert)
+              #:select (compile patch ->plug insert new-positional)
               #:renamer (symbol-prefix-proc 'ins:))
              ((csound orchestra)
               #:renamer (symbol-prefix-proc 'orc:))
@@ -32,8 +32,9 @@
 
 (define gendy-instrument
   (-> (ins:insert #:gendyx gendyx)
-      (orc:insert-curve min-freq-table #:minfreq '(#:v "k") '(* p5 0.9) 'p5)
-      (orc:insert-curve max-freq-table #:maxfreq '(#:v "k") '(* p6 0.9) 'p6)
+      (ins:new-positional 'amp 'min-freq 'max-freq)
+      (orc:insert-curve min-freq-table #:minfreq '(#:v "k") '(* min-freq 0.9) 'min-freq)
+      (orc:insert-curve max-freq-table #:maxfreq '(#:v "k") '(* max-freq 0.9) 'max-freq)
       (ins:patch (ins:->plug #:minfreq #:v)
                  (ins:->plug #:gendyx #:minfreq))
       (ins:patch (ins:->plug #:maxfreq #:v)

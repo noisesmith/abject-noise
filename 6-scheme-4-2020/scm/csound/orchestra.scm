@@ -35,7 +35,7 @@
                                       name
                                       (map (lambda (k) (get i k)) ins)))))
       (update-in '(#:in)
-                 (if (eq? params '())
+                 (if (null? params)
                      identity
                      (lambda (inputs)
                        (hmerge inputs (car params)))))))
@@ -64,35 +64,6 @@
   (->ports '(#:t "k")
            "timeinsts"
            '()))
-
-(define (format-to-infix expr subs)
-  (cond ((eq? expr '())
-         "")
-        ((keyword? expr)
-         (get subs expr))
-        ((symbol? expr)
-         (symbol->string expr))
-        ((number? expr)
-         (number->string expr))
-        (else
-          (fmt:format #f "(~a)"
-                      (string-join (map (lambda (e)
-                                          (format-to-infix e subs))
-                                        (cdr expr))
-                                   (fmt:format #f " ~a "
-                                               (format-to-infix (car expr)
-                                                                subs)))))))
-
-(define (free-keys expression-tree)
-  (if (eq? expression-tree '())
-      expression-tree
-      (append-map! (lambda (form)
-                     (cond ((keyword? form)
-                            (list form))
-                           ((list? form)
-                            (free-keys form))
-                           (else '())))
-                   expression-tree)))
 
 (define (=-expr name/type expression-list)
   (let ((args (free-keys expression-list)))
