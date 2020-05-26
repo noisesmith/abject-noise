@@ -5,10 +5,10 @@
 		: sets up instrument to replace all references to that key with `pN`
 		: and similarly maps references to that symbol in the score to `N`
 		: position.
-	[_] allow expr inline in parameters of an instrument
-		: this implies changing much the =-expr implementation to be part of
-		: (csound instrument) - eg. format-to-infix gets applied to all inputs
-		[_] the tricky change seems to be the conditional formatting
+		[_] allow expr inline in parameters of an instrument
+			: this implies changing much the =-expr implementation to be part of
+			: (csound instrument) - eg. format-to-infix gets applied to all inputs
+			[_] the tricky change seems to be the conditional formatting
 	[_] operator that inserts between an existing connection and its input
 		[X] orchestra (interject instrument target-plug in-plug out-plug)
 		[/] rewrite insert-curve in terms of this operator
