@@ -6,7 +6,7 @@
 Using literate programming.
 </p>
 <small>
-(using the "lit" program, from <a href="">zyedidia</a>, written in D)
+(using the "lit" program, from <a href="https://github.com/zyedidia/Literate">zyedidia</a>, written in D)
 </small>
 
 @s introduction, setup
@@ -37,8 +37,6 @@ i "wobble_a"    66.3   20    -5 -15
 ---
 
 
-;; for playing around
-;; i 9999 0 360000
 @s the synth
 
 
@@ -53,7 +51,7 @@ This same body will be shared by multiple instruments, with different parameter 
   adist      limit aclean, -1, 1
   al         = adist*ampdbfs(adb+p4)
   ar         = adist*ampdbfs(adb+p5)
-             outq al, ar, al, ar
+             out al, ar
 ---
 
 @s the first instrument
@@ -69,7 +67,7 @@ This same body will be shared by multiple instruments, with different parameter 
 
 ;; then come the various curves.
 
-  aidx1      lna 70, 121, 0.92, 0.08, p3
+  aidx1       lna 70, 121, 0.92, 0.08, p3
   again       lna -0.5, 3.0525, 0.9, 0.1, p3
   adb         lna -65, -15, 0.01, 0.25, p3
 @{synth body}
@@ -186,18 +184,18 @@ make more sense to me.
     xin
   aout linen (imx-imn), idur*iin, idur, idur*iiout
          ; between multiplying by (mx-mn), and adding mn back to out,
-         ; we effectively the linen output between mn and mx
+         ; we effectively spread the linen output between mn and mx
     xout aout+imn
     endop
 ---
 
-@s miscellanea and the parent document
+@s the parent document
 
 @comment_type ;;; %s
 --- orc headers --- noWeave
   sr         =  48000
   ksmps      =  512
-  nchnls     =  4
+  nchnls     =  2
   0dbfs      =  1
 ---
 
@@ -209,68 +207,6 @@ make more sense to me.
 -iadc
 -b 1024
 -B 2048
----
-
---- debug / audition
-  gilisten   OSCinit 4445
-
-    opcode oscvar, a, Siii
-  Spath, iini, ilo, ihi \
-             xin
-  kin        init iini
-next:
-  kk         OSClisten gilisten, Spath, "f", kin
-if (kk == 0) goto done
-             kgoto next
-done:
-    iscale   = ihi - ilo
-    kval     port (kin*iscale)+ilo, 0.15
-             xout a(kval)
-    endop
-
-    opcode oscvark, k, Siii
-  Spath, iini, ilo, ihi \
-             xin
-  kin        init iini
-next:
-  kk         OSClisten gilisten, Spath, "f", kin
-if (kk == 0) goto done
-             kgoto next
-done:
-    iscale   = ihi - ilo
-             xout (kin*iscale)+ilo
-    endop
-
-    instr 9999
-    amod1  oscvar "/mod1", 0, 0, 1000
-    acar1  oscvar "/car1", 0, 0, 1000
-    aidx   oscvar "/idx", 0, 0, 1000
-    acar   oscvar "/car", 0, 0, 1000
-    aidx1  oscvar "/idx1", 0, 0, 1000
-    again  oscvar "/gain", 0, 0, 30
-    adb    oscvar "/amp", -65, -65, 0
-    kmute  oscvark "/mute", 0, 1, 0
-    kdisp  oscvark "/display", 0, 0, 1
-    kdp    changed kdisp
-           printf \
-{{
-    amod1   =       %f
-    acar1   =       %f
-    aidx    =       %f
-    acar    =       %f
-    aidx1   =       %f
-    again   =       %f
-}}, \
-                  kdisp*kdp, k(amod1),  k(acar1), k(aidx),  k(acar),  k(aidx1),   k(again)
-    kexit  oscvark "/exit", 0, 0, 1
-           scoreline "e", kexit
-    amod   poscil3 aidx1, amod1
-    a1     poscil3 aidx, acar1+amod
-    aclean poscil3 ampdb(again), acar+a1, 1
-    adist  limit aclean, -1, 1
-    aout   = adist*ampdbfs(adb)*kmute
-           outq aout, aout, aout, aout
-    endin
 ---
 
 @comment_type ;;; %s
@@ -302,6 +238,94 @@ done:
 e
 </CsScore>
 </CsoundSynthesizer>
+---
+
+@s preview, sculpt, audition
+<p>
+The rte.csd document is fed via osc, I use it with simple-stage-control. It creates the same
+sound pallette as used with the composition, and can print out code to fill in the top
+part of an instrument when I've dialed in a texture.
+</p>
+
+<p>
+These are the same parameters that differentiate each instrument defined in this composition.
+</p>
+--- synth parameters
+    amod1  oscvar "/mod1", 0, 0, 1000
+    acar1  oscvar "/car1", 0, 0, 1000
+    aidx   oscvar "/idx", 0, 0, 1000
+    acar   oscvar "/car", 0, 0, 1000
+    aidx1  oscvar "/idx1", 0, 0, 1000
+    again  oscvar "/gain", 0, 0, 30
+    adb    oscvar "/amp", -65, -65, 0
+    kmute  oscvark "/mute", 0, 1, 0
+---
+
+<p>
+The parameter display is the main useful thing about the rte csd - it allows a quick feedback
+loop from experimentation to composition.
+</p>
+--- display parameters
+    kdisp  oscvark "/display", 0, 0, 1
+    kdp    changed kdisp
+           ;; print a structured block of code that can be pasted
+           ;; to create a new instrument
+           printf \
+{{
+    amod1   =       %f
+    acar1   =       %f
+    aidx    =       %f
+    acar    =       %f
+    aidx1   =       %f
+    again   =       %f
+}}, \
+                  kdisp*kdp, k(amod1),  k(acar1), k(aidx),  k(acar),  k(aidx1),   k(again)
+---
+
+
+--- debug / audition
+  gilisten   OSCinit 4445
+
+    opcode oscvar, a, Siii
+  Spath, iini, ilo, ihi \
+             xin
+@{osc read loop}
+    iscale   = ihi - ilo
+    kval     port (kin*iscale)+ilo, 0.15
+             xout a(kval)
+    endop
+
+    opcode oscvark, k, Siii
+  Spath, iini, ilo, ihi \
+             xin
+@{osc read loop}
+    iscale   = ihi - ilo
+             xout (kin*iscale)+ilo
+    endop
+
+    instr 9999
+@{synth parameters}
+@{display parameters}
+    kexit  oscvark "/exit", 0, 0, 1
+           scoreline "e", kexit
+    amod   poscil3 aidx1, amod1
+    a1     poscil3 aidx, acar1+amod
+    aclean poscil3 ampdb(again), acar+a1, 1
+    adist  limit aclean, -1, 1
+    aout   = adist*ampdbfs(adb)*kmute
+           outs aout, aout
+    endin
+---
+
+<p>
+The osc read loop is needed because multiple osc events can appear in one k cycle.
+--- osc read loop
+  kin        init iini
+next:
+  kk         OSClisten gilisten, Spath, "f", kin
+if (kk == 0) goto done
+             kgoto next
+done:
 ---
 
 @comment_type ;;; %s

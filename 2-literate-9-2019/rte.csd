@@ -15,11 +15,10 @@
 ;;; orc headers
   sr         =  48000
   ksmps      =  512
-  nchnls     =  4
+  nchnls     =  2
   0dbfs      =  1
 
 
-;;; debug / audition
   gilisten   OSCinit 4445
 
     opcode oscvar, a, Siii
@@ -31,6 +30,7 @@ next:
 if (kk == 0) goto done
              kgoto next
 done:
+
     iscale   = ihi - ilo
     kval     port (kin*iscale)+ilo, 0.15
              xout a(kval)
@@ -45,6 +45,7 @@ next:
 if (kk == 0) goto done
              kgoto next
 done:
+
     iscale   = ihi - ilo
              xout (kin*iscale)+ilo
     endop
@@ -58,8 +59,11 @@ done:
     again  oscvar "/gain", 0, 0, 30
     adb    oscvar "/amp", -65, -65, 0
     kmute  oscvark "/mute", 0, 1, 0
+
     kdisp  oscvark "/display", 0, 0, 1
     kdp    changed kdisp
+           ;; print a structured block of code that can be pasted
+           ;; to create a new instrument
            printf \
 {{
     amod1   =       %f
@@ -70,6 +74,7 @@ done:
     again   =       %f
 }}, \
                   kdisp*kdp, k(amod1),  k(acar1), k(aidx),  k(acar),  k(aidx1),   k(again)
+
     kexit  oscvark "/exit", 0, 0, 1
            scoreline "e", kexit
     amod   poscil3 aidx1, amod1
@@ -77,7 +82,7 @@ done:
     aclean poscil3 ampdb(again), acar+a1, 1
     adist  limit aclean, -1, 1
     aout   = adist*ampdbfs(adb)*kmute
-           outq aout, aout, aout, aout
+           outs aout, aout
     endin
 
 
