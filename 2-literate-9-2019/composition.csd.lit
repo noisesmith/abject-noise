@@ -162,7 +162,6 @@ This same body will be shared by multiple instruments, with different parameter 
     endin
 ---
 
----
 @s udos
 These UDOs help make curves that are more intuitive to me.
 
@@ -250,6 +249,7 @@ part of an instrument when I've dialed in a texture.
 <p>
 These are the same parameters that differentiate each instrument defined in this composition.
 </p>
+@comment_type ;;; %s
 --- synth parameters
     amod1  oscvar "/mod1", 0, 0, 1000
     acar1  oscvar "/car1", 0, 0, 1000
@@ -265,6 +265,7 @@ These are the same parameters that differentiate each instrument defined in this
 The parameter display is the main useful thing about the rte csd - it allows a quick feedback
 loop from experimentation to composition.
 </p>
+@comment_type ;;; %s
 --- display parameters
     kdisp  oscvark "/display", 0, 0, 1
     kdp    changed kdisp
@@ -283,6 +284,7 @@ loop from experimentation to composition.
 ---
 
 
+@comment_type ;;; %s
 --- debug / audition
   gilisten   OSCinit 4445
 
@@ -319,6 +321,7 @@ loop from experimentation to composition.
 
 <p>
 The osc read loop is needed because multiple osc events can appear in one k cycle.
+@comment_type ;;; %s
 --- osc read loop
   kin        init iini
 next:
@@ -353,4 +356,13 @@ i 9999 0 360000
 e
 </CsScore>
 </CsoundSynthesizer>
+---
+
+@s further plans, ideas
+@code_type outline .otl
+--- todo.otl
+* ideas
+	[_] a rhythmic section following the current
+	[_] a loop that captures open-sound-control events and plays them back
+		: for creating overlapping curves via UI
 ---
