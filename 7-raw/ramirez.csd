@@ -12,7 +12,7 @@ ksmps	=	1024
 nchnls	=	2
 0dbfs	=	1
 
-gagain	= ampdbfs(-10)
+gkgain	= ampdbfs(-10)
 gal	= 0
 gar	= 0
 
@@ -62,7 +62,7 @@ asig	= klow*alow + khigh*ahigh + kdry*araw
 krev	= ampdb(tb0(5))
 gal	+= asig*kal*krev
 gar	+= asig*kar*krev
-	outs gagain*kal*asig, gagain*kar*asig
+	outs gkgain*kal*asig, gkgain*kar*asig
 	endin
 
 	instr 999
@@ -71,7 +71,7 @@ kfblvl	= 0.9 ; 0-1
 kfco	= 18000
 ipitchm	= 8
 al,ar	reverbsc gal, gar, kfblvl, kfco, sr, ipitchm
-	outs (al*kamp), (ar*kamp)
+	outs gkgain*kamp*al, gkgain*kamp*ar
 gal	= 0
 gar	= 0
 	endin
