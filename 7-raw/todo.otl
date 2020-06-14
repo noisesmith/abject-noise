@@ -1,0 +1,23 @@
+inspired by a richard ramirez tape, a raw noise piece
+: "Spinal Amputation" off the "Bleeding Headwound" tape
+generator -> distortion -> filter -> reverb
+
+* generator
+	* gendy
+
+* filter
+	* mode
+
+* reverb
+	* try
+		[X] platerev
+		: maybe bad parameters? way too slow
+		[X] reverbsc
+		: OK this one sounds great
+		[_] wguide2
+		: physical model of a beaten plate, with audio input
+		[_] freeverb
+		[_] reverb
+		[_] reverb2
+		[_] nreverb
+	* tried platerev, it's very slow - parameters?
