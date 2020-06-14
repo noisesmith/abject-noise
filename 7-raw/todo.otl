@@ -14,10 +14,13 @@ generator -> distortion -> filter -> reverb
 		: maybe bad parameters? way too slow
 		[X] reverbsc
 		: OK this one sounds great
-		[_] wguide2
+		[/] wguide2
 		: physical model of a beaten plate, with audio input
-		[_] freeverb
-		[_] reverb
-		[_] reverb2
-		[_] nreverb
-	* tried platerev, it's very slow - parameters?
+		[/] freeverb
+		[/] reverb
+		[/] reverb2
+		[/] nreverb
+
+* compositional concerns:
+	[X] refine an interesting set of parameters with the opcodes used relatively raw
+	[_] make new instruments that apply curves on the parameters in tables
