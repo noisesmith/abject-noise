@@ -12,24 +12,25 @@ ksmps	=	1024
 nchnls	=	2
 0dbfs	=	1
 
-gkgain	init ampdbfs(-10)
+gkgain	init ampdbfs(-18)
 gal	init 0
 gar	init 0
 
 
 	instr 1
 igain	= ampdb(p4)
-im	= p5
-it	= p6
-iw	= p7
+im	= p5 ; table for mix / gain params - all passed through ampdb
+it	= p6 ; table for texture params
+iw	= p7 ; table for "weird" params - hard to categorize or not understood
 kal	= ampdb(tab:k(0, im))
 kar	= ampdb(tab:k(1, im))
-kampdst	= tab:k(0, iw) ; 0:linear 1:cauchy 2:logist 3:hyperbcos 4:arcsine 5:expon 6:table/kadpar
-kdurdst	= tab:k(1, iw) ; 0:linear 1:cauchy 2:logist 3:hyperbcos 4:arcsine 5:expon 6:table/kadpar
+;; dstparam - 0:linear 1:cauchy 2:logist 3:hyperbcos 4:arcsine 5:expon 6:table/kadpar
+kampdst	= tab:k(0, iw) ; dstparam
+kdurdst	= tab:k(1, iw) ; dstparam
 kadpar	= tab:k(2, iw) ; 0.0001 - 1.
 kddpar	= tab:k(3, iw) ; 0.0001 - 1.
-kminhz	= tab:k(0, it)
-kmaxhz	= tab:k(1, it)
+kminhz	= tab:k(0, it) ; hz
+kmaxhz	= tab:k(1, it) ; hz
 kampscl	= tab:k(4, iw) ; 0 - 1
 kdurscl	= tab:k(5, iw) ; 0 - 1
 araw	gendy	1, \
@@ -41,9 +42,9 @@ kshape1	= tab:k(6, iw) ; 0=flat clip
 kshape2	= tab:k(7, iw) ; 0=flat clip
 imode	= 1 ; 0dbfs range
 adist	distort1 araw, kpre, kpost, kshape1, kshape2, imode
-alow	mode adist, tab:k(4, it), tab:k(5, it)
+alow	mode adist, tab:k(4, it), tab:k(5, it) ; hz, q
 alow	dcblock alow ; trying to get bakc some dynamic range
-ahigh	mode adist, tab:k(6, it), tab:k(7, it)
+ahigh	mode adist, tab:k(6, it), tab:k(7, it) ; hz, q
 ahigh	dcblock ahigh
 klow	= ampdb(tab:k(2, im))
 khigh	= ampdb(tab:k(3, im))
