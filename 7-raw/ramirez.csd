@@ -59,6 +59,16 @@ ar	limit kdirect*gkgain*kar*asig, -1, 1
 	outs al, ar
 	endin
 
+;; overwrites some table to superimpose a curve
+;; don't use recursively! it clobbers the table
+	instr 2
+itb	= p4
+idx	= p5
+iv	tab_i idx, itb
+kcurve	linseg iv, p6*p3, iv+p7, p8*p3, iv
+	tabw kcurve, idx, itb
+	endin
+
 	instr 999
 kamp	= ampdb(-10)
 kfblvl	= 0.9 ; 0-1
@@ -93,7 +103,7 @@ f 301 0 8 -2 \
 
 f 202 0 8 -2 \ ; rumble
   0.09 30.1 \
-  30 40 \
+  0 15 \
   30 20 1000 3
 
 f 203 0 8 -2 \ ; bleat
@@ -113,6 +123,9 @@ i1  31  95     0 101 203 301
 i1  40  10    10 101 201 302
 i1  90  20    10 101 201 302
 
+i2 100 100   202   5  90 0.5 0.5
+i2 100 100   202   3 120 0.5 0.5
+i2 100 100   202   4  90 0.5 0.5
 i1 100 100     0 101 202 302
 
 i999 0 -1
