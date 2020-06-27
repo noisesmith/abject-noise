@@ -15,6 +15,7 @@ nchnls	=	2
 gkgain	init ampdbfs(-18)
 gal	init 0
 gar	init 0
+gidebug = 0
 
 
 	instr 1
@@ -61,12 +62,62 @@ ar	limit kdirect*gkgain*kar*asig, -1, 1
 
 ;; overwrites some table to superimpose a curve
 ;; don't use recursively! it clobbers the table
-	instr 2
+	instr 2, curve
 itb	= p4
-idx	= p5
-iv	tab_i idx, itb
-kcurve	linseg iv, p6*p3, iv+p7, p8*p3, iv
-	tabw kcurve, idx, itb
+iidx	= p5
+kidx	= p5
+ipeak	= p6
+iin	= p7*p3
+iout	= p8*p3
+iv	tab_i iidx, itb
+kcurve	linseg iv, iin, iv+ipeak, iout, iv
+	tabw kcurve, kidx, itb
+	endin
+
+;; makes a new table, a copy of some original
+;; id of result table must be passed in
+	instr 3, copytab
+itsrc	= p4
+itdest	= p5
+itsize  = ftlen(itsrc)
+i_	ftgen itdest, 0, itsize, -2, 0
+	tableicopy itdest, itsrc
+itdone	pcount
+itdx	= 6
+NEXT:
+	cigoto (itdx >= itdone), DONE
+ival	= p(itdx+1)
+iidx	= p(itdx)
+Sprefix = "log from instr 3 / copytab "
+SSep    = "%%%%%%%"
+	printf_i "%s %s writing %f to %d of table %d\n", gidebug, \
+	          Sprefix, SSep, ival, iidx, itdest
+	tabw_i ival, iidx, itdest
+itdx    = itdx+2
+	igoto NEXT
+DONE:
+	endin
+
+	instr 4, debugtab
+it	= p4
+isz	= ftlen(it)
+iidx	= 0
+inxtbrk = 5
+Sprefix = "log from instr 4 / debugtab"
+SSep    = "%%%%%%%"
+	printf_i "%s %s time: %f %s dump of table %d\n", 1, \
+	          Sprefix, SSep, \
+	          p2, SSep, it
+NEXT:
+	cigoto (iidx == isz), DONE
+	printf_i "%d: %0.010f", 1, iidx, tab_i(iidx, it)
+	printf_i ", ", (iidx == p(inxtbrk) ? 0 : 1)
+	printf_i "\n...	", (iidx == p(inxtbrk) ? 1 : 0)
+inxtbrk = iidx == p(inxtbrk) ? inxtbrk+1 : inxtbrk
+iidx    = iidx+1
+	igoto NEXT
+DONE:
+	printf_i "\n", 1
 	endin
 
 	instr 999
@@ -123,10 +174,27 @@ i1  31  95     0 101 203 301
 i1  40  10    10 101 201 302
 i1  90  20    10 101 201 302
 
-i2 100 100   202   5  90 0.5 0.5
-i2 100 100   202   3 120 0.5 0.5
-i2 100 100   202   4  90 0.5 0.5
-i1 100 100     0 101 202 302
+i "copytab" 0 0 101 102 \
+   0 -65 1 -65 \
+   4  10
+i "copytab" 0 0 203 204 \
+   0 200.1 \
+   1 300.3 \
+f 303 0 8 -2
+i "copytab" 0 0 302 303 \
+   6 0.9 \
+   7 0.9
+
+;i "debugtab" 140   0 102   1
+;i "debugtab" 190   0 102   1
+;i "debugtab" 240   0 102   1
+
+i "curve" 140 100 102   0   55 0.1 0.9
+i "curve" 140 100 102   1   55 0.9 0.1
+i "curve" 140 100 204   0  820 0.5 0.5
+i "curve" 140 100 204   1  990 0.5 0.5
+i "curve" 140 100 204   5   90 0.5 0.5
+i1 140 100     0 102 204 303
 
 i999 0 -1
 

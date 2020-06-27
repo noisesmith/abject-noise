@@ -24,9 +24,12 @@ generator -> distortion -> filter -> reverb
 * compositional concerns:
 	[X] refine an interesting set of parameters with the opcodes used relatively raw
 	[X] make compositions using tables of params
+	[X] make an instrument that logs values in a table
 	[_] make table manipulation instruments
-		[_] make new instruments that applies curves on the parameters in tables
+		[X] make new instruments that apply curves on the parameters in tables
 			[X] apply curve, base from table, a line to some increment / decrement
+				[X] validate the curve via isolation / experiment
+				[X] either fix curve code, or curve better params
 			[_] set value at index via fm chain
 			[_] modulate value at index via fm chain
 		[_] make an instrument that allows concisely copying tables and varying
