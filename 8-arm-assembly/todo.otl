@@ -100,3 +100,7 @@
 	; info registers
 	; info all-registers
 	: install cgdb
+
+[_] projects
+	[_] conway's game of life in ARM assembler
+	: build it to run on VisUAL
