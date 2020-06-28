@@ -1,0 +1,7 @@
+#!/bin/sh
+
+IN=$1
+OUT=$2
+FILTER_OPTS='[0:a]showspectrum=s=854x480:mode=combined:slide=scroll:saturation=0.2:scale=log,format=yuv420p[v]'
+
+ffmpeg -i "$IN" -filter_complex "$FILTER_OPTS" -map "[v]" -map 0:a -b:v 700k -b:a 360k "$OUT"

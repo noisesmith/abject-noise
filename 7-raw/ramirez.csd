@@ -131,7 +131,6 @@ ar	limit gkgain*kamp*arr, -1, 1
 	outs al, ar
 gal	= 0
 gar	= 0
-	xtratim 10
 	endin
 
 
@@ -175,8 +174,8 @@ i1  40  10    10 101 201 302
 i1  90  20    10 101 201 302
 
 i "copytab" 0 0 101 102 \
-   0 -65 1 -65 \
-   4  10
+   0 -75 1 -75 \
+   4  10 5 10
 i "copytab" 0 0 203 204 \
    0 200.1 \
    1 300.3 \
@@ -189,16 +188,16 @@ i "copytab" 0 0 302 303 \
 ;i "debugtab" 190   0 102   1
 ;i "debugtab" 240   0 102   1
 
-i "curve" 140 100 102   0   55 0.1 0.9
-i "curve" 140 100 102   1   55 0.9 0.1
-i "curve" 140 100 204   0  820 0.5 0.5
-i "curve" 140 100 204   1  990 0.5 0.5
-i "curve" 140 100 204   5   90 0.5 0.5
-i1 140 100     0 102 204 303
+i "curve" 110 100 102   0   55 0.1 0.9
+i "curve" 110 100 102   1   55 0.9 0.1
+i "curve" 110 100 204   0  820 0.5 0.5
+i "curve" 110 100 204   1  990 0.5 0.5
+i "curve" 110 100 204   5   90 0.5 0.5
+i1 110 100     0 102 204 303
 
 i999 0 -1
+s 230
 
 </CsScore>
 </CsoundSynthesizer>
-; csound ramirez.csd
-; e
+; $ csound ramirez.csd -o RZ.wav&& mplayer RZ.wav
