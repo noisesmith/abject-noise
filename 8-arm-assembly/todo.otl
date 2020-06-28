@@ -1,0 +1,102 @@
+[X] dev on the pi
+	[X] access
+	; $ ssh pi@raspberrypi.local
+	[X] tools
+		[X] `as` - comes with!
+
+[/] emulataor
+	: https://wiki.debian.org/Arm64Qemu
+	[/] add ssh key
+	; sudo modprobe nbd
+	; sudo qemu-nbd -c /dev/nbd0 debian-9.9.0-openstack-arm64.qcow2
+	; sudo mount /dev/nbd0p2 /mnt
+	; ssh-add -L > /mnt/home/debian/.ssh/authorized_keys
+	; sudo umount /mnt
+	; sudo qemu-nbd -d /dev/nbd0
+
+[X] dedicated learning emulator
+	: https://salmanarif.bitbucket.io/visual/downloads.html
+	; $ /usr/local/bin/visual/VisUAL.sh
+	: pdf guide, based on the above tool
+	: https://web.sonoma.edu/users/f/farahman/sonoma/courses/es310/310_arm/lectures/Chapter_3_Instructions_ARM.pdf
+	: doesn't use the same pseudo-instructions as gnu as :/
+
+[_] concepts
+: https://azeria-labs.com/arm-data-types-and-registers-part-2/
+	[_] data types
+		* byte - bits 7,0
+		* half word - bits 16,0
+		* word bits 31,0
+		: MSB first default
+		: endianness is configurable though
+	[_] op examples
+		* ldr   - load word
+		* ldrh  - load unsigned half word
+		* ldrsh - load signed half word
+		* ldrb  - load unsigned byte
+		* ldrsb * load signed bytes
+		*
+		* str    - store word
+		* strh   - store unsigned half word
+		* strsh  - store signed half word
+		* strb   - store unsigned byte
+		* strsb  - store signed byte
+	[_] registers
+		[_] general purpose
+		: store locals
+			* R0
+			: first arg to a function (by convention)
+			* R1
+			: second arg to a function (by convention)
+			* R2
+			: third arg to a function (by convention)
+			* R3
+			: fourth arg to a function (by convention)
+			* R4
+			* R5
+			* R6
+			* R7
+			: stores syscall number
+			* R8
+			* R9
+			* R10
+		[_] special or general purpose
+		: store locals OR program execution state
+			* R11 / FP - the frame pointer
+			: helps track boundaries on the stack
+			* R12 / IP - intra procedural call
+		[_] special
+		: only for program execution
+			* R13 / SP - stack pointer
+			: top of the stack, marks place of stack locals
+			: subtract N bytes from it in order to allocate from the stack
+			* R14 / LR - link register
+			: the place a function call returns to
+			* R15 / PC - program counter
+			: automatically incremented based on the size of the instructon
+			: that has been executed
+			: current instruction + 8 in arm state
+			: current instruction + 4 in thumb state
+			* CPSR     - current program status register
+
+[_] hello world!
+	[X] simple demo
+	; pi@raspberrypi:~/assembly $ cat 0-pc-demo.s
+	; .section .text
+	; .global _start
+
+	; _start:
+	;   mov r0, pc
+	;   mov r1, #2
+	;   add r2, r1, r1
+	;   bkpt
+	; pi@raspberrypi:~/assembly $ as 0-pc-demo.s
+	; pi@raspberrypi:~/assembly $ ld -o pc-demo a.out
+	; pi@raspberrypi:~/assembly $ ./pc-demo
+	; Trace/breakpoint trap
+	[X] using gdb
+	; gdb pc-demo
+	; break _start
+	; info registers
+	; info all-registers
+	: install cgdb
