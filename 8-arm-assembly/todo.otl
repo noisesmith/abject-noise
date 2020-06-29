@@ -13,6 +13,8 @@
 	; ssh-add -L > /mnt/home/debian/.ssh/authorized_keys
 	; sudo umount /mnt
 	; sudo qemu-nbd -d /dev/nbd0
+	: temporarily abandoned, as the image has no user defined
+	: probably need to run the installer on the image
 
 [X] dedicated learning emulator
 	: https://salmanarif.bitbucket.io/visual/downloads.html
@@ -100,7 +102,22 @@
 	; info registers
 	; info all-registers
 	: install cgdb
+	[X] using VisUAL
+	: memory map https://salmanarif.bitbucket.io/visual/memory_map.html
+	: instructions https://salmanarif.bitbucket.io/visual/memory_map.html
+	[X] storing and loading memory
+	; mov		r1, #0x00000290
+	; since 666 won't fit in a single numeric literal
+	; add		r1, r1, #0x0000000a
+	; ;		store 666 into random memory location
+	; mov		r2, #0x00011000
+	; str		r1, [r2]
+	; ;		load 666 from that same location
+	; ldr		r0, [r2]
 
 [_] projects
 	[_] conway's game of life in ARM assembler
 	: build it to run on VisUAL
+	[_] data representation
+		[_] one bit per cell?
+	[_] algorithms
