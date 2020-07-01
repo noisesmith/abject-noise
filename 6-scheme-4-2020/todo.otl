@@ -5,6 +5,14 @@
 	[_] paramaterize more controls
 
 * Ideas
+	* use my own oo / multimethod lib with the behavior I want (less complex than goops)
+		* single dispatch with no inheritance
+		* just a hash-table lookup to pick impl when called
+		* declaration takes a name foo, and a dispatch function f
+		* generate two functions in a closure with a hash
+			* register-foo for adding a new value / fn pair to the hash
+			* foo for invoking with dispatch via hash
+		* a macro for dispatch functions that map a first "message" arg to multiple behaviors
 	* track tasks using `git bug` instead of this file
 	* for incomplete compile, show path to every non-compilable input on every node
 	* filter (resonant filters...)
@@ -12,7 +20,6 @@
 	* delete unneeded orc related code, convert score code to align with (csound instrument)
 	* evolve a DSL for working with these instruments
 	* auto-generating open-sound-control UI with hookup
-	* use my own oo / multimethod lib with the behavior I want (less complex than goops)
 	* unified definition of instrument across orchestra/score
 		: instead of magic numbers for tables used, and magic pN fields for params
 	* allow expr inline in parameters of an instrument
