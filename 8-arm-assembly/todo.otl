@@ -4,8 +4,21 @@
 	[X] tools
 		[X] `as` - comes with!
 
-[/] emulataor
+[X] emulataor
+	[X] via qemu userland emulation
+	: $ arm-none-eabi-as foo.s -g -o foo.o
+	: $ arm-none-eabi-ld foo.o -o foo
+	: $ qemu-arm -singlestep -g <port> foo
+	: $ gdb-multiarch foo
+	: (gdb) target remote localhost:<port>
+	: (gdb) layout regs
+	: (gdb) list
+		[X] install qemu-arm for userland execution of single programs
+		[X] install arm-none-eabi-as, arm-non-eabi-ld
+		[X] install gdb-multiarch
+	[/] via qemu image
 	: https://wiki.debian.org/Arm64Qemu
+	: gave up on this approach for now
 	[/] add ssh key
 	; sudo modprobe nbd
 	; sudo qemu-nbd -c /dev/nbd0 debian-9.9.0-openstack-arm64.qcow2
@@ -17,6 +30,7 @@
 	: probably need to run the installer on the image
 
 [X] dedicated learning emulator
+	: works, but not ideal
 	: https://salmanarif.bitbucket.io/visual/downloads.html
 	; $ /usr/local/bin/visual/VisUAL.sh
 	: pdf guide, based on the above tool
@@ -82,6 +96,7 @@
 			* CPSR     - current program status register
 
 [_] hello world!
+: useful guide https://peterdn.com/post/2012/01/14/hello-world-in-arm-assembly/
 	[X] simple demo
 	; pi@raspberrypi:~/assembly $ cat 0-pc-demo.s
 	; .section .text
@@ -117,7 +132,7 @@
 
 [_] projects
 	[_] conway's game of life in ARM assembler
-	: build it to run on VisUAL
+	: build it to run on qemu userspace (the qemu-arm program)
 	[_] data representation
 		[_] one bit per cell?
 	[_] algorithms
