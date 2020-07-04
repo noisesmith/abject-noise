@@ -1,0 +1,10 @@
+;;;; stereo reverb
+
+;; dependencies arevl, arevr, gkgain
+kamp	= ampdb(-10)
+kfblvl	= 0.9 ; 0-1
+kfco	= 18000
+ipitchm	= 8
+arl,arr	reverbsc arevl, arevr, kfblvl, kfco, sr, ipitchm
+al	limit gkgain*kamp*arl, -1, 1
+ar	limit gkgain*kamp*arr, -1, 1

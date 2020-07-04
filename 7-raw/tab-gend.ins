@@ -1,0 +1,46 @@
+;;;; wraps the usage of the "gendy" opcode, based on the xenakis
+;;;; original from la legende d'eer, putting all runtime parameters into
+;;;; a series of tables
+;; dependencies igain, im, it, iw, gkgain
+;; provides al, ar - stereo, balanced by settings in im
+
+;; igain - multiplier for the amplitude of all audio outputs
+;; im - table for mix / gain params - all passed through ampdb
+;; it - table for texture params
+;; iw - table for "weird" params - hard to categorize or not understood
+
+kal	= ampdb(tab:k(0, im))
+kar	= ampdb(tab:k(1, im))
+;; dstparam - 0:linear 1:cauchy 2:logist 3:hyperbcos 4:arcsine 5:expon
+;;            6:table/kadpar
+kampdst	= tab:k(0, iw) ; dstparam
+kdurdst	= tab:k(1, iw) ; dstparam
+kadpar	= tab:k(2, iw) ; 0.0001 - 1.
+kddpar	= tab:k(3, iw) ; 0.0001 - 1.
+kminhz	= tab:k(0, it) ; hz
+kmaxhz	= tab:k(1, it) ; hz
+kampscl	= tab:k(4, iw) ; 0 - 1
+kdurscl	= tab:k(5, iw) ; 0 - 1
+araw	gendy	1, \
+		kampdst, kdurdst, kadpar, kddpar, \
+		kminhz, kmaxhz, kampscl, kdurscl
+kpre	= ampdb(tab:k(2, it))
+kpost	= ampdb(tab:k(3, it))
+kshape1	= tab:k(6, iw) ; 0=flat clip
+kshape2	= tab:k(7, iw) ; 0=flat clip
+imode	= 1 ; 0dbfs range
+adist	distort1 araw, kpre, kpost, kshape1, kshape2, imode
+alow	mode adist, tab:k(4, it), tab:k(5, it) ; hz, q
+alow	dcblock alow ; trying to get back some dynamic range
+ahigh	mode adist, tab:k(6, it), tab:k(7, it) ; hz, q
+ahigh	dcblock ahigh
+klow	= ampdb(tab:k(2, im))
+khigh	= ampdb(tab:k(3, im))
+kdry	= ampdb(tab:k(4, im))
+asig	= igain*(klow*alow + khigh*ahigh + kdry*araw)
+krev	= ampdb(tab:k(5, im))
+gal	+= asig*kal*krev
+gar	+= asig*kar*krev
+kdirect	= ampdb(tab:k(6, im))
+al	limit kdirect*gkgain*kal*asig, -1, 1
+ar	limit kdirect*gkgain*kar*asig, -1, 1

@@ -1,0 +1,12 @@
+;;;; writes a "curve" into one field of a table, simple up/down
+;; itb - table to modify
+;; iidx - index of table to modify
+;; ipeak - value to add at peak
+;; ipt - 0-1 - timing of peak value from start to end
+
+kidx	= iidx
+iin	= ipt*p3
+iout	= (1 - ipt)*p3
+iv	tab_i iidx, itb
+kcurve	linseg iv, iin, iv+ipeak, iout, iv
+	tabw kcurve, kidx, itb

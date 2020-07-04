@@ -34,4 +34,4 @@ generator -> distortion -> filter -> reverb
 				[X] validate the curve via isolation / experiment
 				[X] either fix curve code, or curve better params
 			[_] set value at index via fm chain
-			[_] modulate value at index via fm chain
+			[_] modulate value at index via zak

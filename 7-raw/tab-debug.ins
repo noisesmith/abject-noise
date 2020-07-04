@@ -1,0 +1,24 @@
+;;;; dumps values from a table from iidx to isz, printing line breaks
+;;;; for each index in the pfields from inxtbrk on to end of plist
+
+;; dependencies: itab, iwhen, inxtbrk, iidx, isz, plist
+;; itab - table to use
+;; iwhen - time to print (probably p2)
+;; inxtbrk - first parameter which invoke a line-break in output
+;; iidx - starting index for table print
+;; isz - ending index for table print
+Sprefix = "log from instr 4 / debugtab"
+SSep    = "%%%%%%%"
+	printf_i "%s %s time: %f %s dump of table %d\n", 1, \
+		Sprefix, SSep, \
+		iwhen, SSep, itab
+NEXT:
+	cigoto (iidx == isz), DONE
+	printf_i "%d: %0.010f", 1, iidx, tab_i(iidx, itab)
+	printf_i ", ", (iidx == p(inxtbrk) ? 0 : 1)
+	printf_i "\n...	", (iidx == p(inxtbrk) ? 1 : 0)
+inxtbrk = iidx == p(inxtbrk) ? inxtbrk+1 : inxtbrk
+iidx    = iidx+1
+	igoto NEXT
+DONE:
+	printf_i "\n", 1

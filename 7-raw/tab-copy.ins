@@ -1,0 +1,19 @@
+;;;; copies itsrc to itdest, creating itdest if needed
+
+itsize  = ftlen(itsrc)
+i_	ftgen itdest, 0, itsize, -2, 0
+	tableicopy itdest, itsrc
+itdone	pcount
+itdx	= 6
+NEXT:
+	cigoto (itdx >= itdone), DONE
+ival	= p(itdx+1)
+iidx	= p(itdx)
+Sprefix = "log from instr 3 / copytab "
+SSep    = "%%%%%%%"
+	printf_i "%s %s writing %f to %d of table %d\n", gidebug, \
+		Sprefix, SSep, ival, iidx, itdest
+	tabw_i ival, iidx, itdest
+itdx    = itdx+2
+	igoto NEXT
+DONE:
