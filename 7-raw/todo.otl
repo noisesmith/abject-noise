@@ -21,6 +21,9 @@ generator -> distortion -> filter -> reverb
 		[/] reverb2
 		[/] nreverb
 
+* debug / fix
+	[_] why is the end totally blown out now? maybe the wiggle modulator?
+
 * compositional concerns:
 	[X] make compositions using tables of params
 	[X] refine an interesting set of parameters with the opcodes used relatively raw
@@ -33,5 +36,5 @@ generator -> distortion -> filter -> reverb
 			[X] apply curve, base from table, a line to some increment / decrement
 				[X] validate the curve via isolation / experiment
 				[X] either fix curve code, or curve better params
-			[_] set value at index via fm chain
+			[X] set value at index via fm chain
 			[_] modulate value at index via zak

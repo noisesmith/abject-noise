@@ -29,7 +29,7 @@ iw	= p7
 
 ;; overwrites some table to superimpose a curve
 ;; don't use recursively! it clobbers the table
-	instr 2, curve
+	instr curve
 itb	= p4
 iidx	= p5
 ipeak	= p6
@@ -37,15 +37,23 @@ ipt	= p7
 #include "tab-curve.ins"
 	endin
 
+	instr wiggle
+itb	= p4
+iidx	= p5
+idepth	= p6
+iptab	= p7
+#include "tab-wiggle.ins"
+	endin
+
 ;; makes a new table, a copy of some original
 ;; id of result table must be passed in
-	instr 3, copytab
+	instr copytab
 itsrc	= p4
 itdest	= p5
 #include "tab-copy.ins"
 	endin
 
-	instr 4, debugtab
+	instr debugtab
 iwhen	= p2
 itab	= p4
 isz	= ftlen(itab)
@@ -80,15 +88,20 @@ i1  40  10    10 101 201 302
 i1  90  20    10 101 201 302
 
 
-i "curve" 110 100 102   0   55 0.1
-i "curve" 110 100 102   1   55 0.9
-i "curve" 110 100 204   0  820 0.5
-i "curve" 110 100 204   1  990 0.5
-i "curve" 110 100 204   5   90 0.5
+f 400 0 8 -2 \
+	1 100 \ ; depth
+	333.22 272 \ ; carrier
+	72      49.021 \ ; modulation speed
+	100,   100.3 ; index
+i "wiggle" 110 100 204  4  955 400
+i "curve" 110 100  102  0   55 0.1
+i "curve" 110 100  102  1   55 0.9
+i "curve" 110 100  204  0  820 0.5
+i "curve" 110 100  204  1  990 0.5
+i "curve" 110 100  204  5    9 0.5
 i1 110 100     0 102 204 303
 
 i999 0 -1
-s 230
 
 </CsScore>
 </CsoundSynthesizer>

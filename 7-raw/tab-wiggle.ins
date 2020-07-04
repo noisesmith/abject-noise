@@ -1,0 +1,21 @@
+;;;; writes a "wiggle" into one field of a table
+;; itb - table to modify
+;; iidx - index of table to modify
+;; idepth - scales the depth parameter
+;; iptab - table which will be used to look up parameters
+
+kdepth	= tab:k(0, iptab)
+kdepth0	= tab:k(1, iptab)
+kcar	= tab:k(2, iptab)
+kcar0	= tab:k(3, iptab)
+kmod	= tab:k(4, iptab)
+kmod0	= tab:k(5, iptab)
+kndx	= tab:k(6, iptab)
+kndx0	= tab:k(7, iptab)
+
+kidx	= iidx
+iv	tab_i iidx, itb
+acurve0 foscil kdepth0, 1, kcar0, kmod0, kndx0, 1
+acurve	foscil kdepth*idepth, k(acurve0), kcar, kmod, kndx, 1
+kcurve	downsamp acurve, ksmps
+	tabw kcurve+iv, kidx, itb
