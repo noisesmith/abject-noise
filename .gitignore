@@ -9,3 +9,7 @@
 *.mp3
 *.log
 *.mp4
+*.o
+a.out
+*.arm
+*.run
