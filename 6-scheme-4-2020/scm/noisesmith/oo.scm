@@ -22,16 +22,14 @@
                      k v kvs ...)))))
 
 (define (create-table)
-  ;;; ...
-  )
+  (make-hash-table))
 
 (define (get-from-table t k)
-  ;;; ...
-  )
+  (hash-ref t k (lambda (. args)
+                  (throw 'not-found "method not implemented"))))
 
 (define (put-in-table t k v)
-  ;;; ...
-  )
+  (hash-set! t k v))
 
 ;; TODO: this is almost it - it is close to clojure's defmulti, without the
 ;; binding part, and without the heirarchic lookup of dispatch built in
