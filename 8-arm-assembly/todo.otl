@@ -1,3 +1,17 @@
+[_] conway's game of life in ARM assembler
+	: build it to run on qemu userspace (the qemu-arm program)
+	[_] data representation
+		[X] one bit per cell?
+			: one bit per cell, so 64 cells per memory location
+			: at first: just 64 memory locations, to make a 64x64 grid
+	[_] functionality
+		[_] print the board
+		: use system calls to print to stdout
+		: should be a simple loop
+		[_] update one cell
+		: OR of the register holding the cell, and the mask
+	[_] algorithms
+
 [X] dev on the pi
 	[X] access
 	; $ ssh pi@raspberrypi.local
@@ -130,9 +144,3 @@
 	; ;		load 666 from that same location
 	; ldr		r0, [r2]
 
-[_] projects
-	[_] conway's game of life in ARM assembler
-	: build it to run on qemu userspace (the qemu-arm program)
-	[_] data representation
-		[_] one bit per cell?
-	[_] algorithms
