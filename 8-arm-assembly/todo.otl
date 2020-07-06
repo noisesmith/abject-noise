@@ -27,6 +27,7 @@
 	: (gdb) target remote localhost:<port>
 	: (gdb) layout regs
 	: (gdb) list
+	: (gdb) p/t $cpsr
 		[X] install qemu-arm for userland execution of single programs
 		[X] install arm-none-eabi-as, arm-non-eabi-ld
 		[X] install gdb-multiarch
