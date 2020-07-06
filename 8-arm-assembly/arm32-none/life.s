@@ -4,13 +4,13 @@
 .global _start
 
 _start:
-	push	{r11, lr}	// prologue:	save frame pointer, lr
-	add	r11, sp, #0	//		setting the bottom of the stack frame
-	sub	sp, sp, #16	//		allocating stack
+	// push	{r11, lr}	// prologue:	save frame pointer, lr
+	// add	r11, sp, #0	//		setting the bottom of the stack frame
+	// sub	sp, sp, #16	//		allocating stack
 	mov	r0, #1		// set up call: fd to print to
 	bl	print_board
 	mov	r1, r0		// result of print_board
-	sub	sp, r11, #0	// epilogue: reset the stack pointer
+	// sub	sp, r11, #0	// epilogue: reset the stack pointer
 	mov	r0, #0		// exit success
 	b	_exit		//
 _exit:
@@ -27,7 +27,8 @@ print_board: // args: fd
 	ldr	r1, the_buffer	//			get the buffer
 	mov	r2, #0		//			initial offset into the board
 _do_line:			// loop entry
-	mov	r3, #0		// offset within our output line / index into the_buffer, cycles 0-63
+	mov	r3, #0		// offset within our output line / index into
+				// the_buffer, cycles 0-63
 _do_byte:
 	ldrb	r4, [r0, r2]	// byte from the board
 	mov	r5, #1		// mask to get our bit from the byte
@@ -40,14 +41,14 @@ _do_bit:
 	cmp	r5, #0b100000000 // see if we are done with this byte, 9th bit set
 	bne	_do_bit
 	strb	r7, [r1, r3]	// set buffer
-	add	r2, #1		// next byte
-	// TODO - what is going on here
-	cmp	r2, #512
-	bne	_do_byte
-	// TODO -this is wrong/broken
-	add	r3, #1
-	cmp	r3, #64
+	add	r3, #1		// next position in out buffer
+	add	r2, #1		// next input byte
+	cmp	r3, 64
+	// conditional eq print 65 bytes (line)
 	beq	_do_line
+	cmp	r2, #512
+	bne	_do_byte	// only need to do this explicitly if we are
+				// not jumping to the next line (falls through)
 	// fall through when done
 	add	sp, r11, #0	//	epilogue:	adjusting the stack pointer
 	pop	{r11}		//			restoring the frame pointer

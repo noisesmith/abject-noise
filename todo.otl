@@ -18,6 +18,7 @@ previous / potential:
 	* fennel synth graph to csound compiler
 	* some sort of timeline control - maybe with the help of iannix?
 		: maybe a lua osc lib?
+	* olive video editor
 
 insane future ideas:
 	* pick up the wavelet project again
@@ -27,3 +28,6 @@ insane future ideas:
 	* "peep hole" injection of assembly into a rendering / processing context
 		: cf my hammurabi clojure project
 	* use hammurabi to put low level high throughput code into pink
+	* some combination of granulation plus dimensionality
+		: table offset and choice driven by real time metrics
+		: a loose analogy for human learning
