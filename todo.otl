@@ -18,6 +18,7 @@ previous / potential:
 	* fennel synth graph to csound compiler
 	* some sort of timeline control - maybe with the help of iannix?
 		: maybe a lua osc lib?
+	* olive video editor
 
 insane future ideas:
 	* pick up the wavelet project again
@@ -35,3 +36,6 @@ insane future ideas:
 		: /sinks / mixdowns). Kind of a granulation that keeps things near
 		: eeach other if they were once correlated, can be guided by a human
 		: into categories if used intentionally.
+	* some combination of granulation plus dimensionality
+		: table offset and choice driven by real time metrics
+		: a loose analogy for human learning

@@ -1,13 +1,22 @@
 [_] conway's game of life in ARM assembler
 	: build it to run on qemu userspace (the qemu-arm program)
+	[X] set up basic tdd with log output
+		: xxd helps, made a hex output generator
+	[_] move debugging facilities into a reusable resource
 	[_] data representation
 		[X] one bit per cell?
 			: one bit per cell, so 64 cells per memory location
 			: at first: just 64 memory locations, to make a 64x64 grid
 	[_] functionality
+		[_] break the skeleton into smaller functions
+			[_] use the stack on each call (for return address for now)
 		[_] print the board
 		: use system calls to print to stdout
 		: should be a simple loop
+			[_] print the correct number of lines
+				: currently prints 37 lines(!)
+			[_] print the correct contents per line
+				: currently there are multiple unexpected results
 		[_] update one cell
 		: OR of the register holding the cell, and the mask
 	[_] algorithms
@@ -144,4 +153,6 @@
 	; str		r1, [r2]
 	; ;		load 666 from that same location
 	; ldr		r0, [r2]
-
+*  interesting:
+	: mpidr tells you the cpu number
+	: https://developer.arm.com/documentation/ddi0500/e/system-control/aarch32-register-descriptions/multiprocessor-affinity-register

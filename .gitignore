@@ -14,3 +14,6 @@
 a.out
 *.arm
 *.run
+0-test1
+1-test-halfword
+2-test-write-hex
