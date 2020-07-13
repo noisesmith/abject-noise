@@ -9,6 +9,7 @@
 *.mp3
 *.log
 *.mp4
+*.aiff
 *.o
 a.out
 *.arm
