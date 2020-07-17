@@ -22,7 +22,9 @@ generator -> distortion -> filter -> reverb
 		[/] nreverb
 
 * debug / fix
-	[_] why is the end totally blown out now? maybe the wiggle modulator?
+	[_] why is the end totally blown out now?
+		: find sources of blowouts and fix
+		[_] wiggle modulator
 
 * compositional concerns:
 	[X] make compositions using tables of params
@@ -38,3 +40,19 @@ generator -> distortion -> filter -> reverb
 				[X] either fix curve code, or curve better params
 			[X] set value at index via fm chain
 			[_] modulate value at index via zak
+	[_] agent model granular record/store to table
+	[_] agent model granular
+	[_] "rhythms"
+	[_] oulipian pixel mungers
+		: agent model, consuming and producing pixels in video frames
+		: write a DSL that is for a/v what csound is for a?
+
+* heuristic
+	* why is it doing this?
+	* can I find the smallest change that switches the behavior?
+	* is going in with gdb feasible?
+
+* structure
+	* consider putting individual instrument instances in their own score, then mixing sound files
+		* a separate "mixdown tracks" score
+		* make targets to build all the constituent elements then the composition

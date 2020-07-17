@@ -12,7 +12,7 @@ ksmps	=	1024
 nchnls	=	2
 0dbfs	=	1
 
-gkgain	init ampdbfs(-18)
+gkgain	init ampdbfs(-28)
 gal	init 0
 gar	init 0
 gidebug = 0
@@ -92,14 +92,15 @@ f 400 0 8 -2 \
 	1 100 \ ; depth
 	333.22 272 \ ; carrier
 	72      49.021 \ ; modulation speed
-	100,   100.3 ; index
-i "wiggle" 110 100 204  4  955 400
-i "curve" 110 100  102  0   55 0.1
-i "curve" 110 100  102  1   55 0.9
+	100   100.3 ; index
+;; TODO - fix blowouts caused by overrides below
+;i "wiggle" 110 100 204  4  955 400
+;i "curve" 110 100  102  0   55 0.1
+;i "curve" 110 100  102  1   55 0.9
 i "curve" 110 100  204  0  820 0.5
 i "curve" 110 100  204  1  990 0.5
 i "curve" 110 100  204  5    9 0.5
-i1 110 100     0 102 204 303
+i1 110 100     -28 102 204 303
 
 i999 0 -1
 
