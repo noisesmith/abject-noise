@@ -4,10 +4,15 @@
 _start:
 	sub	sp, sp, #020
 	str	lr, [sp]
-	mov	x0, #1			//; set up call
-	ldr	x1, =board		//; ...
-	mov	x2, #64			//; ...
-	mov	x3, #64			//; ...
+		ldr	x0, =normal_rules	//; set up step_board call
+		ldr	x1, =board		//; ...
+		mov	x2, #64			//; ...
+		mov	x3, #64			//; ...
+	bl	step_board
+		mov	x0, #1			//; set up print_board call
+		ldr	x1, =board		//; ...
+		mov	x2, #64			//; ...
+		mov	x3, #64			//; ...
 	bl	print_board
 	ldr	lr, [sp]
 	//; mov	x1, x0			//; result of print_board
@@ -18,21 +23,41 @@ _exit:
 	mov x8, #93			// system call exit
 	svc 0
 
+normal_rules:	//; x0: cell current
+		//; x1 ... x8: neighbors starting above, clockwise
+		//;
+		//; x8  x1 x2
+		//; x7  x0 x3
+		//; x6  x5 x4
+		//; -> x0 gets new state of cell (0/1)
+      sub	sp, sp, #020
+      str	lr, [sp]
+      ldr	lr, [sp]
+      add	sp, sp, #020
+
+step_board:	//; x0: rule function (takes cell + neighbors, returns 1/0
+		//; x1: the storge for the board
+		//; x2: columns (in bits)
+		//; x3: rows
+		//; -> x0 success
+	sub	sp, sp, #020
+	str	lr, [sp]
+	ldr	lr, [sp]
+	add	sp, sp, #020
+	ret
+
 print_board:	//; x0: output port
 		//; x1: data location
 		//; x2: columns (in bits)
 		//; x3: rows
 		//; -> x0 success
-	sub	sp, sp, #0100
+	sub	sp, sp, #060
 	str	lr, [sp]
-	str	x0, [sp, #010]		//; out
-	str	x1, [sp, #020]		//; loc
-	str	x2, [sp, #030]		//; cols
-	str	x3, [sp, #040]		//; rows
+	stp	x0, x1, [sp, #010]		//; out
+	stp	x2, x3, [sp, #030]		//; cols, rows (unused)
 	      mul	x4, x2, x3		//; size of board in bits
-	str	x4, [sp, #050]		//; total bits
 	      mov	x5, #0			//; read index in quads
-	str	x5, [sp, #060]		//; idx
+	stp	x4, x5, [sp, #050]		//; total bits, idx
 _next_line:
 	ldr	x0, [sp, #060]		//; position in quads
 	      lsl	x1, x0, #3		//; quads to bits
@@ -41,9 +66,7 @@ _next_line:
 	b.ge	_last_line
 	      ldr	x1, [sp, #020]		//; data location
 	      add	x1, x1, x0
-	//;ldp	x2, x3, [x1]		//; next quad, and the one after
-	ldr	x2, [x1]
-	//;ldr	x3, [x1, #1]
+	ldp	x2, x3, [x1]		//; next quad, and the one after
 	      add	x0, x0, #8
 	str	x0, [sp, #060]
 	      mov	x0, x2			//; setting up process_line call
@@ -64,7 +87,7 @@ _next_line:
 	b	_next_line
 _last_line:
 	ldr	lr, [sp]
-	add	sp, sp, #0100
+	add	sp, sp, #060
 	mov	x0, #0
 	ret
 
