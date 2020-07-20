@@ -15,6 +15,15 @@ where I am right now:
 :
 
 previous / potential:
-: fennel synth graph to csound compiler
-: some sort of timeline control - maybe with the help of iannix?
-: maybe a lua osc lib?
+	* fennel synth graph to csound compiler
+	* some sort of timeline control - maybe with the help of iannix?
+		: maybe a lua osc lib?
+
+insane future ideas:
+	* pick up the wavelet project again
+	* turn raspberry pi into a DSP by setting thread core affinity and peephole
+		: see harm
+		: optimizations in a64 assembly to lower latency
+	* "peep hole" injection of assembly into a rendering / processing context
+		: cf my hammurabi clojure project
+	* use hammurabi to put low level high throughput code into pink
