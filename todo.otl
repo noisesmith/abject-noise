@@ -27,3 +27,11 @@ insane future ideas:
 	* "peep hole" injection of assembly into a rendering / processing context
 		: cf my hammurabi clojure project
 	* use hammurabi to put low level high throughput code into pink
+	* hook up a small assembly program to jack (c wrapper), pipe IO through xxd
+	* loose human memory metaphor audio processor
+		: an index to memory to read / play, which results in what is
+		: currently audible being stored nearby
+		: this can happen in multiple places parallel (different sources
+		: /sinks / mixdowns). Kind of a granulation that keeps things near
+		: eeach other if they were once correlated, can be guided by a human
+		: into categories if used intentionally.
