@@ -6,8 +6,8 @@ debug: life
 
 life: life.o
 
-life.o: life.s life_data.s debug.s
-	$(AS) debug.s life_data.s life.s -o $@
+life.o: life.s life_data.s life_steps.s debug.s
+	$(AS) debug.s life_data.s life_steps.s life.s -o $@
 
 %.o: %.s
 	$(AS) $< -o $@

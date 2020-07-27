@@ -4,11 +4,11 @@
 _start:
 	sub	sp, sp, #020
 	str	lr, [sp]
-		ldr	x0, =normal_rules	//; set up step_board call
+		ldr	x0, =normal_rules	//; set up walk_board call
 		ldr	x1, =board		//; ...
 		mov	x2, #64			//; ...
 		mov	x3, #64			//; ...
-	bl	step_board
+	bl	walk_board
 		mov	x0, #1			//; set up print_board call
 		ldr	x1, =board		//; ...
 		mov	x2, #64			//; ...
@@ -20,31 +20,8 @@ _start:
 _exit:
 	ldr	lr, [sp]
 	add	sp, sp, #020
-	mov x8, #93			// system call exit
+	mov x8, #93			//; system call exit
 	svc 0
-
-normal_rules:	//; x0: cell current
-		//; x1 ... x8: neighbors starting above, clockwise
-		//;
-		//; x8  x1 x2
-		//; x7  x0 x3
-		//; x6  x5 x4
-		//; -> x0 gets new state of cell (0/1)
-      sub	sp, sp, #020
-      str	lr, [sp]
-      ldr	lr, [sp]
-      add	sp, sp, #020
-
-step_board:	//; x0: rule function (takes cell + neighbors, returns 1/0
-		//; x1: the storge for the board
-		//; x2: columns (in bits)
-		//; x3: rows
-		//; -> x0 success
-	sub	sp, sp, #020
-	str	lr, [sp]
-	ldr	lr, [sp]
-	add	sp, sp, #020
-	ret
 
 print_board:	//; x0: output port
 		//; x1: data location
