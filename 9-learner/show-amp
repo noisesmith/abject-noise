@@ -1,0 +1,13 @@
+#!/bin/sh
+
+AMP=$(sox $1 -n stat 2>&1 | grep 'RMS.*amplitude'|awk '{print $3}')
+
+if [ "$AMP" = "0.000000" ]
+then
+  echo SILENT!
+  rm $1
+  return 1
+else
+  echo $AMP
+  return 0
+fi
