@@ -156,3 +156,579 @@
 *  interesting:
 	: mpidr tells you the cpu number
 	: https://developer.arm.com/documentation/ddi0500/e/system-control/aarch32-register-descriptions/multiprocessor-affinity-register
+
+* instructions
+	* ADC
+		: Add with Carry D2.3
+		: ADC on page D2-670
+	* ADCS
+		: Add with Carry, setting flags
+		: D2.4 ADCS on page D2-671
+	* ADD (extended register)
+		: Add (extended register) D2.5
+		: ADD (extended register) on page D2-672
+	* ADD (immediate)
+		: Add (immediate) D2.6
+		: ADD (immediate) on page D2-674
+	* ADD (shifted register)
+		: Add (shifted register) D2.7
+		: ADD (shifted register) on page D2-675
+	* ADDG Add with Tag
+		: D2.8
+		: ADDG on page D2-676
+	* ADDS (extended register)
+		: Add (extended register), setting flags D2.9
+		: ADDS (extended register) on page D2-677
+	* ADDS (immediate)
+		: Add (immediate), setting flags D2.10
+		: ADDS (immediate) on page D2-679
+	* ADDS (shifted register)
+		: Add (shifted register), setting flags D2.11
+		: ADDS (shifted register) on page D2-680
+	* ADR
+		: Form PC-relative address D2.12
+		: ADR on page D2-681
+	* ADRL
+		: pseudo-instruction Load a PC-relative address into a register
+	* ADRP
+		: Form PC-relative address to 4KB page D2.13
+		: ADRP on page D2-682
+	* AND (immediate)
+		: Bitwise AND (immediate)
+		: D2.14 AND (immediate) on page D2-683
+	* AND (shifted register)
+		: Bitwise AND (shifted register
+		: ) D2.15 AND (shifted register) on page D2-684
+	* ANDS (immediate)
+		: Bitwise AND (immediate),
+		: setting flags D2.16 ANDS (immediate) on page D2-685
+	* ANDS (shifted register)
+		: Bitwise AND (shifted register), setting flags
+		: D2.17 ANDS (shifted register) on page D2-686
+	* ASR (register)
+		: Arithmetic Shift Right (register) D2.18
+		: ASR (register) on page D2-687
+	* ASR (immediate)
+		: Arithmetic Shift Right (immediate) D2.19
+		: ASR (immediate) on page D2-688
+	* ASRV
+		: Arithmetic Shift Right Variable D2.20
+		: ASRV on page D2-689
+	* AT
+		: Address Translate D2.21
+		: AT on page D2-690
+	* AUTDA
+		: , AUTDZA Authenticate Data
+		: address, using key A D2.22 AUTDA, AUTDZA on page D2-692
+	* AUTDB
+		: , AUTDZB Authenticate Data
+		: address, using key B D2.23 AUTDB, AUTDZB on page D2-693
+	* AUTIA, AUTIZA, AUTIA1716, AUTIASP, AUTIAZ
+		: Authenticate Instruction address, using key A
+		: D2.24 AUTIA, AUTIZA, AUTIA1716, AUTIASP, AUTIAZ on page D2-694
+	* AUTIB, AUTIZB, AUTIB1716, AUTIBSP, AUTIBZ
+		: Authenticate Instruction address, using key B
+		: D2.25 AUTIB, AUTIZB, AUTIB1716, AUTIBSP, AUTIBZ on page D2-695
+	* AXFlag
+		: Convert floating-point condition flags from Arm to external format D2.26
+		: AXFlag on page D2-696
+	* B.cond
+		: Branch conditionally D2.27
+		: B.cond on page D2-697
+	* B
+		: Branch D2.28
+		: B on page D2-698 D2 A64 General Instructions D2.1
+	* BFC
+		: Bitfield Clear, leaving other bits unchanged D2.29
+		: BFC on page D2-699
+	* BFI
+		: Bitfield Insert D2.30
+		: BFI on page D2-700
+	* BFM
+		: Bitfield Move D2.31
+		: BFM on page D2-701
+	* BFXIL
+		: Bitfield extract and insert at low end D2.32
+		: BFXIL on page D2-702
+	* BIC (shifted register)
+		: Bitwise Bit Clear (shifted register) D2.33
+		: BIC (shifted register) on page D2-703
+	* BICS (shifted register)
+		: Bitwise Bit Clear (shifted register), setting flags D2.34
+		: BICS (shifted register) on page D2-704
+	* BL
+		: Branch with Link D2.35
+		: BL on page D2-705
+	* BLR
+		: Branch with Link to Register D2.36
+		: BLR on page D2-706
+	* BLRAA, BLRAAZ, BLRAB, BLRABZ
+		: Branch with Link to Register, with pointer authentication D2.37
+		: BLRAA, BLRAAZ, BLRAB, BLRABZ on page D2-707
+	* BR
+		: Branch to Register D2.38
+		: BR on page D2-708
+	* BRAA, BRAAZ, BRAB, BRABZ
+		: Branch to Register, with pointer authentication D2.39
+		: BRAA, BRAAZ, BRAB, BRABZ on page D2-709
+	* BRK
+		: Breakpoint instruction D2.40
+		: BRK on page D2-710
+	* BTI
+		: Branch Target Identification D2.41
+		: BTI on page D2-711
+	* CBNZ
+		: Compare and Branch on Nonzero D2.42
+		: CBNZ on page D2-712
+	* CBZ
+		: Compare and Branch on Zero D2.43
+		: CBZ on page D2-713
+	* CCMN (immediate)
+		: Conditional Compare Negative (immediate) D2.44
+		: CCMN (immediate) on page D2-714
+	* CCMN (register)
+		: Conditional Compare Negative (register) D2.45
+		: CCMN (register) on page D2-715
+	* CCMP (immediate)
+		: Conditional Compare (immediate) D2.46
+		: CCMP (immediate) on page D2-716
+	* CCMP (register)
+		: Conditional Compare (register) D2.47
+		: CCMP (register) on page D2-717
+	* CINC
+		: Conditional Increment D2.48
+		: CINC on page D2-718
+	* CINV
+		: Conditional Invert D2.49
+		: CINV on page D2-719
+	* CLREX
+		: Clear Exclusive D2.50
+		: CLREX on page D2-720
+	* CLS
+		: Count leading sign bits D2.51
+		: CLS on page D2-721
+	* CLZ
+		: Count leading zero bits D2.52
+		: CLZ on page D2-722
+	* CMN (extended register)
+		: Compare Negative (extended register) D2.53
+		: CMN (extended register) on page D2-723
+	* CMN (immediate)
+		: Compare Negative (immediate) D2.54
+		: CMN (immediate) on page D2-725
+	* CMN (shifted register)
+		: Compare Negative (shifted register) D2.55
+		: CMN (shifted register) on page D2-726
+	* CMP (extended register)
+		: Compare (extended register) D2.56
+		: CMP (extended register) on page D2-727
+	* CMP (immediate)
+		: Compare (immediate) D2.57
+		: CMP (immediate) on page D2-729
+	* CMP (shifted register)
+		: Compare (shifted register) D2.58
+		: CMP (shifted register) on page D2-730
+	* CMPP
+		: Compare with Tag D2.59
+		: CMPP on page D2-731
+	* CNEG
+		: Conditional Negate D2.60
+		: CNEG on page D2-732
+	* CRC32B, CRC32H, CRC32W, CRC32X CRC32
+		: checksum performs a cyclic redundancy check (CRC) calculation on a value held in a general-purpose register D2.61
+		: CRC32B, CRC32H, CRC32W, CRC32X on page D2-733
+	* CRC32CB, CRC32CH, CRC32CW, CRC32CX CRC32C checksum performs a cyclic redundancy check (CRC)
+		: calculation on a value held in a general-purpose register D2.62
+		: CRC32CB, CRC32CH, CRC32CW, CRC32CX on page D2-734
+	* CSDB
+		: Consumption of Speculative Data Barrier D2
+		: .63 CSDB on page D2-735
+	* CSEL
+		: Conditional Select D2.64
+		: CSEL on page D2-737
+	* CSET
+		: Conditional Set D2.65
+		: CSET on page D2-738
+	* CSETM
+		: Conditional Set Mask D2.66
+		: CSETM on page D2-739
+	* CSINC
+		: Conditional Select Increment D2.67
+		: CSINC on page D2-740
+	* CSINV
+		: Conditional Select Invert D2.68
+		: CSINV on page D2-741
+	* CSNEG
+		: Conditional Select Negation D2.69
+		: CSNEG on page D2-742
+	* DC
+		: Data Cache operation
+		: D2.70 DC on page D2-743
+	* DCPS1
+		: Debug Change PE
+		: State to EL1 D2.71 DCPS1 on page D2-744
+	* DCPS2
+		: Debug Change PE
+		: State to EL2 D2.72 DCPS2 on page D2-745
+	* DCPS3
+		: Debug Change PE
+		: State to EL3 D2.73 DCPS3 on page D2-746
+	* DMB
+		: Data Memory Barrier
+		: D2.74 DMB on page D2-747
+	* DRPS
+		: Debug restore process
+		: state D2.75 DRPS on page D2-749
+	* DSB
+		: Data Synchronization Barrier
+		: D2.76 DSB on page D2-750
+	* EON (shifted register)
+		: Bitwise Exclusive OR NOT (shifted register) D2.77
+		: EON (shifted register) on page D2-752
+	* EOR (immediate)
+		: Bitwise Exclusive OR (immediate) D2.78
+		: EOR (immediate) on page D2-753
+	* EOR (shifted register)
+		: Bitwise Exclusive OR (shifted register) D2.79
+		: EOR (shifted register) on page D2-754
+	* ERET
+		: Returns from an exception D2.80
+		: ERET on page D2-755
+	* ERETAA, ERETAB
+		: Exception Return, with pointer authentication D2.81
+		: ERETAA, ERETAB on page D2-756
+	* ESB
+		: Error Synchronization Barrier D2.82
+		: ESB on page D2-757
+	* EXTR
+		: Extract register D2.83
+		: EXTR on page D2-758
+	* HINT
+		: Hint instruction D2.85
+		: HINT on page D2-760
+	* HLT
+		: Halt instruction D2.86
+		: HLT on page D2-761
+	* HVC
+		: Hypervisor call to allow OS code to call the Hypervisor D2.87
+		: HVC on page D2-762
+	* IC
+		: Instruction Cache operation D2.88
+		: IC on page D2-763
+	* IRG
+		: Insert Random Tag D2.89
+		: IRG on page D2-764
+	* ISB
+		: Instruction Synchronization Barrier D2.90
+		: ISB on page D2-765
+	* LDG
+		: Load Allocation Tag D2.91
+		: LDG on page D2-766
+	* LDGV
+		: Load Allocation Tag D2.92
+		: LDGV on page D2-767
+	* LSL (register)
+		: Logical Shift Left (register) D2.93
+		: LSL (register) on page D2-768
+	* LSL (immediate)
+		: Logical Shift Left (immediate) D2.94
+		: LSL (immediate) on page D2-769
+	* LSLV
+		: Logical Shift Left Variable D2.95
+		: LSLV on page D2-770
+	* LSR (register)
+		: Logical Shift Right (register) D2.96
+		: LSR (register) on page D2-771
+	* LSR (immediate)
+		: Logical Shift Right (immediate) D2.97
+		: LSR (immediate) on page D2-772
+	* LSRV
+		: Logical Shift Right Variable D2.98
+		: LSRV on page D2-773
+	* MADD
+		: Multiply-Add D2.99
+		: MADD on page D2-774
+	* MNEG
+		: Multiply-Negate D2.100
+		: MNEG on page D2-775
+	* MOV (to or from SP)
+		: Move between register and stack pointer D2.101
+		: MOV (to or from SP) on page D2-776
+	* MOV (inverted wide immediate)
+		: Move (inverted wide immediate) D2.102
+		: MOV (inverted wide immediate) on page D2-777
+	* MOV (wide immediate)
+		: Move (wide immediate) D2.103
+		: MOV (wide immediate) on page D2-778
+	* MOV (bitmask immediate)
+		: Move (bitmask immediate) D2.104
+		: MOV (bitmask immediate) on page D2-779
+	* MOV (register)
+		: Move (register) D2.105
+		: MOV (register) on page D2-780
+	* MOVK
+		: Move wide with keep D2.106
+		: MOVK on page D2-781
+	* MOVL
+		: pseudo-instruction Load a register with either a 32-bit or 64-bit immediate value or any address
+	* MOVN
+		: Move wide with NOT D2.107
+		: MOVN on page D2-782
+	* MOVZ
+		: Move wide with zero D2.108
+		: MOVZ on page D2-783
+	* MRS
+		: Move System Register D2.109
+		: MRS on page D2-784
+	* MSR (immediate)
+		: Move immediate value to Special Register D2.110
+		: MSR (immediate) on page D2-785
+	* MSR (register)
+		: Move general-purpose register to System Register D2.111
+		: MSR (register) on page D2-786
+	* MSUB
+		: Multiply-Subtract D2.112
+		: MSUB on page D2-787
+	* MUL
+		: Multiply D2.113
+		: MUL on page D2-788
+	* MVN
+		: Bitwise NOT D2.114
+		: MVN on page D2-789
+	* NEG (shifted register)
+		: Negate (shifted register) D2.115
+		: NEG (shifted register) on page D2-790
+	* NEGS
+		: Negate, setting flags D2.116
+		: NEGS on page D2-791
+	* NGC
+		: Negate with Carry D2.117
+		: NGC on page D2-792
+	* NGCS
+		: Negate with Carry, setting flags D2.118
+		: NGCS on page D2-793
+	* NOP
+		: No Operation D2.119
+		: NOP on page D2-794
+	* ORN (shifted register)
+		: Bitwise OR NOT (shifted register) D2.120
+		: ORN (shifted register) on page D2-795
+	* ORR (immediate)
+		: Bitwise OR (immediate) D2.121
+		: ORR (immediate) on page D2-796
+	* ORR (shifted register)
+		: Bitwise OR (shifted register) D2.122
+		: ORR (shifted register) on page D2-797
+	* PACDA, PACDZA
+		: Pointer Authentication Code for Data address, using key A D2.123
+		: PACDA, PACDZA on page D2-798
+	* PACDB, PACDZB
+		: Pointer Authentication
+		: Code for Data address, using key B D2.124 PACDB, PACDZB on page D2-799
+	* PACGA
+		: Pointer Authentication Code, using Generic key D2.125
+		: PACGA on page D2-800
+	* PACIA, PACIZA, PACIA1716, PACIASP, PACIAZ
+		: Pointer Authentication Code for Instruction address, using key A D2.126
+		: PACIA, PACIZA, PACIA1716, PACIASP, PACIAZ on page D2-801
+	* PACIB, PACIZB, PACIB1716, PACIBSP, PACIBZ
+		: Pointer Authentication Code for Instruction address, using key B D2.127
+		: PACIB, PACIZB, PACIB1716, PACIBSP, PACIBZ on page D2-802
+	* PSB
+		: Profiling Synchronization Barrier D2.128
+		: PSB on page D2-803 RBIT Reverse Bits D2.129 RBIT on page D2-804
+	* RET
+		: Return from subroutine D2.130
+		: RET on page D2-805
+	* RETAA, RETAB
+		: Return from subroutine, with pointer authentication D2.131
+		: RETAA, RETAB on page D2-806
+	* REV16
+		: Reverse bytes in 16-bit halfwords D2.132
+		: REV16 on page D2-807
+	* REV32
+		: Reverse bytes in 32-bit words D2.133
+		: REV32 on page D2-808
+	* REV64
+		: Reverse Bytes D2.134
+		: REV64 on page D2-809
+	* REV
+		: Reverse Bytes D2.135
+		: REV on page D2-810
+	* ROR (immediate)
+		: Rotate right (immediate) D2.136
+		: ROR (immediate) on page D2-811
+	* ROR (register)
+		: Rotate Right (register) D2.137
+		: ROR (register) on page D2-812
+	* RORV
+		: Rotate Right Variable D2.138
+		: RORV on page D2-813
+	* SBC
+		: Subtract with Carry D2.139
+		: SBC on page D2-814
+	* SBCS
+		: Subtract with Carry, setting flags D2.140
+		: SBCS on page D2-815
+	* SBFIZ
+		: Signed Bitfield Insert in Zero D2.141
+		: SBFIZ on page D2-816
+	* SBFM
+		: Signed Bitfield Move D2.142
+		: SBFM on page D2-817
+	* SBFX
+		: Signed Bitfield Extract D2.143
+		: SBFX on page D2-818
+	* SDIV
+		: Signed Divide D2.
+		: 144 SDIV on page D2-819
+	* SEV
+		: Send Event D2.145
+		: SEV on page D2-820
+	* SEVL
+		: Send Event Local D2.146
+		: SEVL on page D2-821
+	* SMADDL
+		: Signed Multiply-Add Long D2.147
+		: SMADDL on page D2-822
+	* SMC
+		: Supervisor call to allow OS or Hypervisor code to call the Secure Monitor D2.148
+		: SMC on page D2-823
+	* SMNEGL
+		: Signed Multiply-Negate Long D2.149
+		: SMNEGL on page D2-824
+	* SMSUBL
+		: Signed Multiply-Subtract Long D2.150
+		: SMSUBL on page D2-825
+	* SMULH
+		: Signed Multiply High D2.151
+		: SMULH on page D2-826
+	* SMULL
+		: Signed Multiply Long D2.152
+		: SMULL on page D2-827
+	* ST2G
+		: Store Allocation Tags D2.153
+		: ST2G on page D2-828
+	* STG
+		: Store Allocation Tag D2.154
+		: STG on page D2-829
+	* STGP
+		: Store Allocation Tag and Pair of registers. D2.155
+		: STGP on page D2-830
+	* STGV
+		: Store Tag Vector D2.156
+		: STGV on page D2-831
+	* STZ2G
+		: Store Allocation Tags, Zeroing D2.157
+		: STZ2G on page D2-832
+	* STZG
+		: Store Allocation Tag, Zeroing D2.158
+		: STZG on page D2-833
+	* SUB (extended register)
+		: Subtract (extended register) D2.159
+		: SUB (extended register) on page D2-834
+	* SUB (immediate)
+		: Subtract (immediate) D2.160
+		: SUB (immediate) on page D2-836
+	* SUB (shifted register)
+		: Subtract (shifted register) D2.161
+		: SUB (shifted register) on page D2-837
+	* SUBG
+		: Subtract with Tag D2.162
+		: SUBG on page D2-838
+	* SUBP
+		: Subtract Pointer D2.163
+		: SUBP on page D2-839
+	* SUBPS
+		: Subtract Pointer, setting Flags D2.164
+		: SUBPS on page D2-840
+	* SUBS (extended register)
+		: Subtract (extended register), setting flags D2.165
+		: SUBS (extended register) on page D2-841
+	* SUBS (immediate)
+		: Subtract (immediate), setting flags D2.166
+		: SUBS (immediate) on page D2-843
+	* SUBS (shifted register)
+		: Subtract (shifted register), setting flags D2.167
+		: SUBS (shifted register) on page D2-844
+	* SVC
+		: Supervisor call to allow application code to call the OS D2.168
+		: SVC on page D2-845
+	* SXTB
+		: Signed Extend Byte D2.169
+		: SXTB on page D2-846
+	* SXTH
+		: Sign Extend Halfword D2.170
+		: SXTH on page D2-847
+	* SXTW
+		: Sign Extend Word D2.171
+		: SXTW on page D2-848
+	* SYS
+		: System instruction D2.172
+		: SYS on page D2-849
+	* SYSL
+		: System instruction with result D2.173
+		: SYSL on page D2-850
+	* TBNZ
+		: Test bit and Branch if Nonzero D2.174
+		: TBNZ on page D2-851
+	* TBZ
+		: Test bit and Branch if Zero D2.175
+		: TBZ on page D2-852
+	* TLBI
+		: TLB Invalidate operation D2.176
+		: TLBI on page D2-853
+	* TST (immediate)
+		: , setting the condition flags and discarding the result D2.177
+		: TST (immediate) on page D2-855
+	* TST (shifted register)
+		: Test (shifted register) D2.178
+		: TST (shifted register) on page D2-856
+	* UBFIZ
+		: Unsigned Bitfield Insert in Zero D2.179
+		: UBFIZ on page D2-857
+	* UBFM
+		: Unsigned Bitfield Move D2.180
+		: UBFM on page D2-858
+	* UBFX
+		: Unsigned Bitfield Extract D2.181
+		: UBFX on page D2-859
+	* UDIV
+		: Unsigned Divide D2.
+		: 182 UDIV on page D2-860
+	* UMADDL
+		: Unsigned Multiply-Add Long D2.183
+		: UMADDL on page D2-861
+	* UMNEGL
+		: Unsigned Multiply-Negate Long D2.184
+		: UMNEGL on page D2-862
+	* UMSUBL
+		: Unsigned Multiply-Subtract Long D2.185
+		: UMSUBL on page D2-863
+	* UMULH
+		: Unsigned Multiply High D2.186
+		: UMULH on page D2-864
+	* UMULL
+		: Unsigned Multiply Long D2.187
+		: UMULL on page D2-865
+	* UXTB
+		: Unsigned Extend Byte D2.188
+		: UXTB on page D2-866
+	* UXTH
+		: Unsigned Extend Halfword D2.189
+		: UXTH on page D2-867
+	* WFE
+		: Wait For Event D2.191
+		: WFE on page D2-869
+	* WFI
+		: Wait For Interrupt D2.192
+		: WFI on page D2-870
+	* XAFlag
+		: Convert floating-point condition flags from external format to Arm format D2.190
+		: XAFlag on page D2-868
+	* XPACD, XPACI, XPACLRI
+		: Strip Pointer Authentication Code D2.193
+		: XPACD, XPACI, XPACLRI on page D2-871
+	* YIELD
+		: YIELD D2.194
+		: YIELD on page D2-872
