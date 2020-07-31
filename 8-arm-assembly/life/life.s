@@ -20,7 +20,7 @@ _start:
 _exit:
 	ldr	lr, [sp]
 	add	sp, sp, #020
-	mov x8, #93			//; system call exit
+	mov	x8, #93			//; system call exit
 	svc 0
 
 print_board:	//; x0: output port
