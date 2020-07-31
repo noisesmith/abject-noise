@@ -29,9 +29,8 @@ normal_rules:	//; x0: cell current
       cinc	x9, x9, gt
       cmp	x8, #0
       cinc	x9, x9, gt
-      mov	x10, #1
       cmp	x9, #3
-      b.eq	_live			//; 3 neighbots -> live (1)
+      b.eq	_live			//; 3 neighbors -> live (1)
       cmp	x9, #2
       b.eq	_done			//; 2 neighbors -> unchanged, else dead
       mov	x0, #0
@@ -86,70 +85,95 @@ _norm_live:
 //; gathers neighbor cells into registers, passes them to the rule function in x0
 //; updates the board in that position based on the return value
 walk_board:	//; x0: rule function (takes cell + neighbors, returns 1/0
-		//; x1: the storge for the board
+		//; x1: the storage for the board
 		//; x2: columns (in bits) / currently only 64 supported
 		//; x3: rows
 		//; -> x0 success
-	sub	sp, sp, #0100
+	sub	sp, sp, #0120
 	str	lr, [sp]
 	stp	x0, x1, [sp, #010]
 	stp	x2, x3, [sp, #030]
 
 	mov	x5, #0			//; row index
 	mov	x6, #0			//; column index
-	mov	x7, #63
-	mov	x8, #8
-	mul	x7, x7, x8
+	stp	x5, x6, [sp, #050]
+_one_row:	//; x4 <- 64 cells of previous row (previous with wrap)
+		//; x5 <- 64 cells of row
+		//; x6 <- 64 cells of next row
 
-_one_row:
-	ldr	x12, [x1, x7]		//; get the first 64 cells of the last row
-	rev	x12, x12
-	rbit	x12, x12		//; un-little-endian
-	//; the target this time
-	ldr	x13, [x1, #0]		//; get the first 64 cells of the first row (target)
-	rev	x13, x13
-	rbit	x13, x13
-	//; then the next
-	ldr	x14, [x1, #1]		//; get the first 64 cells of the second row
-	rev	x14, x14
-	rbit	x14, x14
+		//; x15 <- current row offset
+	ldr	x15, [sp, #050]		//; get the row index
+	ldr	x0, [sp, #020]
+	sub	x4, x15, #1		//; get the previous row index
+		//; x3 <- maximum row offset
+	ldr	x3, [sp, #040]		//; get the maximum row count
+	sub	x3, x3, #1		//; turn into maximum offset
+	cmp	x4, xzr
+	csel	x4, x4, x3, lo		//; rotate to max offset if offset was below 0
+	ldr	x4, [x0, x4]		//; get the data at the previous row
+	rev	x4, x4			//; un-little-endian
+	rbit	x4, x4
+	ldr	x5, [x0, x15]		//; get the data at our row
+	rev	x5, x5			//; un-little-endian
+	rbit	x5, x5
+	add	x6, x15, #1		//; get the next row index
+	str	x6, [sp, #050]
+	cmp	x6, x3			//; see if it's greater than the max row
+	csel	x6, x6, xzr, ge		//; wrap to 0 if yes
+	ldr	x6, [x0, x6]		//; grab the row
+	rev	x6, x6			//; un-little-endian
+	rbit	x6, x6
+	stp	x4, x5, [sp, #070]		//; previous and current row, stored
+	stp	x6, x5, [sp, #0100]		//; next and scratch row, stored
 
-	str	x13, [sp, #050]		//; scratch row - will contain the new values
 	//; build up args to rules function
+_one_column:	//; x0 <- mask for previous column
+		//; x1 <- mask for current column
+		//; x2 <- mask for next column
+	ldr	x7, [sp, #060]		//; column index
+	subs	x0, x7, #1		//; previous column
+		//; x8 <- max column
+	ldr	x8, [sp, #030]		//; max column
+	sub	x8, x8, #1		//; max offset of column
+	cmp	x0, xzr
+	csel	x0, x0, x8, ge		//; if below 0, grab the max
+	//;	x11 <- a single bit for shift / mask
+	mov	x11, #1			//; single bit set
+	lsl	x0, x11, x0		//; turn column offset into bit mask
+	lsl	x1, x11, x7		//; current column mask
+	add	x2, x7, #1		//; next column
+	cmp	x2, x8			//; check offset against max
+	csel	x2, x2, xzr, lt		//; index 0 if over the max
+	lsl	x2, x11, x2		//; turn index into mask
 
-_one_column:
-	mov	x8, #1			//; used in constructing a series of masks
+	add	x7, x7, #1		//; next column
+	str	x7, [sp, #060]		//; store state
 
-	sub	x15, x6, #1		//; left of cell
-	cmp	x15, #0
-	csel	x15, x15, x2, lt
-	lsl	x15, x8, x15		//; turn index into mask
+	//; the building blocks are acquired,
+	//; build the call to the rule function via bit masks
+	//; x9 <- previous row, as bits
+	//; x10 <- current row, as bits
+	//; x11 <- next row, as bits
+	ldp	x9, x10, [sp, #070]		//; get the prev, current row data
+	ldr	x11, [sp, #011]			//; get the next row data
 
-	lsl	x16, x8, x6		//; column of cell
-
-	add	x17, x6, #1		//; right of cell
-	cmp	x17, x2
-	csel	x17, x17, xzr, eq
-	lsl	x17, x8, x17
-
-	add	x6, x6, #1
-	str	x5, [sp, #060]
-	str	x6, [sp, #070]
-
-	and	x0, x13, x16		//; cell
-	and	x1, x12, x16		//; above
-	and	x2, x12, x17		//; upper right
-	and	x3, x13, x17		//; right
-	and	x4, x14, x17		//; lower right
-	and	x5, x14, x16		//; below
-	and	x6, x14, x15		//; lower left
-	and	x7, x13, x15		//; left
-	and	x8, x12, x15		//; upper left
+	//; set the registers for the call
+	//;   one for each of 9 cells in a square
+	and	x8, x9, x0			//; upper left cell
+	and	x7, x10, x0			//; left cell
+	and	x6, x11, x0			//; lower left
+	and	x5, x11, x1			//; below
+	and	x4, x11, x2			//; lower right
+	and	x3, x10, x2			//; right
+	and	x2, x9, x2			//; upper right
+	and	x1, x9, x1			//; above
+	and	x0, x10, x0			//; current
 
 	ldr	x9, [sp, #010]		//; retrieve rule function
 	blr	x9			//; call rule function
+	//; TODO - use x0 to update row in progress
 	ldr	x6, [sp, #070]		//; index across board
-	ldr	x3, [sp, #040]
+	ldr	x3, [sp, #040]		//; max row count
 	add	x6, x6, #1
 	str	x6, [sp, #070]
 	cmp	x6, x3
@@ -162,7 +186,7 @@ _one_column:
 	b.lt	_one_row
 
 	ldr	lr, [sp]
-	add	sp, sp, #0100
+	add	sp, sp, #0120
 	ret
 
 //; like walk_board, but passes args as adjacent values in memory (stack)
