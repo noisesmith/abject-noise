@@ -57,65 +57,30 @@ walk_board:	//; x0: rule function (takes cell + neighbors, returns 1/0
 	mov	x5, #0			//; row index
 	mov	x6, #0			//; column index
 	stp	x5, x6, [sp, #050]
-_one_row:	//; x4 <- 64 cells of previous row (previous with wrap)
-		//; x5 <- 64 cells of row
-		//; x6 <- 64 cells of next row
+_one_row:
+	ldr	x0, [sp, #020]		//; get board storage
+	ldr	x1, [sp, #050]		//; get the row index
+	ldr	x2, [sp, #040]		//; get the max row index
 
-		//; x15 <- current row offset
-	ldr	x15, [sp, #050]		//; get the row index
-	ldr	x0, [sp, #020]
-	sub	x4, x15, #1		//; get the previous row index
-		//; x3 <- maximum row offset
-	ldr	x3, [sp, #040]		//; get the maximum row count
-	sub	x3, x3, #1		//; turn into maximum offset
-	cmp	x4, xzr
-	csel	x4, x4, x3, lo		//; rotate to max offset if offset was below 0
-	ldr	x4, [x0, x4]		//; get the data at the previous row
-	rev	x4, x4			//; un-little-endian
-	rbit	x4, x4
-	ldr	x5, [x0, x15]		//; get the data at our row
-	rev	x5, x5			//; un-little-endian
-	rbit	x5, x5
-	add	x6, x15, #1		//; get the next row index
-	str	x6, [sp, #050]
-	cmp	x6, x3			//; see if it's greater than the max row
-	csel	x6, x6, xzr, ge		//; wrap to 0 if yes
-	ldr	x6, [x0, x6]		//; grab the row
-	rev	x6, x6			//; un-little-endian
-	rbit	x6, x6
-	stp	x4, x5, [sp, #070]		//; previous and current row, stored
-	stp	x6, x5, [sp, #0100]		//; next and scratch row, stored
+	bl	rows
+
+	stp	x0, x1, [sp, #070]		//; previous and current row, stored
+	stp	x2, x1, [sp, #0100]		//; next and scratch row, stored
+
+	ldr	x5, [sp, #050]		//; get the row index
+	add	x6, x5, #1		//; calculate the next row index
+	str	x6, [sp, #050]		//; store the next row index
+
 
 	//; build up args to rules function
-_one_column:	//; x0 <- mask for previous column
-		//; x1 <- mask for current column
-		//; x2 <- mask for next column
-	ldr	x7, [sp, #060]		//; column index
-	subs	x0, x7, #1		//; previous column
-		//; x8 <- max column
-	ldr	x8, [sp, #030]		//; max column
-	sub	x8, x8, #1		//; max offset of column
-	cmp	x0, xzr
-	csel	x0, x0, x8, ge		//; if below 0, grab the max
-	//;	x11 <- a single bit for shift / mask
-	mov	x11, #1			//; single bit set
-	lsl	x0, x11, x0		//; turn column offset into bit mask
-	lsl	x1, x11, x7		//; current column mask
-	add	x2, x7, #1		//; next column
-	cmp	x2, x8			//; check offset against max
-	csel	x2, x2, xzr, lt		//; index 0 if over the max
-	lsl	x2, x11, x2		//; turn index into mask
+_one_column:
+	ldr	x0, [sp, #060]		//; column index
+	ldr	x1, [sp, #030]		//; max column
 
-	add	x7, x7, #1		//; next column
-	str	x7, [sp, #060]		//; store state
+	bl	column_masks		//; x0: prev, x1: current, x2: next columns
 
-	//; the building blocks are acquired,
-	//; build the call to the rule function via bit masks
-	//; x9 <- previous row, as bits
-	//; x10 <- current row, as bits
-	//; x11 <- next row, as bits
 	ldp	x9, x10, [sp, #070]		//; get the prev, current row data
-	ldr	x11, [sp, #011]			//; get the next row data
+	ldr	x11, [sp, #0100]			//; get the next row data
 
 	//; set the registers for the call
 	//;   one for each of 9 cells in a square
@@ -131,20 +96,92 @@ _one_column:	//; x0 <- mask for previous column
 
 	ldr	x9, [sp, #010]		//; retrieve rule function
 	blr	x9			//; call rule function
-	//; TODO - use x0 to update row in progress
-	ldr	x6, [sp, #070]		//; index across board
-	ldr	x3, [sp, #040]		//; max row count
-	add	x6, x6, #1
-	str	x6, [sp, #070]
+
+	//; TODO - use x0 from rule function call to update row in progress
+
+	ldr	x6, [sp, #060]		//; column index
+	add	x6, x6, #1		//; next column
+	str	x6, [sp, #060]		//; store new row index
+	ldr	x3, [sp, #030]		//; max column
 	cmp	x6, x3
 	b.lt	_one_column
-	ldr	x5, [sp, #060]
-	ldr	x2, [sp, #030]
-	add	x5, x5, #1
-	str	x5, [sp, #060]
-	cmp	x5, x2
+
+	ldr	x5, [sp, #050]		//; row index
+	add	x5, x5, #1		//; next row
+	str	x5, [sp, #050]
+	ldr	x4, [sp, #040]		//; max row index
+	cmp	x5, x4
 	b.lt	_one_row
 
 	ldr	lr, [sp]
 	add	sp, sp, #0120
 	ret
+
+
+column_masks:	//; x0: column index
+		//; x1: max column
+		//; --> x0, x1, x2 - masks for prev, current, next column
+	sub	sp, sp, #020
+	str	lr, [sp]
+
+	//; some registers to reuse
+	mov	x3, x0			//; our index
+	sub	x4, x1, #1		//; width to max column
+	mov	x11, #1			//; single bit set, for masking with
+
+	//; previous column
+	sub	x0, x3, #1		//; previous column offset
+	cmp	x0, xzr
+	csel	x0, x0, x4, ge		//; if below 0, grab the max
+	lsl	x0, x11, x0		//; turn column offset into bit mask
+
+	//; current colun
+	lsl	x1, x11, x3
+
+	//; next column
+	add	x2, x3, #1		//; next column offset
+	cmp	x2, x4			//; check offset against max
+	csel	x2, x2, xzr, lt		//; index 0 if over the max
+	lsl	x2, x11, x2		//; turn index into mask
+
+	ldr	lr, [sp]
+	add	sp, sp, #020
+	ret
+
+rows:		//; x0: row storage
+		//; x1: row index
+		//; x2: max row
+		//; --> x0, x1, x2 - prev, current, next row
+	sub	sp, sp, #020
+	str	lr, [sp]
+
+	//; some set registers to reuse
+	mov	x5, x0
+	mov	x6, x1
+	sub	x3, x2, #1		//; maximum row offset
+
+	//; previous row
+	sub	x4, x6, #1		//; get the previous row index
+	cmp	x4, xzr
+	csel	x4, x4, x3, lo		//; rotate to max offset if offset was below 0
+	ldr	x0, [x5, x4]		//; get the data at the previous row
+	rev	x0, x0			//; un-little-endian
+	rbit	x0, x4
+
+	//; current row
+	ldr	x1, [x5, x6]
+	rev	x1, x1
+	rbit	x1, x1
+
+	//; next row
+	add	x4, x6, #1
+	cmp	x4, x3			//; see if it's greater than the max row
+	csel	x4, x4, xzr, ge		//; wrap to 0 if yes
+	ldr	x4, [x5, x4]		//; grab the row
+	rev	x4, x4			//; un-little-endian
+	rbit	x2, x4
+
+	ldr	lr, [sp]
+	add	sp, sp, #020
+	ret
+
