@@ -12,21 +12,21 @@ normal_rules:	//; x0: cell current
       str	lr, [sp]
       mov	x9, #0			//; live neighbor count
       cmp	x1, #0
-      cinc	x9, x9, gt		//; increment live neighbor count for positive x1
+      cinc	x9, x9, ne		//; increment live neighbor count for positive x1
       cmp	x2, #0
-      cinc	x9, x9, gt
+      cinc	x9, x9, ne
       cmp	x3, #0
-      cinc	x9, x9, gt
+      cinc	x9, x9, ne
       cmp	x4, #0
-      cinc	x9, x9, gt
+      cinc	x9, x9, ne
       cmp	x5, #0
-      cinc	x9, x9, gt
+      cinc	x9, x9, ne
       cmp	x6, #0
-      cinc	x9, x9, gt
+      cinc	x9, x9, ne
       cmp	x7, #0
-      cinc	x9, x9, gt
+      cinc	x9, x9, ne
       cmp	x8, #0
-      cinc	x9, x9, gt
+      cinc	x9, x9, ne
       cmp	x9, #3
       b.eq	_live			//; 3 neighbors -> live (1)
       cmp	x9, #2
@@ -59,18 +59,13 @@ walk_board:	//; x0: rule function (takes cell + neighbors, returns 1/0
 	stp	x5, x6, [sp, #050]
 _one_row:
 	ldr	x0, [sp, #020]		//; get board storage
-	ldr	x1, [sp, #050]		//; get the row index
-	ldr	x2, [sp, #040]		//; get the max row index
+	ldp	x2, x1, [sp, #040]	//; get the max and current row index
+	lsl	x1, x1, #3		//; bytes to words offset
 
 	bl	rows
 
 	stp	x0, x1, [sp, #070]		//; previous and current row, stored
 	stp	x2, x1, [sp, #0100]		//; next and scratch row, stored
-
-	ldr	x5, [sp, #050]		//; get the row index
-	add	x6, x5, #1		//; calculate the next row index
-	str	x6, [sp, #050]		//; store the next row index
-
 
 	//; build up args to rules function
 _one_column:
@@ -78,26 +73,33 @@ _one_column:
 	ldr	x1, [sp, #030]		//; max column
 
 	bl	column_masks		//; x0: prev, x1: current, x2: next columns
+	str	x1, [sp, #0120]		//; save current column mask for later
 
-	ldp	x9, x10, [sp, #070]		//; get the prev, current row data
-	ldr	x11, [sp, #0100]			//; get the next row data
+	ldp	x9, x10, [sp, #070]	//; get the prev, current row data
+	ldr	x11, [sp, #0100]	//; get the next row data
 
 	//; set the registers for the call
 	//;   one for each of 9 cells in a square
-	and	x8, x9, x0			//; upper left cell
-	and	x7, x10, x0			//; left cell
-	and	x6, x11, x0			//; lower left
-	and	x5, x11, x1			//; below
-	and	x4, x11, x2			//; lower right
-	and	x3, x10, x2			//; right
-	and	x2, x9, x2			//; upper right
-	and	x1, x9, x1			//; above
-	and	x0, x10, x0			//; current
+	and	x8, x9, x0	//; upper left cell
+	and	x7, x10, x0	//; left cell
+	and	x6, x11, x0	//; lower left
+	and	x5, x11, x1	//; below
+	and	x4, x11, x2	//; lower right
+	and	x3, x10, x2	//; right
+	and	x2, x9, x2	//; upper right
+	and	x1, x9, x1	//; above
+	and	x0, x10, x0	//; current
 
 	ldr	x9, [sp, #010]		//; retrieve rule function
 	blr	x9			//; call rule function
 
-	//; TODO - use x0 from rule function call to update row in progress
+	ldr	x1, [sp, #0120]		//; current column mask
+	cmp	x0, #0			//; did the rules return zero?
+	csel	x1, xzr, x1, eq		//; if so, we combine with zero
+					//; otherwise, the column mask
+	ldr	x2, [sp, #0110]		//; retrieve the next value of current row
+	orr	x3, x2, x1		//; set bit if rule set bit
+	str	x3, [sp, #0110]		//; save the new row
 
 	ldr	x6, [sp, #060]		//; column index
 	add	x6, x6, #1		//; next column
@@ -106,7 +108,16 @@ _one_column:
 	cmp	x6, x3
 	b.lt	_one_column
 
+	//; TODO - store the right number of new rows, de-scrambled and correctly calculated
+	ldr	x2, [sp, #0110]		//; get the newly calculated row
 	ldr	x5, [sp, #050]		//; row index
+	lsl	x6, x5, #3		//; bytes to words, x8
+	ldr	x3, [sp, #020]		//; get the board storage
+
+	debug	x2, #1
+	debug	x5, #2
+
+	str	x2, [x3, x6]		//; store new row
 	add	x5, x5, #1		//; next row
 	str	x5, [sp, #050]
 	ldr	x4, [sp, #040]		//; max row index
@@ -165,21 +176,21 @@ rows:		//; x0: row storage
 	cmp	x4, xzr
 	csel	x4, x4, x3, lo		//; rotate to max offset if offset was below 0
 	ldr	x0, [x5, x4]		//; get the data at the previous row
-	rev	x0, x0			//; un-little-endian
-	rbit	x0, x4
+	//;rev	x0, x0			//; un-little-endian
+	//;rbit	x0, x4
 
 	//; current row
 	ldr	x1, [x5, x6]
-	rev	x1, x1
-	rbit	x1, x1
+	//;rev	x1, x1
+	//;rbit	x1, x1
 
 	//; next row
 	add	x4, x6, #1
 	cmp	x4, x3			//; see if it's greater than the max row
 	csel	x4, x4, xzr, ge		//; wrap to 0 if yes
-	ldr	x4, [x5, x4]		//; grab the row
-	rev	x4, x4			//; un-little-endian
-	rbit	x2, x4
+	ldr	x2, [x5, x4]		//; grab the row
+	//;rev	x2, x2			//; un-little-endian
+	//;rbit	x2, x2
 
 	ldr	lr, [sp]
 	add	sp, sp, #020

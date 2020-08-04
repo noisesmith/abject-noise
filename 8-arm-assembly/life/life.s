@@ -4,16 +4,24 @@
 _start:
 	sub	sp, sp, #020
 	str	lr, [sp]
+	mov	x0, #0				//; rule iterations
+	str	x0, [sp, #010]
+_iterate_rules:
 		ldr	x0, =normal_rules	//; set up walk_board call
-		ldr	x1, =board		//; ...
+		ldr	x1, =debug_board		//; ...
 		mov	x2, #64			//; ...
 		mov	x3, #64			//; ...
 	bl	walk_board
 		mov	x0, #1			//; set up print_board call
-		ldr	x1, =board		//; ...
+		ldr	x1, =debug_board		//; ...
 		mov	x2, #64			//; ...
 		mov	x3, #64			//; ...
 	bl	print_board
+		ldr	x0, [sp, #010]
+		add	x0, x0, #1
+		str	x0, [sp, #010]
+		cmp	x0, #88
+		b.lt	_iterate_rules
 	ldr	lr, [sp]
 	//; mov	x1, x0			//; result of print_board
 	mov	x0, #0			//; exit success
