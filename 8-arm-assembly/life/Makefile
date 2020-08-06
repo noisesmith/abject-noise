@@ -1,13 +1,14 @@
 AS=as -g
 LD=ld
+SOURCES=debug.s life_data.s life_steps.s life.s
 
 debug: life
 	./debugger ./life
 
 life: life.o
 
-life.o: life.s life_data.s life_steps.s debug.s
-	$(AS) debug.s life_data.s life_steps.s life.s -o $@
+life.o: $(SOURCES)
+	$(AS) $(SOURCES) -o $@
 
 %.o: %.s
 	$(AS) $< -o $@

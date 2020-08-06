@@ -49,34 +49,47 @@ walk_board:	//; x0: rule function (takes cell + neighbors, returns 1/0
 		//; x2: columns (in bits) / currently only 64 supported
 		//; x3: rows
 		//; -> x0 success
-	sub	sp, sp, #0120
+.equ	rule_function, 010
+.equ	storage, 020
+.equ	columns, 030
+.equ	rows, 040
+.equ	row, 050
+.equ	column, 060
+.equ	prev_row, 070
+.equ	this_row, 0100
+.equ	next_row, 0110
+.equ	scratch_row, 0120
+.equ	column_mask, 0130
+.equ	total_stack, 0140
+	sub	sp, sp, total_stack
 	str	lr, [sp]
-	stp	x0, x1, [sp, #010]
-	stp	x2, x3, [sp, #030]
+	stp	x0, x1, [sp, rule_function]
+	stp	x2, x3, [sp, columns]
 
 	mov	x5, #0			//; row index
 	mov	x6, #0			//; column index
-	stp	x5, x6, [sp, #050]
+	stp	x5, x6, [sp, row]
 _one_row:
-	ldr	x0, [sp, #020]		//; get board storage
-	ldp	x2, x1, [sp, #040]	//; get the max and current row index
+	ldr	x0, [sp, storage]
+	ldp	x2, x1, [sp, rows]	//; get the max and current row index
 	lsl	x1, x1, #3		//; bytes to words offset
 
 	bl	rows
 
-	stp	x0, x1, [sp, #070]		//; previous and current row, stored
-	stp	x2, x1, [sp, #0100]		//; next and scratch row, stored
+	stp	x0, x1, [sp, prev_row]	//; previous and current row, stored
+	stp	x2, x1, [sp, this_row]	//; next and scratch row, stored
+
 
 	//; build up args to rules function
 _one_column:
-	ldr	x0, [sp, #060]		//; column index
-	ldr	x1, [sp, #030]		//; max column
+	ldr	x0, [sp, column]	//; column index
+	ldr	x1, [sp, columns]
 
 	bl	column_masks		//; x0: prev, x1: current, x2: next columns
-	str	x1, [sp, #0120]		//; save current column mask for later
+	str	x1, [sp, column_mask]
 
-	ldp	x9, x10, [sp, #070]	//; get the prev, current row data
-	ldr	x11, [sp, #0100]	//; get the next row data
+	ldp	x9, x10, [sp, prev_row]	//; get the prev, current row data
+	ldr	x11, [sp, next_row]	//; get the next row data
 
 	//; set the registers for the call
 	//;   one for each of 9 cells in a square
@@ -90,42 +103,39 @@ _one_column:
 	and	x1, x9, x1	//; above
 	and	x0, x10, x0	//; current
 
-	ldr	x9, [sp, #010]		//; retrieve rule function
+	ldr	x9, [sp, rule_function]
 	blr	x9			//; call rule function
 
-	ldr	x1, [sp, #0120]		//; current column mask
+	ldr	x1, [sp, column_mask]
 	cmp	x0, #0			//; did the rules return zero?
 	csel	x1, xzr, x1, eq		//; if so, we combine with zero
 					//; otherwise, the column mask
-	ldr	x2, [sp, #0110]		//; retrieve the next value of current row
+	ldr	x2, [sp, scratch_row]	//; retrieve the next value of current row
 	orr	x3, x2, x1		//; set bit if rule set bit
-	str	x3, [sp, #0110]		//; save the new row
+	str	x3, [sp, scratch_row]		//; save the new row
 
-	ldr	x6, [sp, #060]		//; column index
+	ldr	x6, [sp, column]	//; get old column index
 	add	x6, x6, #1		//; next column
-	str	x6, [sp, #060]		//; store new row index
-	ldr	x3, [sp, #030]		//; max column
+	str	x6, [sp, column]	//; store new row index
+	ldr	x3, [sp, columns]
 	cmp	x6, x3
 	b.lt	_one_column
 
 	//; TODO - store the right number of new rows, de-scrambled and correctly calculated
-	ldr	x2, [sp, #0110]		//; get the newly calculated row
-	ldr	x5, [sp, #050]		//; row index
+	ldr	x2, [sp, scratch_row]		//; get the newly calculated row
+	ldr	x5, [sp, row]
 	lsl	x6, x5, #3		//; bytes to words, x8
-	ldr	x3, [sp, #020]		//; get the board storage
-
-	debug	x2, #1
-	debug	x5, #2
+	ldr	x3, [sp, storage]
 
 	str	x2, [x3, x6]		//; store new row
 	add	x5, x5, #1		//; next row
-	str	x5, [sp, #050]
-	ldr	x4, [sp, #040]		//; max row index
+	str	x5, [sp, row]
+	ldr	x4, [sp, rows]		//; max row index
 	cmp	x5, x4
 	b.lt	_one_row
 
 	ldr	lr, [sp]
-	add	sp, sp, #0120
+	add	sp, sp, total_stack
 	ret
 
 
