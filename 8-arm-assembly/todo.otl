@@ -1,21 +1,23 @@
 [_] conway's game of life in ARM assembler
 	: build it to run on qemu userspace (the qemu-arm program)
+	[_] set up linkage hints for function label globals
+	[_] set up compile target to use libc
 	[X] set up basic tdd with log output
 		: xxd helps, made a hex output generator
-	[_] move debugging facilities into a reusable resource
-	[_] data representation
+	[X] move debugging facilities into a reusable resource
+	[X] data representation
 		[X] one bit per cell?
 			: one bit per cell, so 64 cells per memory location
 			: at first: just 64 memory locations, to make a 64x64 grid
 	[_] functionality
-		[_] break the skeleton into smaller functions
-			[_] use the stack on each call (for return address for now)
-		[_] print the board
+		[X] break the skeleton into smaller functions
+			[X] use the stack on each call (for return address for now)
+		[X] print the board
 		: use system calls to print to stdout
 		: should be a simple loop
-			[_] print the correct number of lines
+			[X] print the correct number of lines
 				: currently prints 37 lines(!)
-			[_] print the correct contents per line
+			[X] print the correct contents per line
 				: currently there are multiple unexpected results
 		[_] update one cell
 		: OR of the register holding the cell, and the mask
