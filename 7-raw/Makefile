@@ -23,7 +23,7 @@ $(AUDIO_FILE):	$(SOURCE_FILE) $(INSTRUMENTS) $(SCO)
 video: $(VIDEO_FILE)
 
 $(VIDEO_FILE):	$(AUDIO_FILE)
-	rm $(VIDEO_FILE)
+	rm -f $(VIDEO_FILE)
 	./specvid $(AUDIO_FILE) $(VIDEO_FILE)
 
 clean:
