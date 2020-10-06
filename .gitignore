@@ -18,3 +18,4 @@ a.out
 1-test-halfword
 2-test-write-hex
 8-arm-assembly/life/life
+*/zig-cache/
