@@ -1,12 +1,14 @@
 const std = @import("std");
 const player = @import("../src/playhead.zig");
-const print = std.debug.print;
+const node = @import("../src/audio_node.zig");
 const jack = @import("../src/c_jack_audio.zig").jack;
+const print = std.debug.print;
+const alloc = std.heap.c_allocator.alloc;
 const destroy = std.heap.c_allocator.destroy;
 
 pub const Context = struct {
-    input: ?*jack.jack_port_t,
-    output: ?*jack.jack_port_t,
+    input: node.Input,
+    output: node.Output,
 };
 
 pub fn prep(client: *jack.jack_client_t, user_data: ?*c_void) c_int {
@@ -27,52 +29,68 @@ pub fn prep(client: *jack.jack_client_t, user_data: ?*c_void) c_int {
 }
 
 fn register_ports(client: *jack.jack_client_t, context: *Context) c_int {
-    context.input = jack.jack_port_register(client, "input", jack.JACK_DEFAULT_AUDIO_TYPE,
-        jack.JackPortIsInput, 0);
-    context.output = jack.jack_port_register(client, "output", jack.JACK_DEFAULT_AUDIO_TYPE,
-        jack.JackPortIsOutput, 0);
-
-    if ((context.input == null) or (context.output == null)) {
-        print("no more Jack ports available\n", .{});
-        return 1;
+    context.input.ports = alloc(*jack.jack_port_t, 1) catch |_| return 1;
+    if (context.input.ports) |in| {
+            if (jack.jack_port_register(client, "input", jack.JACK_DEFAULT_AUDIO_TYPE,
+                        jack.JackPortIsInput, 0)) |port| {
+                    in[0] = port;
+                } else {
+                    print("no more Jack ports available\n", .{});
+                    return 1;
+                }
+    }
+    context.output.ports = alloc(*jack.jack_port_t, 1) catch |_| return 1;
+    if (context.output.ports) |out| {
+            if (jack.jack_port_register(client, "output",
+                    jack.JACK_DEFAULT_AUDIO_TYPE, jack.JackPortIsOutput, 0)) |port| {
+                out[0] = port;
+            } else {
+                print("no more Jack ports available\n", .{});
+                return 1;
+            }
     }
     return 0;
 }
 
 fn connect_ports(client: *jack.jack_client_t, context: *Context) c_int {
-    var ports: *?[*:0]const u8 = undefined;
+    var in_ports: *?[*:0]const u8 = undefined;
+    var out_ports: *?[*:0]const u8 = undefined;
     const hardware_output = jack.JackPortIsPhysical | jack.JackPortIsOutput;
-    ports = jack.jack_get_ports(client, null, null, hardware_output) orelse {
+    in_ports = jack.jack_get_ports(client, null, null, hardware_output) orelse {
         print("no physical capture ports available\n", .{});
         return 1;
     };
-    defer destroy(ports);
+    defer destroy(in_ports);
 
     // if we were doing more than just using the first port returned, it would be something like:
     // for (std.mem.span(ports)) |port| { // do something }
-    if (jack.jack_connect(client, ports.*, jack.jack_port_name(context.input)) != 0) {
-        print("cannot connect input ports\n", .{});
-    }
-    destroy(ports);
+    if (context.input.ports) |in|
+        if (jack.jack_connect(client, in_ports.*, jack.jack_port_name(in[0])) != 0)
+            print("cannot connect input ports\n", .{});
     const hardware_input = jack.JackPortIsPhysical | jack.JackPortIsInput;
-    ports = jack.jack_get_ports(client, null, null, hardware_input) orelse {
+    out_ports = jack.jack_get_ports(client, null, null, hardware_input) orelse {
         print("no physical playback ports available\n", .{});
         return 1;
     };
-    if (jack.jack_connect(client, jack.jack_port_name(context.output), ports.*) != 0) {
-        print("connot connect output ports", .{});
-    }
+    defer destroy(out_ports);
+    if (context.output.ports) |out|
+        if (jack.jack_connect(client, jack.jack_port_name(out[0]), out_ports.*) != 0)
+            print("connot connect output ports", .{});
     return 0;
 }
 
-
 pub fn process_audio(nframes: jack.jack_nframes_t, user_data: ?*c_void) callconv(.C) c_int {
     var context = context_userdata(user_data);
-    var in = @ptrCast([*]u8, jack.jack_port_get_buffer(context.input, nframes));
-    var out = @ptrCast([*]u8, jack.jack_port_get_buffer(context.output, nframes));
-
+    var in: ?[*]u8 = undefined;
+    var out: ?[*]u8 = undefined;
+    if (context.input.ports) |in_port|
+       in = @ptrCast([*]u8, jack.jack_port_get_buffer(in_port[0], nframes));
+    if (context.output.ports) |out_port|
+       out = @ptrCast([*]u8, jack.jack_port_get_buffer(out_port[0], nframes));
+    if (in) |source|
+        if (out) |dest|
+            @memcpy(dest, source, @sizeOf(jack.jack_default_audio_sample_t) * nframes);
     // just copy input to output
-    @memcpy(out, in, @sizeOf(jack.jack_default_audio_sample_t) * nframes);
     return 0;
 }
 
