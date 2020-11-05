@@ -5,31 +5,42 @@ const node = @import("../src/audio_node.zig");
 
 pub fn main() anyerror!u8 {
     var jack_server_name: ?[*:0]const u8 = null;
-    const source_data = node.MonoSource{
+    var source_data = node.MonoSource{
         .label = "input",
         .in = undefined
     };
-    const outputs: []*f64 = &.{null};
-    const source_node = node.Node{
-        .inputs = undefined,
-        .outputs = &outputs
-    };
-    const source_gen = node.source(source_node, source_data);
-    const sink_data = node.MonoSink{
+    var source_inputs = [1][]f64{undefined};
+    var nodes = node.blank_node(2);
+    defer node.free_node(nodes);
+    //var source_node = node.Node{
+    //    .ticks = 0,
+    nodes[0].outputs = &source_inputs;
+    //    .inputs = undefined,
+    //    .generate = node.noop_generator,
+    //    .init = node.noop_init,
+    //    .cleanup = node.noop_cleanup,
+    //    .data = undefined
+    //};
+    node.source(&nodes[0], &source_data);
+
+    var sink_data = node.MonoSink{
         .label = "output",
+        .out = undefined
     };
-    const sink_node = node.Node{
-        .inputs = .{source_gen},
-        .outputs = undefined
-    };
-    const sink_gen = node.sink(sink_node, sink_data);
-    const audio_context = .{
-        source_gen,
-        sink_gen
-    };
+    var sink_input = [_]node.Node{nodes[0]};
+    //var sink_node = node.Node{
+    //    .ticks = 0,
+        nodes[1].inputs = &sink_input;
+    //    .outputs = undefined,
+    //    .generate = node.noop_generator,
+    //    .init = node.noop_init,
+    //    .cleanup = node.noop_cleanup,
+    //    .data = undefined
+    //};
+    node.sink(&nodes[1], &sink_data);
     const jack_result = jack_connect.start_audio(
         jack_server_name,
-        audio_context,
+        &nodes,
         jack_process.process_audio,
         jack_process.prep,
         jack_process.shutdown
