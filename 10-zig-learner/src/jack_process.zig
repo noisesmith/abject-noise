@@ -13,11 +13,12 @@ pub fn prep(client: *jack.jack_client_t, data: *c_void) c_int {
         if (a_node.ticks == 0) {
             print("init of node\n", .{});
             nodes[i].ticks = 1;
-            if (prep(client, @ptrCast(*c_void, &nodes[i].inputs)) != 0)
-                return 1;
+            if (nodes[i].inputs) |inputs|
+                if (prep(client, @ptrCast(*c_void, &nodes[i].inputs)) != 0)
+                    return 1;
         }
     }
-    return 1;
+    return 0;
 }
 
 pub fn process_audio(nframes: jack.jack_nframes_t, data: ?*c_void) callconv(.C) c_int {
