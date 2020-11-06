@@ -25,6 +25,7 @@ pub fn start_audio(server_name: ?[*:0]const u8,
         return 1;
     };
     defer _ = jack.jack_client_close(client);
+    print("process connected to jack server\n", .{});
 
     debug = node.void_to_nodes(ctx_userdata);
 
@@ -32,13 +33,15 @@ pub fn start_audio(server_name: ?[*:0]const u8,
         return 2;
 
     // set up callbacks
+    if (prep_callback(client, ctx_userdata) != 0)
+        return 3;
+    print("nodes prepared for synthesis\n", .{});
     _ = jack.jack_set_process_callback(client, process_callback, ctx_userdata);
+    print("process callback set\n", .{});
     jack.jack_on_shutdown(client, cleanup_callback, ctx_userdata);
     // info
     print("engine sample rate: {}\n", .{jack.jack_get_sample_rate(client)});
 
-    if (prep_callback(client, ctx_userdata) != 0)
-        return 3;
 
     // don't return until we are done processing audio
     sleep(std.math.maxInt(u64));
@@ -54,5 +57,6 @@ fn handle_status(client: *jack.jack_client_t, status: jack.jack_status_t) u8 {
         print("unique name '{}' assigned\n", .{client_name});
     }
 
+    print("jack status OK\n", .{});
     return 0;
 }
