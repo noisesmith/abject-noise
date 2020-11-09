@@ -42,6 +42,10 @@ pub fn start_audio(server_name: ?[*:0]const u8,
     // info
     print("engine sample rate: {}\n", .{jack.jack_get_sample_rate(client)});
 
+    if (jack.jack_activate(client) != 0) {
+        print("cannot activate client\n", .{});
+        return 1;
+    }
 
     // don't return until we are done processing audio
     sleep(std.math.maxInt(u64));

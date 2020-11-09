@@ -5,6 +5,8 @@ const exit = std.process.exit;
 const print = std.debug.print;
 
 pub fn prep(client: *jack.jack_client_t, data: *c_void) c_int {
+    // TODO - find some error here, or in process_audio below, which causes the client to be inactive
+    // TODO - better traversal order
     var nodes_ptr = node.void_to_nodes(data);
     var nodes = nodes_ptr.*;
     for (nodes) |a_node, i| {
@@ -21,15 +23,18 @@ pub fn prep(client: *jack.jack_client_t, data: *c_void) c_int {
 }
 
 pub fn process_audio(nframes: jack.jack_nframes_t, data: ?*c_void) callconv(.C) c_int {
-    print("processing...\n", .{});
-    const nodes = @ptrCast(*[]node.Node, @alignCast(@alignOf(*[]node.Node), data));
-    var ticks: u64 = 2;
-    for (nodes.*) |a_node| {
-        if (a_node.ticks > ticks)
-            ticks = a_node.ticks;
+    // TODO - redo this to have a principled generation order
+    if (data) |user_data| {
+        var nodes_ptr = node.void_to_nodes(user_data);
+        var nodes = nodes_ptr.*;
+        var ticks: u64 = 2;
+        for (nodes) |a_node| {
+            if (a_node.ticks > ticks)
+                ticks = a_node.ticks;
+        }
+        for (nodes) |a_node, i|
+            _ = a_node.generate(&nodes[i], ticks, nframes);
     }
-    for (nodes.*) |a_node, i|
-        _ = a_node.generate(&nodes.*[i], ticks, nframes);
     return 0;
 }
 
