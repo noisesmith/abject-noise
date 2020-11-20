@@ -32,6 +32,7 @@ pub fn process_audio(nframes: jack.jack_nframes_t, data: ?*c_void) callconv(.C) 
             if (a_node.ticks > ticks)
                 ticks = a_node.ticks;
         }
+        ticks = ticks + 1;
         for (nodes) |a_node, i|
             _ = a_node.generate(&nodes[i], ticks, nframes);
     }
