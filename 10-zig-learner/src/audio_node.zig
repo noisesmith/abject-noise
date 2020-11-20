@@ -1,5 +1,7 @@
 const std = @import("std");
-const jack = @import("../src/c_jack_audio.zig").jack;
+const jack = @import("../src/c_jack_audio.zig");
+const jack_t = jack.jack_t;
+const jack_f = jack.jack_f;
 const print = std.debug.print;
 const mem = std.mem;
 const Allocator = mem.Allocator;
@@ -14,7 +16,7 @@ pub const Node = struct {
     outputs: ?[][]f64,
     // used to process data, "clock", number of samples, returns outputs
     generate: fn(*Node, u64, u32) ?[][]f64,
-    init: fn(*Node, *jack.jack_client_t) bool,
+    init: fn(*Node, *jack_t.jack_client_t) bool,
     cleanup: fn(*Node) void,
     // holds implementation dependent data
     data: ?*c_void,
@@ -24,7 +26,7 @@ pub fn noop_generator(_node: *Node, _clock: u64, _nsmps: u32) ?[][]f64 {
     return null;
 }
 
-pub fn noop_init(_node: *Node, _client: *jack.jack_client_t) bool {
+pub fn noop_init(_node: *Node, _client: *jack_t.jack_client_t) bool {
     return false;
 }
 
@@ -33,7 +35,7 @@ pub fn noop_cleanup(_node: *Node) void {
 
 pub const MonoSink = struct {
     label: [*:0]const u8,
-    out: *jack.jack_port_t
+    out: *jack_t.jack_port_t
 };
 
 pub fn sink(node: *Node, port: *MonoSink) void {
@@ -56,17 +58,17 @@ pub fn sink_generate(node: *Node, ticks: u64, nsmps: u32) ?[][]f64 {
     // generate data from source
     const generated = @ptrCast(?[*]u8, &src.generate(src, ticks, nsmps));
     // copy that data to dest.out
-    const copy_count = @sizeOf(jack.jack_default_audio_sample_t) * nsmps;
-    if (@ptrCast(?[*]u8, jack.jack_port_get_buffer(dest.out, nsmps))) |output|
+    const copy_count = @sizeOf(jack_t.jack_default_audio_sample_t) * nsmps;
+    if (@ptrCast(?[*]u8, jack_t.jack_port_get_buffer(dest.out, nsmps))) |output|
         if (generated) |in|
             @memcpy(output, in, copy_count);
     return null;
 }
 
-pub fn sink_init(node: *Node, client: *jack.jack_client_t) bool {
+pub fn sink_init(node: *Node, client: *jack_t.jack_client_t) bool {
     const dest = @ptrCast(*MonoSink, @alignCast(@alignOf(*MonoSink), node.data));
     print("hooking up output: \"{}\"\n", .{dest.label});
-    if (jack.jack_port_register(client, dest.label, jack.JACK_DEFAULT_AUDIO_TYPE, jack.JackPortIsOutput, 0)) |port| {
+    if (jack_f.port_register(client, dest.label, jack_t.JACK_DEFAULT_AUDIO_TYPE, jack_t.JackPortIsOutput, 0)) |port| {
         dest.out = port;
         return true;
     } else {
@@ -81,7 +83,7 @@ pub fn sink_cleanup(node: *Node) void {
 
 pub const MonoSource = struct {
     label: [*:0]const u8,
-    in: *jack.jack_port_t
+    in: *jack_t.jack_port_t
 };
 
 pub fn source(node: *Node, port: *MonoSource) void {
@@ -96,8 +98,8 @@ pub fn source_generate(node: *Node, ticks: u64, nsmps: u32) ?[][]f64 {
     var outputs = node.outputs orelse return null;
     if (node.ticks != ticks) { // only need to get data once per cycle
         const src = @ptrCast(*MonoSource, @alignCast(@alignOf(*MonoSource), node.data));
-        const copy_count = @sizeOf(jack.jack_default_audio_sample_t) * nsmps;
-        if(@ptrCast(?[*]f64, @alignCast(@alignOf([*]f64), jack.jack_port_get_buffer(src.in, nsmps)))) | buffer|
+        const copy_count = @sizeOf(jack_t.jack_default_audio_sample_t) * nsmps;
+        if(@ptrCast(?[*]f64, @alignCast(@alignOf([*]f64), jack_f.port_get_buffer(src.in, nsmps)))) | buffer|
             // just forward it
             outputs[0] = buffer[0..nsmps];
         node.ticks = ticks;
@@ -105,11 +107,11 @@ pub fn source_generate(node: *Node, ticks: u64, nsmps: u32) ?[][]f64 {
     return node.outputs;
 }
 
-pub fn source_init(node: *Node, client: *jack.jack_client_t) bool {
+pub fn source_init(node: *Node, client: *jack_t.jack_client_t) bool {
     // const nsmps = jack.jack_get_buffer_size(client);
     const src = @ptrCast(*MonoSource, @alignCast(@alignOf(*MonoSource), node.data));
     print("hooking up input: \"{}\"\n", .{src.label});
-    if (jack.jack_port_register(client, src.label, jack.JACK_DEFAULT_AUDIO_TYPE, jack.JackPortIsInput, 0)) |port| {
+    if (jack_f.port_register(client, src.label, jack_t.JACK_DEFAULT_AUDIO_TYPE, jack_t.JackPortIsInput, 0)) |port| {
         src.in = port;
         return true;
     } else {
