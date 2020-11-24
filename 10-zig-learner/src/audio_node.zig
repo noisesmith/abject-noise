@@ -68,7 +68,8 @@ pub fn sink_generate(node: *Node, ticks: u64, nsmps: u32) ?[][]f64 {
 pub fn sink_init(node: *Node, client: *u8) bool {
     const dest = @ptrCast(*MonoSink, @alignCast(@alignOf(*MonoSink), node.data));
     print("hooking up output: \"{}\"\n", .{dest.label});
-    if (jack_f.port_register(client, dest.label, jack_t.JACK_DEFAULT_AUDIO_TYPE, jack_t.JackPortIsOutput, 0)) |port| {
+    const nsmps = jack_f.get_buffer_size(client);
+    if (jack_f.port_register(client, dest.label, jack_t.JACK_DEFAULT_AUDIO_TYPE, jack_t.JackPortIsOutput, nsmps)) |port| {
         dest.out = port;
         return true;
     } else {
@@ -108,10 +109,10 @@ pub fn source_generate(node: *Node, ticks: u64, nsmps: u32) ?[][]f64 {
 }
 
 pub fn source_init(node: *Node, client: *u8) bool {
-    // const nsmps = jack.jack_get_buffer_size(client);
     const src = @ptrCast(*MonoSource, @alignCast(@alignOf(*MonoSource), node.data));
     print("hooking up input: \"{}\"\n", .{src.label});
-    if (jack_f.port_register(client, src.label, jack_t.JACK_DEFAULT_AUDIO_TYPE, jack_t.JackPortIsInput, 0)) |port| {
+    const nsmps = jack_f.get_buffer_size(client);
+    if (jack_f.port_register(client, src.label, jack_t.JACK_DEFAULT_AUDIO_TYPE, jack_t.JackPortIsInput, nsmps)) |port| {
         src.in = port;
         return true;
     } else {

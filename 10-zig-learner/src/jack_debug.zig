@@ -10,6 +10,7 @@ pub const jack_f = .{
     .activate = activate,
     .client_close = client_close,
     .client_open = client_open,
+    .get_buffer_size = get_buffer_size,
     .get_client_name = get_client_name,
     .get_sample_rate = get_sample_rate,
     .on_shutdown = on_shutdown,
@@ -23,6 +24,7 @@ const DummyClient = struct {
     active_p: bool,
     shutdown_fn: jack_t.JackShutdownCallback,
     shutdown_data: *u8,
+    nsmps: u64,
     process_fn: jack_t.JackProcessCallback,
     process_data: *u8
 };
@@ -38,8 +40,9 @@ fn as_data(client: *DummyClient) ?*u8 {
 
 fn activate(data: *u8) c_int {
     var client = get_client(data);
-    print("debug: activation of client {}\n", .{client});
     client.active_p = true;
+    print("debug: activation of client {}\n", .{client});
+    // TODO - after activation, start calling the process_fn ?
     return 0;
 }
 
@@ -60,6 +63,7 @@ fn client_open(client_name: ?[*:0]const u8,
         var client = &the_client[0];
         client.name = client_name;
         client.active_p = false;
+        client.nsmps = 1024;
         return @ptrCast(*u8, client);
     } else |err| {
         return undefined;
@@ -101,6 +105,7 @@ fn port_register(client: *u8,
     port_type: [*:0]const u8,
     flags: u64,
     buffer_size: u64) ?*u8 {
+    print("debug, register of port for {}, size {}\n", .{client, buffer_size});
     var buffer: anyerror![]f64 = allocator.alloc(f64, buffer_size);
     if (buffer) |b| {
         return @ptrCast(*u8, b);
@@ -116,4 +121,9 @@ fn set_process_callback(data: *u8,
     client.process_data = @ptrCast(*u8, arg);
     client.process_fn = cb;
     return 0;
+}
+
+fn get_buffer_size(data: *u8) u64 {
+    var client = get_client(data);
+    return client.nsmps;
 }

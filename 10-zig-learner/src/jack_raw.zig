@@ -1,3 +1,5 @@
+const std = @import("std");
+const print = std.debug.print;
 pub const jack_lib = @cImport({
     @cInclude("jack/jack.h");
 });
@@ -6,10 +8,11 @@ pub const jack_f = .{
     .activate = activate,
     .client_close = client_close,
     .client_open = client_open,
+    .get_buffer_size = get_buffer_size,
     .get_client_name = get_client_name,
     .get_sample_rate = get_sample_rate,
     .on_shutdown = on_shutdown,
-    .port_get_buffer = jack_lib.jack_port_get_buffer,
+    .port_get_buffer = port_get_buffer,
     .port_register = port_register,
     .set_process_callback = set_process_callback
 };
@@ -45,6 +48,11 @@ fn client_open(client_name: ?[*:0]const u8,
     }
 }
 
+fn get_buffer_size(data: *u8) u64 {
+    var client = get_client(data);
+    return jack_lib.jack_get_buffer_size(client);
+}
+
 fn get_client_name(data: *u8) [*:0]const u8 {
     var client = get_client(data);
     return jack_lib.jack_get_client_name(client);
@@ -62,18 +70,23 @@ fn on_shutdown(data: *u8,
     jack_lib.jack_on_shutdown(client, cb, arg);
 }
 
-// fn port_get_buffer(port: *jack_t.jack_port_t,
-//     nframes: jack_t.jack_nframes_t) ?*c_void {
-//     return jack_rawf.port_get_buffer(port, nframes);
-// }
+fn port_get_buffer(port_data: *u8,
+    nframes: jack_lib.jack_nframes_t) ?*c_void {
+    print("debug: port_data={*}\n", .{port_data});
+    var port = @ptrCast(*jack_lib.jack_port_t, @alignCast(@alignOf(*jack_lib.jack_port_t), port_data));
+    return jack_lib.jack_port_get_buffer(port, nframes);
+}
 
 fn port_register(data: *u8,
     port_name: [*:0]const u8,
     port_type: [*:0]const u8,
     flags: u64,
-    buffer_size: u64) ?*jack_lib.jack_port_t {
+    buffer_size: u64) ?*u8 {
     var client = get_client(data);
-    return jack_lib.jack_port_register(client, port_name, port_type, flags, buffer_size);
+    var port = jack_lib.jack_port_register(client, port_name, port_type, flags, buffer_size);
+    var port_data = @ptrCast(*u8, port);
+    print("debug: port={} port_data={*}\n", .{port, port_data});
+    return port_data;
 }
 
 fn set_process_callback(data: *u8,
