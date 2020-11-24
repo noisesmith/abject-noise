@@ -4,7 +4,7 @@ const jack_t = @import("../src/c_jack_audio.zig").jack_t;
 const exit = std.process.exit;
 const print = std.debug.print;
 
-pub fn prep(client: *jack_t.jack_client_t, data: *c_void) c_int {
+pub fn prep(client: *u8, data: *c_void) c_int {
     // TODO - find some error here, or in process_audio below, which causes the client to be inactive
     // TODO - better traversal order
     var nodes_ptr = node.void_to_nodes(data);

@@ -50,7 +50,7 @@ fn client_open(client_name: ?[*:0]const u8,
     options: jack_t.jack_options_t,
     status: *jack_t.jack_status_t,
     server_name: ?[*:0]const u8) ?*jack_t.jack_client_t {
-    var client = jack_rawf.client_open(client_name, options, status);
+    var client = jack_rawf.client_open(client_name, options, status, server_name);
     print("debug: allocation of client {}\n", .{client});
     return client;
 }

@@ -16,7 +16,7 @@ pub const Node = struct {
     outputs: ?[][]f64,
     // used to process data, "clock", number of samples, returns outputs
     generate: fn(*Node, u64, u32) ?[][]f64,
-    init: fn(*Node, *jack_t.jack_client_t) bool,
+    init: fn(*Node, *u8) bool,
     cleanup: fn(*Node) void,
     // holds implementation dependent data
     data: ?*c_void,
@@ -26,7 +26,7 @@ pub fn noop_generator(_node: *Node, _clock: u64, _nsmps: u32) ?[][]f64 {
     return null;
 }
 
-pub fn noop_init(_node: *Node, _client: *jack_t.jack_client_t) bool {
+pub fn noop_init(_node: *Node, _client: *u8) bool {
     return false;
 }
 
@@ -65,7 +65,7 @@ pub fn sink_generate(node: *Node, ticks: u64, nsmps: u32) ?[][]f64 {
     return null;
 }
 
-pub fn sink_init(node: *Node, client: *jack_t.jack_client_t) bool {
+pub fn sink_init(node: *Node, client: *u8) bool {
     const dest = @ptrCast(*MonoSink, @alignCast(@alignOf(*MonoSink), node.data));
     print("hooking up output: \"{}\"\n", .{dest.label});
     if (jack_f.port_register(client, dest.label, jack_t.JACK_DEFAULT_AUDIO_TYPE, jack_t.JackPortIsOutput, 0)) |port| {
@@ -107,7 +107,7 @@ pub fn source_generate(node: *Node, ticks: u64, nsmps: u32) ?[][]f64 {
     return node.outputs;
 }
 
-pub fn source_init(node: *Node, client: *jack_t.jack_client_t) bool {
+pub fn source_init(node: *Node, client: *u8) bool {
     // const nsmps = jack.jack_get_buffer_size(client);
     const src = @ptrCast(*MonoSource, @alignCast(@alignOf(*MonoSource), node.data));
     print("hooking up input: \"{}\"\n", .{src.label});

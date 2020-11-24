@@ -7,7 +7,7 @@ const jack_f = c_jack.jack_f;
 const node = @import("../src/audio_node.zig");
 
 const jack_cb_t = fn(u32, ?*c_void) callconv(.C) c_int;
-const jack_prep_t = fn(*jack_t.jack_client_t, *c_void) c_int;
+const jack_prep_t = fn(*u8, *c_void) c_int;
 const jack_cleanup_t = fn(?*c_void) callconv(.C) void;
 
 pub fn start_audio(server_name: ?[*:0]const u8,
@@ -54,7 +54,7 @@ pub fn start_audio(server_name: ?[*:0]const u8,
     return 0;
 }
 
-fn handle_status(client: *jack_t.jack_client_t, status: jack_t.jack_status_t) u8 {
+fn handle_status(client: *u8, status: jack_t.jack_status_t) u8 {
     if ((@enumToInt(status) & jack_t.JackServerStarted) != 0) {
         print("new jack server started\n", .{});
     }
