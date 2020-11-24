@@ -35,7 +35,7 @@ pub fn noop_cleanup(_node: *Node) void {
 
 pub const MonoSink = struct {
     label: [*:0]const u8,
-    out: *jack_t.jack_port_t
+    out: *u8
 };
 
 pub fn sink(node: *Node, port: *MonoSink) void {
@@ -59,7 +59,7 @@ pub fn sink_generate(node: *Node, ticks: u64, nsmps: u32) ?[][]f64 {
     const generated = @ptrCast(?[*]u8, &src.generate(src, ticks, nsmps));
     // copy that data to dest.out
     const copy_count = @sizeOf(jack_t.jack_default_audio_sample_t) * nsmps;
-    if (@ptrCast(?[*]u8, jack_t.jack_port_get_buffer(dest.out, nsmps))) |output|
+    if (@ptrCast(?[*]u8, jack_f.port_get_buffer(dest.out, nsmps))) |output|
         if (generated) |in|
             @memcpy(output, in, copy_count);
     return null;
@@ -83,7 +83,7 @@ pub fn sink_cleanup(node: *Node) void {
 
 pub const MonoSource = struct {
     label: [*:0]const u8,
-    in: *jack_t.jack_port_t
+    in: *u8
 };
 
 pub fn source(node: *Node, port: *MonoSource) void {

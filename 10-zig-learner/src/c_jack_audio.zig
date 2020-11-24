@@ -3,7 +3,7 @@ const jack_raw = @import("../src/jack_raw.zig");
 pub const jack_t = jack_raw.jack_lib;
 const jack_debug = @import("../src/jack_debug.zig");
 
-const debug = false;
+const debug = true;
 
 pub const jack_f = blk: {
     if (!debug) {
