@@ -54,14 +54,22 @@ pub fn sink_generate(node: *Node, ticks: u64, nsmps: u32) ?[][]f64 {
     } else {
         return null;
     }
+    // // print("generating sink, src = {}\n", .{src});
     const dest = @ptrCast(*MonoSink, @alignCast(@alignOf(*MonoSink), node.data));
+    // print("generating sink, dest = {}\n", .{dest});
     // generate data from source
     const generated = @ptrCast(?[*]u8, &src.generate(src, ticks, nsmps));
     // copy that data to dest.out
-    const copy_count = @sizeOf(jack_t.jack_default_audio_sample_t) * nsmps;
-    if (@ptrCast(?[*]u8, jack_f.port_get_buffer(dest.out, nsmps))) |output|
-        if (generated) |in|
+    // print("generating sink, generated = {}\n", .{generated});
+    // const copy_count = @sizeOf(jack_t.jack_default_audio_sample_t) * nsmps;
+    const copy_count = nsmps;
+    if (@ptrCast(?[*]u8, jack_f.port_get_buffer(dest.out, nsmps))) |output| {
+        if (generated) |in| {
+            // print("generating sink, output = {}, in = {}, copy_count = {}\n", .{output, in, copy_count});
             @memcpy(output, in, copy_count);
+        }
+        // print("generated sink\n", .{});
+    }
     return null;
 }
 

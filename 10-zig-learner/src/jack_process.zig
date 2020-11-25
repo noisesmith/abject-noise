@@ -33,8 +33,11 @@ pub fn process_audio(nframes: jack_t.jack_nframes_t, data: ?*c_void) callconv(.C
                 ticks = a_node.ticks;
         }
         ticks = ticks + 1;
-        for (nodes) |a_node, i|
+        for (nodes) |a_node, i| {
+            // print("debug: position {}\n", .{i});
+            // print("debug: generating from {}\n", .{&nodes[i]});
             _ = a_node.generate(&nodes[i], ticks, nframes);
+        }
     }
     return 0;
 }

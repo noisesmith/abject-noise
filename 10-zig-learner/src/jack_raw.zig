@@ -72,8 +72,7 @@ fn on_shutdown(data: *u8,
 
 fn port_get_buffer(port_data: *u8,
     nframes: jack_lib.jack_nframes_t) ?*c_void {
-    print("debug: port_data={*}\n", .{port_data});
-    var port = @ptrCast(*jack_lib.jack_port_t, @alignCast(@alignOf(*jack_lib.jack_port_t), port_data));
+    var port = @ptrCast(*jack_lib.jack_port_t,  port_data);
     return jack_lib.jack_port_get_buffer(port, nframes);
 }
 
@@ -85,7 +84,6 @@ fn port_register(data: *u8,
     var client = get_client(data);
     var port = jack_lib.jack_port_register(client, port_name, port_type, flags, buffer_size);
     var port_data = @ptrCast(*u8, port);
-    print("debug: port={} port_data={*}\n", .{port, port_data});
     return port_data;
 }
 

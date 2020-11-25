@@ -24,7 +24,7 @@ const DummyClient = struct {
     active_p: bool,
     shutdown_fn: jack_t.JackShutdownCallback,
     shutdown_data: *u8,
-    nsmps: u64,
+    nsmps: u32,
     process_fn: jack_t.JackProcessCallback,
     process_data: *u8
 };
@@ -42,7 +42,12 @@ fn activate(data: *u8) c_int {
     var client = get_client(data);
     client.active_p = true;
     print("debug: activation of client {}\n", .{client});
-    // TODO - after activation, start calling the process_fn ?
+    if (client.process_fn) |process| {
+        var res = process(client.nsmps, client.process_data);
+        print("processing returned {}\n", .{res});
+    } else {
+        print("process called with no fn, client is: {}\n", .{client});
+    }
     return 0;
 }
 
