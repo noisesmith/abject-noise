@@ -5,8 +5,6 @@ const exit = std.process.exit;
 const print = std.debug.print;
 
 pub fn prep(client: *u8, data: *c_void) c_int {
-    // TODO - find some error here, or in process_audio below, which causes the client to be inactive
-    // TODO - better traversal order
     var nodes_ptr = node.void_to_nodes(data);
     var nodes = nodes_ptr.*;
     for (nodes) |a_node, i| {
@@ -14,16 +12,12 @@ pub fn prep(client: *u8, data: *c_void) c_int {
             nodes[i].ticks = 1;
             if (!nodes[i].init(&nodes[i], client))
                 return 1;
-            //if (nodes[i].inputs) |inputs|
-            //    if (prep(client, @ptrCast(*c_void, &nodes[i].inputs)) != 0)
-            //        return 1;
         }
     }
     return 0;
 }
 
 pub fn process_audio(nframes: jack_t.jack_nframes_t, data: ?*c_void) callconv(.C) c_int {
-    // TODO - redo this to have a principled generation order
     if (data) |user_data| {
         var nodes_ptr = node.void_to_nodes(user_data);
         var nodes = nodes_ptr.*;
@@ -34,8 +28,7 @@ pub fn process_audio(nframes: jack_t.jack_nframes_t, data: ?*c_void) callconv(.C
         }
         ticks = ticks + 1;
         for (nodes) |a_node, i| {
-            // print("debug: position {}\n", .{i});
-            // print("debug: generating from {}\n", .{&nodes[i]});
+            print("generating for node {}, {*}\n", .{i, &nodes[i]});
             _ = a_node.generate(&nodes[i], ticks, nframes);
         }
     }

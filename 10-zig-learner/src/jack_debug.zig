@@ -37,7 +37,6 @@ fn as_data(client: *DummyClient) ?*u8 {
     return @ptrCast(*u8, client);
 }
 
-
 fn activate(data: *u8) c_int {
     var client = get_client(data);
     client.active_p = true;
@@ -50,7 +49,6 @@ fn activate(data: *u8) c_int {
     }
     return 0;
 }
-
 
 fn client_close(data: *u8) c_int {
     var client = get_client(data);

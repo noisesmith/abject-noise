@@ -1,3 +1,16 @@
+* where I am right now:
+	* 10-zig
+		[X] redo allocation / data type translation
+			[X] move all allocation into the datatype specific code
+		[_] walk the nodes as a tree
+			[_] pre-calculate the traversal order for now, walk that traversal
+				: represent the node traversal as an array of pointer to node
+			[?] later, use a graph traversal to create the traversal array at comp time
+		[_] free the data in the cleanup method (this might mean allocating differently)
+			[_] only use "alloc" for arrays, use the other function for individual items
+		[_] simplify, reduce the number of pointer casts
+		[_] write to buffers / wave-terrain style granulation
+
 [_] copy fennel csound libs
 [_] UI concept
 
@@ -7,20 +20,19 @@
 * synth compiler ideas
 	* have tests, make it easier to pick up where I left off
 
-where I am right now:
-: working directory, composition-5
-: can make live preview with rte.csd and rte-open-stage-control.json
-: multiple fennel files for making a score (with help of the live preview for
-: picking params), and a hard coded orchestra in csound
-:
-
-previous / potential:
+* previous / potential:
 	* fennel synth graph to csound compiler
 	* some sort of timeline control - maybe with the help of iannix?
 		: maybe a lua osc lib?
 	* olive video editor
+	* composition 5
+		: working directory, composition-5
+		: can make live preview with rte.csd and rte-open-stage-control.json
+		: multiple fennel files for making a score (with help of the live preview for
+		: picking params), and a hard coded orchestra in csound
+		:
 
-insane future ideas:
+* insane future ideas:
 	* pick up the wavelet project again
 	* turn raspberry pi into a DSP by setting thread core affinity and peephole
 		: see harm
