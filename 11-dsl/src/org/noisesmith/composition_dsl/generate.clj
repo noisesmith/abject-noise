@@ -7,7 +7,6 @@
   (fn [categorized {:keys [e]}]
     e))
 
-
 (defmethod event-collect :start
   [categorized {:keys [i t]}]
   (-> categorized

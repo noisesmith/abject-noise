@@ -26,9 +26,10 @@
 
        ;; f 1 0 2 3 0 2 4
        ;; i 1 0 3 1
-       ;; TODO - test is broken, times must be translated from
-       ;; score time to instrument time here
-       [{:i 1 :start 0 :duration 3 :params {:foo [[0 0] [1 2] [2 4]]}}]
+       [{:i 1
+         :start 0
+         :duration 3
+         :params {:foo [[0 0] [1 2] [2 4]]}}]
        [{:e :start :t 0 :i 1}
         {:e :parameter :i 1 :t 0 :p :foo :v 0}
         {:e :parameter :i 1 :t 1 :p :foo :v 2}

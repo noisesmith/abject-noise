@@ -2,6 +2,7 @@
   (:require [org.noisesmith.composition-dsl.emit :as emit]))
 
 ;; TODO - make a DSL targetting the features in the operations namespace
+;; TODO - use the tables namespace
 (def score
   [{:i 1
     :start 0

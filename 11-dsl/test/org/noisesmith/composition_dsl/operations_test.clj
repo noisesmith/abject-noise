@@ -13,7 +13,7 @@
         {:e :parameter :i 1 :p :foo :t 1 :v 12}
         {:e :parameter :i 1 :p :foo :t 2 :v 42}
         {:e :stop :i 1 :t 2}
-        {:e :start :i 1 :t 3}
+        {:e :start :i 1 :t 3 :params [:foo]}
         {:e :end :t 4}]
        [[:i 1 :foo]
         [:p :foo 42]
@@ -23,6 +23,6 @@
         [:p :foo 42]
         [:d 1]
         [:t 1]
-        [:i 1]
+        [:i 1 :foo]
         [:t 1]
         [:e]]))
