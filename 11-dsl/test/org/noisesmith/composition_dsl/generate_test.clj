@@ -10,16 +10,16 @@
        []
        []
 
-       [{:i 1 :start 0 :duration 1}]
+       [{:i 1 :start 0 :duration 1 :params {:key/order nil}}]
        [{:e :start :t 0 :i 1}
         {:e :end :t 1}]
 
-       [{:i 1 :start 0 :duration 1}]
+       [{:i 1 :start 0 :duration 1 :params {:key/order nil}}]
        [{:e :start :t 0 :i 1}
         {:e :stop :i 1 :t 1}]
 
-       [{:i 1 :start 0 :duration 2}
-        {:i 2 :start 1 :duration 1}]
+       [{:i 1 :start 0 :duration 2 :params {:key/order nil}}
+        {:i 2 :start 1 :duration 1 :params {:key/order nil}}]
        [{:e :start :t 0 :i 1}
         {:e :start :t 1 :i 2}
         {:e :end :t 2}]
@@ -29,8 +29,9 @@
        [{:i 1
          :start 0
          :duration 3
-         :params {:foo [[0 0] [1 2] [2 4]]}}]
-       [{:e :start :t 0 :i 1}
+         :params {:key/order [:foo]
+                  :foo [[0 0] [1 2] [2 4]]}}]
+       [{:e :start :t 0 :i 1 :order [:foo]}
         {:e :parameter :i 1 :t 0 :p :foo :v 0}
         {:e :parameter :i 1 :t 1 :p :foo :v 2}
         {:e :parameter :i 1 :t 2 :p :foo :v 4}

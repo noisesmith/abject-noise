@@ -8,9 +8,9 @@
     e))
 
 (defmethod event-collect :start
-  [categorized {:keys [i t]}]
+  [categorized {:keys [i t order]}]
   (-> categorized
-      (update :instruments conj {:i i :start t})
+      (update :instruments conj {:i i :start t :params {:key/order order}})
       (update :instruments (partial sort-by
                                     (juxt :start (fnil :duration 0))))
       (update :instruments vec)))
