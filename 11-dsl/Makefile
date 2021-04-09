@@ -1,22 +1,27 @@
-COMPOSITION = src/org/noisesmith/composition_dsl/composition.clj
-HELPERS = src/org/noisesmith/composition_dsl/emit.clj
-HELPERS += src/org/noisesmith/composition_dsl/generate.clj
-HELPERS += src/org/noisesmith/composition_dsl/operations.clj
-HELPERS += src/org/noisesmith/composition_dsl/tables.clj
+PREFIX = org.noisesmith.composition-dsl
+PATH_PREFIX = src/org/noisesmith/composition_dsl
+COMPOSITION = $(PATH_PREFIX)/composition.clj
+HELPERS = $(PATH_PREFIX)/emit.clj
+HELPERS += $(PATH_PREFIX)/generate.clj
+HELPERS += $(PATH_PREFIX)/operations.clj
+HELPERS += $(PATH_PREFIX)/tables.clj
 
 test.wav: test.sco
 	csound simple.orc test.sco
 
 test.sco: $(COMPOSITION) $(HELPERS)
-	clj -m org.noisesmith.composition-dsl.composition > test.sco
+	clj -m $(PREFIX).composition | tee test.sco
 
 test: operations-test generate-test emit-test
 
 operations-test:
-	bin/test org.noisesmith.composition-dsl.operations-test
+	bin/test $(PREFIX).operations-test
 
 generate-test:
-	bin/test org.noisesmith.composition-dsl.generate-test
+	bin/test $(PREFIX).generate-test
 
 emit-test:
-	bin/test org.noisesmith.composition-dsl.emit-test
+	bin/test $(PREFIX).emit-test
+
+clean:
+	rm test.wav test.sco
