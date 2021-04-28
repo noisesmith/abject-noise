@@ -1,5 +1,6 @@
 (ns noisesmith.egregore
-  (:require [clojure.string :as string]))
+  (:require [clojure.string :as string]
+            [noisesmith.generative :as gen]))
 
 (defn number-present?
   [m ks]
@@ -69,7 +70,7 @@
   ["f 1 0 0 1 \"src.ardour/Untitled-2021-04-27-09-30-00/export/session.wav\" 0 4 1"
    "f 2 0 0 1 \"src.ardour/Untitled-2021-04-27-09-30-00/export/session.wav\" 0 4 2"])
 
-(defn granulatable
+(defn simplified-granulatable
   []
   (eviscerate
    (fn [state]
@@ -101,12 +102,12 @@
            (string/join " ")
            (list)))
 
-(defn gran-score
+(defn simplified-gran-score
   []
   (into table-headers
         (cons ""
               (mapcat event->sco
-                      (granulatable)))))
+                      (simplified-granulatable)))))
 
 (def dummy-score
   (into table-headers
@@ -136,6 +137,74 @@
    ""
    "apos      = apos + 1"
    "  endin"])
+
+(defn sequence-a
+  [{:keys [voices start-time end-time max-slice-len sample-location]}]
+  (let [voices (or (some-> voices (long))
+                   1)
+        start-time (or (some-> start-time (double))
+                       0.0)
+        end-time (some-> end-time (double))
+        sample-location (or (some-> sample-location (double))
+                            0.0)
+        max-slice-len (or (some-> max-slice-len (double))
+                          3.0)
+        slicer (fn slicer []
+                 (let [durations #(gen/curve {:mn 0.01 :mx max-slice-len :slope Math/PI})
+                       sample-locations (fn [duration]
+                                          (gen/curve {:mn sample-location
+                                                      :mx (+ sample-location 20 duration)
+                                                      :slope 2}))
+                       fades #(gen/curve {:mn 0 :mx (/ % 2)})
+                       sources #(inc (rand-int 2))
+                       amps #(gen/curve {:mn % :mx 0 :slope 1.3})
+                       lags #(gen/curve {:mn 0 :mx (/ % 4)})]
+                   (eviscerate
+                    (fn [state]
+                      (let [duration (durations)
+                            short-boost (gen/translate [0.1 3] [-25 -65] duration)]
+                        (assoc state
+                               :in-lag (lags duration)
+                               :duration duration
+                               :out-lag (lags duration)
+                               :slice {:t (sample-locations duration)
+                                       :vl (amps short-boost)
+                                       :vr (amps short-boost)
+                                       :fade-in (fades duration)
+                                       :fade-out (fades duration)
+                                       :src (sources)})))
+                    {:timestamp start-time
+                     :min-duration 10
+                     :max-duration 10
+                     :total-time end-time})))]
+    (apply concat
+           (repeatedly voices
+                       slicer))))
+
+(defn granulatable
+  []
+  (concat (sequence-a {:voices 50
+                       :start-time 0
+                       :end-time 100
+                       :sample-location 400
+                       :max-slice-len 3})
+          (sequence-a {:voices 90
+                       :start-time 80
+                       :end-time 180
+                       :sample-location 500
+                       :max-slice-len 0.3})
+          (sequence-a {:voices 10
+                       :start-time 175
+                       :end-time 300
+                       :sample-location 800
+                       :max-slice-len 0.1})))
+
+(defn gran-score
+  []
+  (into table-headers
+        (cons ""
+              (mapcat event->sco
+                      (granulatable)))))
 
 (defn -main
   [& args]
