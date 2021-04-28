@@ -5,6 +5,7 @@
 05-fennel-4-2020/compo.sco
 06-scheme-4-2020/g.sco
 06-scheme-4-2020/g.orc
+*.sco
 *.wav
 *.mp3
 *.log
