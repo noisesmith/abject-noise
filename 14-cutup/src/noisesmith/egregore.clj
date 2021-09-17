@@ -2,11 +2,42 @@
   (:require [clojure.string :as string]
             [noisesmith.generative :as gen]))
 
+;;; TODO - this is a big tangled mess, simplify with the two kinds of curve
+
 (defn number-present?
   [m ks]
   (and (map? m)
        (every? (comp number? m)
                ks)))
+
+(defmulti curve (fn [impl coords]
+                  [(type impl) (count coords)]))
+
+(defmethod curve [Number 0]
+  [x _]
+  x)
+
+(defmethod curve [Number 1]
+  [x _]
+  x)
+
+(defmethod curve [clojure.lang.PersistentTreeSet 1]
+  [table x]
+  (gen/interpolate table x))
+
+(defn evdata->scodata
+  [{:keys [in duration data :as ev]}]
+  (let [{:keys [t vl vr fade-in fade-out src]} data]
+    ["i1" in duration vl vr t fade-in fade-out src]))
+
+(defn event->sco
+  [row-data]
+  (some->> row-data
+           (:event)
+           (evdata->scodata)
+           (string/join " ")
+           (list)))
+
 
 ;; obsessed with the inviolability of my identity
 ;; my choices
@@ -26,11 +57,11 @@
   (assert (number-present? state [:timestamp :min-duration :max-duration :total-time]))
   (let [slice-data (sculpting-f state)
         {:keys [in-lag duration out-lag slice]} slice-data]
-    (assert (number-present? slice-data [:in-lag :duration :out-lag]))
+    (assert (number-present? slice-data [:out-lag]))
     (-> state
         (merge slice-data)
-        (assoc :event {:in (+ timestamp in-lag)
-                       :duration duration
+        (assoc :event {:in (+ timestamp (curve in-lag [timestamp]))
+                       :duration (curve duration [timestamp])
                        :data slice})
         (update :timestamp + in-lag duration out-lag))))
 
@@ -89,19 +120,6 @@
     :max-duration 10
     :total-time 10}))
 
-(defn evdata->scodata
-  [{:keys [in duration data :as ev]}]
-  (let [{:keys [t vl vr fade-in fade-out src]} data]
-    ["i1" in duration vl vr t fade-in fade-out src]))
-
-(defn event->sco
-  [row-data]
-  (some->> row-data
-           (:event)
-           (evdata->scodata)
-           (string/join " ")
-           (list)))
-
 (defn simplified-gran-score
   []
   (into table-headers
@@ -138,48 +156,52 @@
    "apos      = apos + 1"
    "  endin"])
 
+(defn slicer
+  [{:keys [start-time end-time max-slice-len sample-location]}]
+  (let [durations #(gen/curve {:mn 0.01 :mx max-slice-len :slope Math/PI})
+        sample-locations (fn [duration]
+                           (gen/curve {:mn sample-location
+                                       :mx (+ sample-location 20 duration)
+                                       :slope 2}))
+        fades #(gen/curve {:mn 0 :mx (/ % 2)})
+        sources #(inc (rand-int 2))
+        amps #(gen/curve {:mn % :mx 0 :slope 1.3})
+        lags #(gen/curve {:mn 0 :mx (/ % 4)})]
+    (eviscerate
+     (fn [state]
+       (let [duration (durations)
+             short-boost (gen/translate [0.1 3] [-25 -65] duration)]
+         (assoc state
+                :in-lag (lags duration)
+                :duration duration
+                :out-lag (lags duration)
+                :slice {:t (sample-locations duration)
+                        :vl (amps short-boost)
+                        :vr (amps short-boost)
+                        :fade-in (fades duration)
+                        :fade-out (fades duration)
+                        :src (sources)})))
+     {:timestamp start-time
+      :min-duration 10
+      :max-duration 10
+      :total-time end-time})))
+
 (defn sequence-a
   [{:keys [voices start-time end-time max-slice-len sample-location]}]
-  (let [voices (or (some-> voices (long))
-                   1)
-        start-time (or (some-> start-time (double))
-                       0.0)
-        end-time (some-> end-time (double))
-        sample-location (or (some-> sample-location (double))
-                            0.0)
-        max-slice-len (or (some-> max-slice-len (double))
-                          3.0)
-        slicer (fn slicer []
-                 (let [durations #(gen/curve {:mn 0.01 :mx max-slice-len :slope Math/PI})
-                       sample-locations (fn [duration]
-                                          (gen/curve {:mn sample-location
-                                                      :mx (+ sample-location 20 duration)
-                                                      :slope 2}))
-                       fades #(gen/curve {:mn 0 :mx (/ % 2)})
-                       sources #(inc (rand-int 2))
-                       amps #(gen/curve {:mn % :mx 0 :slope 1.3})
-                       lags #(gen/curve {:mn 0 :mx (/ % 4)})]
-                   (eviscerate
-                    (fn [state]
-                      (let [duration (durations)
-                            short-boost (gen/translate [0.1 3] [-25 -65] duration)]
-                        (assoc state
-                               :in-lag (lags duration)
-                               :duration duration
-                               :out-lag (lags duration)
-                               :slice {:t (sample-locations duration)
-                                       :vl (amps short-boost)
-                                       :vr (amps short-boost)
-                                       :fade-in (fades duration)
-                                       :fade-out (fades duration)
-                                       :src (sources)})))
-                    {:timestamp start-time
-                     :min-duration 10
-                     :max-duration 10
-                     :total-time end-time})))]
+  (let [voices (or (some-> voices (long)) 1)
+        params {:start-time (or (some-> start-time (double))
+                                0.0)
+                :end-time (some-> end-time (double))
+                :sample-location (or (some-> sample-location (double))
+                                     0.0)
+                :max-slice-len (or (some-> max-slice-len (double))
+                                   3.0)}]
     (apply concat
            (repeatedly voices
-                       slicer))))
+                       #(slicer params)))))
+
+;; TODO - values that use the state for intermediate data,
+;; and have a meaningful curve or flow (memory dependent behavior)
 
 (defn granulatable
   []
@@ -206,6 +228,13 @@
               (mapcat event->sco
                       (granulatable)))))
 
+(defn gran-score2
+  []
+  (into table-headers
+        (cons ""
+              (mapcat event->sco
+                      (granulatable2)))))
+
 (defn -main
   [& args]
-  (run! println (gran-score)))
+  (run! println (gran-score2)))
