@@ -29,18 +29,14 @@
                (iterate (fn [{:keys [in]}]
                           (let [min-dt (gen/interpolate step0 in)
                                 max-dt (gen/interpolate step1 in)
-                                times {:mn (min min-dt max-dt)
-                                       :mx (max min-dt max-dt)}
-                                delta-in (gen/curve times)
+                                delta-in (gen/curve min-dt max-dt)
                                 in' (+ in delta-in)
                                 st (gen/interpolate source-time in)
-                                source-t (gen/curve {:mn st
-                                                     :mx (+ st 1)})
+                                source-t (gen/curve st (+ st 1))
                                 dur (gen/interpolate grain-duration in)
-                                duration (gen/curve {:mn dur
-                                                     :mx (* dur 5)})
-                                vl (gen/curve {:mn -30 :mx 0})
-                                vr (gen/curve {:mn -30 :mx 0})]
+                                duration (gen/curve dur (* dur 5))
+                                vl (gen/curve -30 0)
+                                vr (gen/curve -30 0)]
                             {:in in'
                              :duration duration
                              :data {:t source-t

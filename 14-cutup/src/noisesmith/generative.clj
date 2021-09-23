@@ -8,21 +8,25 @@
 (def not-zero (Math/nextUp 0.0))
 
 (defn curve
-  [{:keys [mn mx slope]}]
-  (let [mn (or (some-> mn (double))
-               0.0)
-        mx (or (some-> mx (double))
-               1.0)
-        upper-limit (- mx mn)
-        lower-limit mn
-        slope (or (some-> slope (double))
-                  Math/E)
-        scale (calc-scale upper-limit slope)]
-    (+ lower-limit
-       (* scale
-          (Math/pow (+ not-zero
-                       (rand upper-limit))
-                    slope)))))
+  ([a b]
+   (curve a b nil))
+  ([a b slope]
+   (curve {:mn (min a b) :mx (max a b) :slope slope}))
+  ([{:keys [mn mx slope]}]
+   (let [mn (or (some-> mn (double))
+                0.0)
+         mx (or (some-> mx (double))
+                1.0)
+         upper-limit (- mx mn)
+         lower-limit mn
+         slope (or (some-> slope (double))
+                   Math/E)
+         scale (calc-scale upper-limit slope)]
+     (+ lower-limit
+        (* scale
+           (Math/pow (+ not-zero
+                        (rand upper-limit))
+                     slope))))))
 
 (defn translate
   [[a b] [x y] term]
