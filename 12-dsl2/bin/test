@@ -1,0 +1,7 @@
+#!/bin/sh
+
+NS="$1"
+
+RUN_TESTS="(requiring-resolve 'clojure.test/run-tests)"
+
+clj -C:test -e "(doto '${NS} (require) ($RUN_TESTS))"

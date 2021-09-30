@@ -3,9 +3,12 @@
             [org.noisesmith.composition-dsl.operations :as op]
             [org.noisesmith.composition-dsl.generate :as gen]))
 
-;; TODO - make a DSL targetting the features in the operations namespace
-;; TODO - use the tables namespace
-#_ ;; the redef below should be equivalent to this...
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; TODO - make a DSL targetting the features in the operations namespace ;;;;;;;
+;; TODO - use the tables namespace                                       ;;;;;;;
+;; the redef below should be equivalent to this...                       ;;;;;;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+#_
 (def score
   [{:i 1
     :start 0
