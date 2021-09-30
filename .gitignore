@@ -20,3 +20,5 @@ a.out
 02-test-write-hex
 08-arm-assembly/life/life
 */zig-cache/
+13-directed-graph/ignore/
+14-cutup/src.ardour/
